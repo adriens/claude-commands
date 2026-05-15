@@ -14,10 +14,12 @@ curl -o ~/.claude/commands/<skill>.md \
 
 | Skill | Commande | Description | Prérequis |
 |-------|----------|-------------|-----------|
-| [opt-nc-avps](opt-nc-avps.md) | `/opt-nc-avps <profil>` | Recherche d'AVPs OPT-NC avec accompagnement candidature | MCP `avps-opt-nc` |
+| [opt-nc-avps](opt-nc-avps.md) | `/opt-nc-avps <profil>` | Recherche d'AVPs OPT-NC avec accompagnement candidature | `claude mcp add avps-opt-nc --transport sse https://opt-nc-avps.hf.space/gradio_api/mcp/sse` |
 
 ## Prérequis MCP
 
-Certains skills dépendent de serveurs MCP. Consultez la fiche de chaque skill pour les détails.
+Certains skills dépendent de serveurs MCP, à installer via la CLI Claude Code.
 
-- **avps-opt-nc** : serveur MCP OPT-NC pour l'accès aux Avis de Vacances de Poste
+| MCP | Commande d'installation |
+|-----|------------------------|
+| `avps-opt-nc` | `claude mcp add avps-opt-nc --transport sse https://opt-nc-avps.hf.space/gradio_api/mcp/sse` |
