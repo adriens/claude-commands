@@ -46,3 +46,7 @@ link = "https://www.youtube.com/@devopslabs2812"
 [[project.extra.social]]
 icon = "simpleicons/huggingface"
 link = "https://huggingface.co/rastadidi"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/dev"
+link = "https://dev.to/adriens/"
