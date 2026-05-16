@@ -26,3 +26,23 @@ toggle.name = "Switch to light mode"
 scheme = "default"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/x-twitter"
+link = "https://x.com/rastadidi"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/adriens"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/linkedin"
+link = "https://www.linkedin.com/in/adrien-sales/"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/youtube"
+link = "https://www.youtube.com/@devopslabs2812"
+
+[[project.extra.social]]
+icon = "lucide/database"
+link = "https://huggingface.co/rastadidi"
