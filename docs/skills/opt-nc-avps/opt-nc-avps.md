@@ -10,12 +10,20 @@ tags:
 ---
 # Recherche d'AVPs OPT-NC
 
-!!! info "Commande Claude Code"
+```yaml
+title: "Recherche AVPs OPT-NC"
+description: "Recherche d'AVPs OPT-NC avec accompagnement complet à la préparation de candidature."
+command: "/opt-nc-avps"
+tags:
+  - emploi
+  - opt-nc
+  - nouvelle-calédonie
+```
 
-    **Commande** : `{{ page.command | default: "/opt-nc-avps" }}`  
+!!! info "Utilisation"
+
+    **Commande** : `/opt-nc-avps`  
     **Tags** : :material-tag-outline: `emploi` :material-tag-outline: `opt-nc` :material-tag-outline: `nouvelle-calédonie`
-
-    *Accompagnement complet à la préparation de candidature pour l'OPT-NC.*
 
 ---
 
