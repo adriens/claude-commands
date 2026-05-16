@@ -6,7 +6,12 @@ command: "/opt-nc-avps"
 ---
 # Recherche d'AVPs OPT-NC
 
-Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet à la préparation de candidature.
+!!! info "Commande Claude Code"
+
+    **Commande** : `{{ page.command | default: "/opt-nc-avps" }}`  
+    *Accompagnement complet à la préparation de candidature pour l'OPT-NC.*
+
+---
 
 ## Instructions
 
