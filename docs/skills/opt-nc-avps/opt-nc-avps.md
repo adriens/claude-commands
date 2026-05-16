@@ -5,15 +5,15 @@ description: "Recherche d'AVPs OPT-NC avec accompagnement complet à la prépara
 command: "/opt-nc-avps"
 tags:
   - emploi
-  - nouvelle-caledonie
-  - carrière
+  - opt-nc
+  - nouvelle-calédonie
 ---
 # Recherche d'AVPs OPT-NC
 
 !!! info "Commande Claude Code"
 
     **Commande** : `{{ page.command | default: "/opt-nc-avps" }}`  
-    **Tags** : :material-tag-outline: `emploi` :material-tag-outline: `nouvelle-caledonie` :material-tag-outline: `carrière`
+    **Tags** : :material-tag-outline: `emploi` :material-tag-outline: `opt-nc` :material-tag-outline: `nouvelle-calédonie`
 
     *Accompagnement complet à la préparation de candidature pour l'OPT-NC.*
 
