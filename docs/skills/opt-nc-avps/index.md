@@ -2,13 +2,8 @@
 layout: default
 title: "Recherche AVPs OPT-NC"
 description: "Recherche d'AVPs OPT-NC avec accompagnement complet à la préparation de candidature."
-command: "/opt-nc-avps"
-tags:
-  - emploi
-  - opt-nc
-  - nouvelle-calédonie
 ---
-# Recherche d'AVPs OPT-NC
+# 🚀 Recherche d'AVPs OPT-NC
 
 !!! info "Commande Claude Code"
 
@@ -17,88 +12,41 @@ tags:
 
     *Accompagnement complet à la préparation de candidature pour l'OPT-NC.*
 
-
 ---
 
 ## 📥 Installation
 
+L'installation se fait en deux étapes dans votre terminal Claude Code.
+
 ### 1️⃣ Serveur MCP (Prérequis)
-Installez d'abord le serveur de données via la CLI Claude Code :
+Installez d'abord le serveur de données :
 ```bash
 claude mcp add avps-opt-nc --transport sse https://opt-nc-avps.hf.space/gradio_api/mcp/sse
 ```
 
 ### 2️⃣ Skill (Slash Command)
-Téléchargez ensuite le skill dans votre répertoire de commandes :
+Téléchargez le skill dans votre répertoire de commandes :
 ```bash
 curl -o ~/.claude/commands/opt-nc-avps.md \
-  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/index.md
+  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/src/opt-nc-avps.md
 ```
 
-## 📝 Instructions
+---
 
-### 🏗️ Étape 1 — Recherche des postes
-1. Si l'utilisateur ne fournit pas de profil dans `$ARGUMENTS`, demande son profil (métier, niveau, compétences clés).
-2. Lance `mcp__avps-opt-nc__avps_search_avps` avec une requête enrichie.
-3. Tableau markdown : titre, numéro, score, dispo immédiate, date clôture, lien.
-4. Mettre en avant : postes disponibles immédiatement et score > 0.6.
-5. Proposer d'ouvrir le détail via `mcp__avps-opt-nc__avps_on_card_click`.
+## 📝 Utilisation
 
-### 🔍 Étape 2 — Détail d'un poste
-1. Appelle `mcp__avps-opt-nc__avps_on_card_click`. Si erreur, `WebFetch` sur l'`url_markdown`.
-2. Présente la fiche complète : missions, activités, profil requis, modalités.
-3. Enchaîne immédiatement avec l'étape 3.
+Une fois installé, lancez simplement la commande en précisant votre profil ou le type de poste :
 
-### 👥 Étape 3 — Profilage candidat
-**AskUserQuestion, 3 questions simultanées**
+```text
+/opt-nc-avps chef de projet SI
+```
 
-**Q1 — Expérience** (header: "Expérience") :
-- Chef de projet confirmé (5 ans+, bout en bout)
-- Chef de projet junior (2-5 ans)
-- Profil MOA/AMOA (besoins, specs, recette)
-- En reconversion (compétences transverses)
+### ✨ Fonctionnalités
+*   🔍 **Recherche ciblée** des postes ouverts.
+*   🧠 **Profilage intelligent** via questionnaire.
+*   🛠️ **Plan de préparation** (atouts, points à renforcer, questions d'entretien STAR).
+*   ✍️ **Aide à la rédaction** de lettre de motivation personnalisée.
 
-**Q2 — Conduite du changement** (header: "Conduite du chgt") :
-- Oui, formalisée (méthodologie, plan de com)
-- Oui, opérationnelle (animation terrain)
-- Partielle (ateliers ponctuels)
-- Non
+---
 
-**Q3 — Lien NC / OPT-NC** (header: "Contexte local") :
-- Résident en NC
-- Fonctionnaire NC (voie hiérarchique)
-- Candidat extérieur (mobilité)
-- Ancien agent OPT
-
-> Adapter les options au domaine du poste (ex: technique réseau → certifications, terrain vs bureau).
-
-### 📋 Étape 4 — Plan de préparation personnalisé
-
-#### ✨ Atouts à mettre en avant
-- 2-3 points forts en lien avec les missions.
-- Pour chaque atout : une phrase d'accroche prête à l'emploi (lettre ou entretien).
-- Ancien agent OPT → valoriser la connaissance terrain, processus internes, enjeux institutionnels.
-
-#### 💪 Points à renforcer
-- Écarts entre profil et exigences du poste.
-- Pour chaque écart : stratégie concrète (formation courte, expérience indirecte, angle de com).
-- Ne jamais laisser un écart sans solution.
-
-#### 🎙️ Préparation à l'entretien
-- 5 questions types du jury, basées sur les missions du poste.
-- Pour chaque question : structure STAR (Situation, Tâche, Action, Résultat) avec éléments à personnaliser.
-- 2 questions à poser au jury (montrer engagement et maturité).
-
-### ✉️ Étape 5 — Lettre de candidature
-Proposer de rédiger un brouillon personnalisé intégrant :
-- Accroche sur le lien OPT-NC / NC si pertinent.
-- Atouts identifiés (étape 4A).
-- Réponse proactive aux points faibles (étape 4B).
-- Ton adapté à la fonction publique territoriale calédonienne.
-
-## ⚙️ Paramètres de recherche
-- Threshold par défaut : 30 — monter à 60+ si trop de bruit.
-- Requête : reformuler le profil en description métier complète.
-
-## 🏷️ Arguments
-`$ARGUMENTS` — profil recherché (ex: "chef de projet SI MOA transformation digitale")
+[:fontawesome-brands-github: Voir le code source du skill](https://github.com/adriens/claude-commands/blob/main/docs/skills/opt-nc-avps/src/opt-nc-avps.md)
