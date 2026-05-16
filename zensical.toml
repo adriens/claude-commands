@@ -46,3 +46,7 @@ link = "https://www.youtube.com/@devopslabs2812"
 [[project.extra.social]]
 icon = "lucide/smile"
 link = "https://huggingface.co/rastadidi"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/kaggle"
+link = "https://www.kaggle.com/adriensales"
