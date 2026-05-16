@@ -44,5 +44,5 @@ icon = "fontawesome/brands/youtube"
 link = "https://www.youtube.com/@devopslabs2812"
 
 [[project.extra.social]]
-icon = "simpleicons/huggingface"
+icon = "lucide/smile"
 link = "https://huggingface.co/rastadidi"
