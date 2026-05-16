@@ -33,7 +33,3 @@ Les contributions sont les bienvenues ! Si vous avez créé un skill utile, n'h�
 1. Forkez le projet.
 2. Créez votre dossier dans `docs/skills/`.
 3. Proposez votre modification via une PR.
-
----
-
-[:fontawesome-brands-github: Voir le projet sur GitHub](https://github.com/adriens/claude-commands)
