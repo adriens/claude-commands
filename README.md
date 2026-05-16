@@ -6,4 +6,5 @@
 Collection de slash commands (skills) pour [Claude Code](https://claude.ai/code).
 
 ## 🌐 Documentation & Catalogue
-Retrouvez tous les détails et exemples sur le site : [adriens.github.io/claude-commands/](https://adriens.github.io/claude-commands/)
+
+Retrouvez tous les détails et exemples sur le [site](https://adriens.github.io/claude-commands/).
