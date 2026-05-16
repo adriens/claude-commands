@@ -1,0 +1,28 @@
+[project]
+site_name = "Claude Code Skills"
+site_description = "Collection de slash commands (skills) pour Claude Code."
+site_author = "adriens"
+site_url = "https://adriens.github.io/claude-commands/"
+copyright = "Copyright &copy; 2026 adriens"
+
+[project.theme]
+language = "fr"
+features = [
+    "navigation.footer",
+    "navigation.path",
+    "navigation.top",
+    "navigation.tracking",
+    "content.code.copy",
+    "content.tooltips",
+    "search.highlight"
+]
+
+[[project.theme.palette]]
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"

@@ -1,25 +1,17 @@
-# claude-commands
+# Claude Code Skills
 
 Collection de slash commands (skills) pour [Claude Code](https://claude.ai/code).
 
-## Installation
+## 🌐 Documentation & Catalogue
+Retrouvez tous les détails et exemples sur notre site : [adriens.github.io/claude-commands/](https://adriens.github.io/claude-commands/)
+
+## 🚀 Installation rapide
 
 ```bash
-# Installer un skill globalement
-curl -o ~/.claude/commands/<skill>.md \
-  https://raw.githubusercontent.com/adriens/claude-commands/main/skills/<skill>/<skill>.md
+# Exemple pour le skill opt-nc-avps
+curl -o ~/.claude/commands/opt-nc-avps.md \
+  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/opt-nc-avps.md
 ```
 
-## Skills disponibles
-
-| Skill | Commande | Description | Prérequis |
-|-------|----------|-------------|-----------|
-| [opt-nc-avps](skills/opt-nc-avps/opt-nc-avps.md) | `/opt-nc-avps <profil>` | Recherche d'AVPs OPT-NC avec accompagnement candidature | `claude mcp add avps-opt-nc --transport sse https://opt-nc-avps.hf.space/gradio_api/mcp/sse` |
-
-## Prérequis MCP
-
-Certains skills dépendent de serveurs MCP, à installer via la CLI Claude Code.
-
-| MCP | Commande d'installation |
-|-----|------------------------|
-| `avps-opt-nc` | `claude mcp add avps-opt-nc --transport sse https://opt-nc-avps.hf.space/gradio_api/mcp/sse` |
+## 🛠️ Structure
+Ce projet utilise **Zensical** et **uv** pour la gestion de la documentation. Toute la documentation se trouve dans le dossier `docs/`.
