@@ -7,14 +7,14 @@ Collection de slash commands (skills) pour [Claude Code](https://claude.ai/code)
 ```bash
 # Installer un skill globalement
 curl -o ~/.claude/commands/<skill>.md \
-  https://raw.githubusercontent.com/adriens/claude-commands/main/<skill>.md
+  https://raw.githubusercontent.com/adriens/claude-commands/main/skills/<skill>/<skill>.md
 ```
 
 ## Skills disponibles
 
 | Skill | Commande | Description | Prérequis |
 |-------|----------|-------------|-----------|
-| [opt-nc-avps](opt-nc-avps.md) | `/opt-nc-avps <profil>` | Recherche d'AVPs OPT-NC avec accompagnement candidature | `claude mcp add avps-opt-nc --transport sse https://opt-nc-avps.hf.space/gradio_api/mcp/sse` |
+| [opt-nc-avps](skills/opt-nc-avps/opt-nc-avps.md) | `/opt-nc-avps <profil>` | Recherche d'AVPs OPT-NC avec accompagnement candidature | `claude mcp add avps-opt-nc --transport sse https://opt-nc-avps.hf.space/gradio_api/mcp/sse` |
 
 ## Prérequis MCP
 

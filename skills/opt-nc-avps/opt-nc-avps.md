@@ -1,3 +1,9 @@
+---
+layout: default
+title: "Recherche AVPs OPT-NC"
+description: "Recherche d'AVPs OPT-NC avec accompagnement complet à la préparation de candidature."
+command: "/opt-nc-avps"
+---
 # Recherche d'AVPs OPT-NC
 
 Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet à la préparation de candidature.
