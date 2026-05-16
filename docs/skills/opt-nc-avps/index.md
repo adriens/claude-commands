@@ -2,13 +2,20 @@
 layout: default
 title: "Recherche AVPs OPT-NC"
 description: "Recherche d'AVPs OPT-NC avec accompagnement complet à la préparation de candidature."
+command: "/opt-nc-avps"
+tags:
+  - emploi
+  - opt-nc
+  - nouvelle-calédonie
+source_url: "https://github.com/adriens/claude-commands/blob/main/docs/skills/opt-nc-avps/src/opt-nc-avps.md"
 ---
 # 🚀 Recherche d'AVPs OPT-NC
 
 !!! info "Commande Claude Code"
 
     **Commande** : `/opt-nc-avps`  
-    **Tags** : :material-tag-outline: `emploi` :material-tag-outline: `opt-nc` :material-tag-outline: `nouvelle-calédonie`
+    **Tags** : :material-tag-outline: `emploi` :material-tag-outline: `opt-nc` :material-tag-outline: `nouvelle-calédonie`  
+    **Source** : [:fontawesome-brands-github: Voir le code source](https://github.com/adriens/claude-commands/blob/main/docs/skills/opt-nc-avps/src/opt-nc-avps.md)
 
     *Accompagnement complet à la préparation de candidature pour l'OPT-NC.*
 
@@ -48,7 +55,3 @@ Une fois installé, lancez simplement la commande en précisant votre profil ou 
 *   🧠 **Profilage intelligent** via questionnaire.
 *   🛠️ **Plan de préparation** (atouts, points à renforcer, questions d'entretien STAR).
 *   ✍️ **Aide à la rédaction** de lettre de motivation personnalisée.
-
----
-
-[:fontawesome-brands-github: Voir le code source du skill](https://github.com/adriens/claude-commands/blob/main/docs/skills/opt-nc-avps/src/opt-nc-avps.md)
