@@ -32,7 +32,7 @@ claude mcp add avps-opt-nc --transport sse https://opt-nc-avps.hf.space/gradio_a
 Téléchargez ensuite le skill dans votre répertoire de commandes :
 ```bash
 curl -o ~/.claude/commands/opt-nc-avps.md \
-  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/opt-nc-avps.md
+  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/index.md
 ```
 
 ## 📝 Instructions

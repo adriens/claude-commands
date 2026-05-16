@@ -7,17 +7,23 @@ Bienvenue dans cette collection de commandes personnalisées pour **Claude Code*
 ### 🚀 Recherche AVPs OPT-NC
 Accompagnement complet pour postuler à l'OPT-NC : recherche ciblée, profilage intelligent et aide à la rédaction de candidature.
 *   **Commande** : `/opt-nc-avps`
-*   [En savoir plus](skills/opt-nc-avps/README.md)
+*   [En savoir plus](skills/opt-nc-avps/index.md)
 
 ---
 
 ## 📦 Installation rapide
 
-Pour utiliser ces skills, installez le fichier `.md` correspondant dans votre dossier local Claude Code :
+L'installation se fait en deux étapes :
 
+### 1. Serveur MCP
+```bash
+claude mcp add avps-opt-nc --transport sse https://opt-nc-avps.hf.space/gradio_api/mcp/sse
+```
+
+### 2. Skill (Slash Command)
 ```bash
 curl -o ~/.claude/commands/opt-nc-avps.md \
-  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/opt-nc-avps.md
+  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/index.md
 ```
 
 ## 🤝 Comment contribuer ?
