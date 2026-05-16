@@ -5,6 +5,14 @@ site_author = "adriens"
 site_url = "https://adriens.github.io/claude-commands/"
 copyright = "Copyright &copy; 2026 adriens"
 
+# Navigation explicite pour éviter les doublons
+nav = [
+    { "Accueil" = "index.md" },
+    { "Skills" = [
+        { "Recherche AVPs OPT-NC" = "skills/opt-nc-avps/index.md" }
+    ]}
+]
+
 [project.theme]
 language = "fr"
 features = [
