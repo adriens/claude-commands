@@ -11,7 +11,7 @@ Accompagnement complet pour postuler à l'OPT-NC : recherche ciblée, profilage 
 
 ---
 
-## Installation rapide
+## 📦 Installation rapide
 
 Pour utiliser ces skills, installez le fichier `.md` correspondant dans votre dossier local Claude Code :
 
@@ -20,5 +20,14 @@ curl -o ~/.claude/commands/opt-nc-avps.md \
   https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/opt-nc-avps.md
 ```
 
-## Comment contribuer ?
-Ajoutez simplement un nouveau dossier dans `docs/skills/` avec votre fichier `.md` et documentez-le.
+## 🤝 Comment contribuer ?
+
+Les contributions sont les bienvenues ! Si vous avez créé un skill utile, n'hésitez pas à **ouvrir une Pull Request** pour l'ajouter à la collection.
+
+1. Forkez le projet.
+2. Créez votre dossier dans `docs/skills/`.
+3. Proposez votre modification via une PR.
+
+---
+
+[:fontawesome-brands-github: Voir le projet sur GitHub](https://github.com/adriens/claude-commands)
