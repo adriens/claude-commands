@@ -5,7 +5,7 @@ Bienvenue dans cette collection de commandes personnalisées pour **Claude Code*
 ## Skills disponibles
 
 ### 🚀 Recherche AVPs OPT-NC
-Accompagnement complet pour postuler à l'OPT-NC (recherche, profilage, entretien).
+Accompagnement complet pour postuler à l'OPT-NC : recherche ciblée, profilage intelligent et aide à la rédaction de candidature.
 *   **Commande** : `/opt-nc-avps`
 *   [En savoir plus](skills/opt-nc-avps/README.md)
 

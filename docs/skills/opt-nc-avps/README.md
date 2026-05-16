@@ -2,14 +2,15 @@
 
 Recherche des AVPs (Avis de Vacance de Poste) de l'OPT-NC adaptés à votre profil, avec un accompagnement complet à la préparation de votre candidature.
 
-## Description
+## Fonctionnalités
 
-Ce skill permet de :
-1. Rechercher des postes ouverts à l'OPT-NC via un serveur MCP dédié.
-2. Analyser en détail une fiche de poste.
-3. Évaluer l'adéquation de votre profil via un questionnaire interactif.
-4. Générer un plan de préparation (atouts, points à renforcer, questions d'entretien).
-5. Rédiger un brouillon de lettre de motivation personnalisé.
+Ce skill vous accompagne tout au long du processus de candidature :
+
+*   🔍 **Recherche ciblée** : Identifie les postes ouverts à l'OPT-NC via un serveur MCP dédié.
+*   📄 **Analyse de fiche** : Décortique les missions et le profil requis en un clic.
+*   🧠 **Profilage intelligent** : Évalue votre adéquation via un questionnaire interactif.
+*   🛠️ **Plan de préparation** : Génère vos atouts, points de vigilance et questions d'entretien (méthode STAR).
+*   ✍️ **Aide à la rédaction** : Rédige un brouillon de lettre de motivation personnalisé et adapté au contexte local.
 
 ## Installation
 
