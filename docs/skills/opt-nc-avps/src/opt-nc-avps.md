@@ -1,56 +1,22 @@
----
-layout: default
-title: "Recherche AVPs OPT-NC"
-description: "Recherche d'AVPs OPT-NC avec accompagnement complet à la préparation de candidature."
-command: "/opt-nc-avps"
-tags:
-  - emploi
-  - opt-nc
-  - nouvelle-calédonie
----
 # Recherche d'AVPs OPT-NC
 
-!!! info "Commande Claude Code"
+Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet à la préparation de candidature.
 
-    **Commande** : `/opt-nc-avps`  
-    **Tags** : :material-tag-outline: `emploi` :material-tag-outline: `opt-nc` :material-tag-outline: `nouvelle-calédonie`
+## Instructions
 
-    *Accompagnement complet à la préparation de candidature pour l'OPT-NC.*
-
-
----
-
-## 📥 Installation
-
-### 1️⃣ Serveur MCP (Prérequis)
-Installez d'abord le serveur de données via la CLI Claude Code :
-```bash
-claude mcp add avps-opt-nc --transport sse https://opt-nc-avps.hf.space/gradio_api/mcp/sse
-```
-
-### 2️⃣ Skill (Slash Command)
-Téléchargez ensuite le skill dans votre répertoire de commandes :
-```bash
-curl -o ~/.claude/commands/opt-nc-avps.md \
-  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/index.md
-```
-
-## 📝 Instructions
-
-### 🏗️ Étape 1 — Recherche des postes
+### Étape 1 — Recherche des postes
 1. Si l'utilisateur ne fournit pas de profil dans `$ARGUMENTS`, demande son profil (métier, niveau, compétences clés).
 2. Lance `mcp__avps-opt-nc__avps_search_avps` avec une requête enrichie.
 3. Tableau markdown : titre, numéro, score, dispo immédiate, date clôture, lien.
 4. Mettre en avant : postes disponibles immédiatement et score > 0.6.
 5. Proposer d'ouvrir le détail via `mcp__avps-opt-nc__avps_on_card_click`.
 
-### 🔍 Étape 2 — Détail d'un poste
+### Étape 2 — Détail d'un poste
 1. Appelle `mcp__avps-opt-nc__avps_on_card_click`. Si erreur, `WebFetch` sur l'`url_markdown`.
 2. Présente la fiche complète : missions, activités, profil requis, modalités.
 3. Enchaîne immédiatement avec l'étape 3.
 
-### 👥 Étape 3 — Profilage candidat
-**AskUserQuestion, 3 questions simultanées**
+### Étape 3 — Profilage candidat (AskUserQuestion, 3 questions simultanées)
 
 **Q1 — Expérience** (header: "Expérience") :
 - Chef de projet confirmé (5 ans+, bout en bout)
@@ -72,33 +38,33 @@ curl -o ~/.claude/commands/opt-nc-avps.md \
 
 > Adapter les options au domaine du poste (ex: technique réseau → certifications, terrain vs bureau).
 
-### 📋 Étape 4 — Plan de préparation personnalisé
+### Étape 4 — Plan de préparation personnalisé
 
-#### ✨ Atouts à mettre en avant
+#### A. Atouts à mettre en avant
 - 2-3 points forts en lien avec les missions.
 - Pour chaque atout : une phrase d'accroche prête à l'emploi (lettre ou entretien).
 - Ancien agent OPT → valoriser la connaissance terrain, processus internes, enjeux institutionnels.
 
-#### 💪 Points à renforcer
+#### B. Points à renforcer
 - Écarts entre profil et exigences du poste.
 - Pour chaque écart : stratégie concrète (formation courte, expérience indirecte, angle de com).
 - Ne jamais laisser un écart sans solution.
 
-#### 🎙️ Préparation à l'entretien
+#### C. Préparation à l'entretien
 - 5 questions types du jury, basées sur les missions du poste.
 - Pour chaque question : structure STAR (Situation, Tâche, Action, Résultat) avec éléments à personnaliser.
 - 2 questions à poser au jury (montrer engagement et maturité).
 
-### ✉️ Étape 5 — Lettre de candidature
+### Étape 5 — Lettre de candidature
 Proposer de rédiger un brouillon personnalisé intégrant :
 - Accroche sur le lien OPT-NC / NC si pertinent.
 - Atouts identifiés (étape 4A).
 - Réponse proactive aux points faibles (étape 4B).
 - Ton adapté à la fonction publique territoriale calédonienne.
 
-## ⚙️ Paramètres de recherche
+## Paramètres de recherche
 - Threshold par défaut : 30 — monter à 60+ si trop de bruit.
 - Requête : reformuler le profil en description métier complète.
 
-## 🏷️ Arguments
+## Arguments
 `$ARGUMENTS` — profil recherché (ex: "chef de projet SI MOA transformation digitale")
