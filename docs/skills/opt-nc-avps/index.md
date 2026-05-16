@@ -21,7 +21,9 @@ L'installation se fait en deux étapes dans votre terminal Claude Code.
 ### 1️⃣ Serveur MCP (Prérequis)
 Installez d'abord le serveur de données :
 ```bash
-claude mcp add avps-opt-nc --transport sse https://opt-nc-avps.hf.space/gradio_api/mcp/sse
+claude mcp add avps-opt-nc \
+  --transport sse \
+  https://opt-nc-avps.hf.space/gradio_api/mcp/sse
 ```
 
 ### 2️⃣ Skill (Slash Command)
