@@ -20,10 +20,12 @@ tags:
   - nouvelle-calédonie
 ```
 
-!!! info "Utilisation"
+!!! info "Commande Claude Code"
 
     **Commande** : `/opt-nc-avps`  
     **Tags** : :material-tag-outline: `emploi` :material-tag-outline: `opt-nc` :material-tag-outline: `nouvelle-calédonie`
+
+    *Accompagnement complet à la préparation de candidature pour l'OPT-NC.*
 
 ---
 
