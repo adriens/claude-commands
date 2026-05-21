@@ -9,7 +9,37 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
 2. Lance `mcp__avps-opt-nc__avps_search_avps` avec une requête enrichie.
 3. Tableau markdown : titre, numéro, score, dispo immédiate, date clôture, lien.
 4. Mettre en avant : postes disponibles immédiatement et score > 0.6.
-5. Proposer d'ouvrir le détail via `mcp__avps-opt-nc__avps_on_card_click`.
+5. Si 3+ AVPs avec score > 0.5 : proposer d'abord la comparaison (étape 1.5) avant de détailler.
+6. Sinon : proposer d'ouvrir le détail via `mcp__avps-opt-nc__avps_on_card_click`.
+
+### Étape 1.5 — Comparaison multi-AVPs (optionnelle)
+
+**Quand** : Si la recherche retourne 3+ AVPs avec score > 0.5
+
+**Proposer** (AskUserQuestion) : "Souhaitez-vous comparer plusieurs postes avant de choisir ?"
+
+**Si oui** :
+1. Demander de sélectionner 2-3 AVPs à comparer (par numéros)
+2. Récupérer les détails de chaque AVP via `mcp__avps-opt-nc__avps_on_card_click`
+3. Générer un **tableau comparatif markdown** avec :
+   - Titre du poste
+   - Missions principales (résumé 2-3 points clés)
+   - Score de matching
+   - Disponibilité immédiate (✓/✗)
+   - Date de clôture
+   - Localisation / Direction
+   - Niveau requis vs profil candidat (adéquation)
+4. **Analyse comparative** :
+   - 🟢 Match parfait (score > 0.7 + dispo immédiate + profil aligné)
+   - 🟡 Bon match (score > 0.6 + 1-2 écarts gérables)
+   - 🟠 Match partiel (nécessite préparation significative)
+5. **Recommandation stratégique** :
+   - Lequel prioriser et pourquoi (3-4 arguments)
+   - Si pertinent : suggérer candidatures multiples avec ordre de préférence
+   - Timeline recommandée (quel poste traiter en premier)
+6. Laisser le candidat choisir l'AVP sur lequel continuer (étape 2)
+
+**Si non** : Passer directement à l'étape 2 avec l'AVP choisi.
 
 ### Étape 2 — Détail d'un poste
 1. Appelle `mcp__avps-opt-nc__avps_on_card_click`. Si erreur, `WebFetch` sur l'`url_markdown`.
