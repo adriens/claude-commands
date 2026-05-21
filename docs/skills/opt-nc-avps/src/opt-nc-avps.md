@@ -64,6 +64,7 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
      - **Activités principales** (section ## Activités principales)
      - **Activités secondaires** (section ## Activités secondaires)
      - **Compétences requises** (section ## Compétences requises)
+     - **Lien hiérarchique** : Responsable hiérarchique et fonction (section # Lien hiérarchique)
 
 **Option B — Saisie manuelle** :
 - Le contenu de la fiche de poste actuelle
@@ -97,6 +98,7 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
 2. **Markdown (.md)** — format simple et universel
 
 Proposer de rédiger un brouillon personnalisé intégrant :
+- **Mention obligatoire** : "sous couvert de [Responsable hiérarchique]" (extrait de l'EAE si disponible, sinon à demander).
 - Accroche sur le lien OPT-NC / NC si pertinent.
 - Si employé actuel OPT : référence aux réalisations de l'EAE et alignement entre fiche de poste actuelle et AVP ciblé.
 - Atouts identifiés (étape 4A).
@@ -112,7 +114,9 @@ pandoc lettre-motivation.adoc -o lettre-motivation.docx
 pandoc lettre-motivation.md -o lettre-motivation.docx
 ```
 
-> Note : pandoc doit être installé via brew (`brew install pandoc`) si non disponible.
+> **Note importante** : Les candidatures AVP à l'OPT-NC doivent être faites **sous couvert du responsable hiérarchique**. La lettre doit mentionner explicitement cette information (extraite automatiquement de l'EAE si disponible).
+
+> Note technique : pandoc doit être installé via brew (`brew install pandoc`) si non disponible.
 
 ## Paramètres de recherche
 - Threshold par défaut : 30 — monter à 60+ si trop de bruit.
