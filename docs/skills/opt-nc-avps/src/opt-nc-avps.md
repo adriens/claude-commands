@@ -43,6 +43,11 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
 
 **Option A — Via le template EAE GitHub** :
 - Utilisez-vous le template EAE de l'OPT-NC (https://github.com/opt-nc/template-eae) ?
+- Si non : Proposer de s'y mettre avec les ressources suivantes :
+  - Template : https://github.com/opt-nc/template-eae
+  - Guide complet : https://dev.to/adriens/versionner-et-builder-lebook-de-son-entretien-annuel-devaluation-sur-github-242k
+  - Avantages : versioning, suivi annuel, génération PDF automatique, réutilisable pour candidatures
+  - Puis passer à l'Option B (saisie manuelle) pour cette fois
 - Si oui :
   1. Demander le login GitHub (ex: `username`)
   2. Tenter avec la convention : `https://github.com/{login}/eae-opt`
