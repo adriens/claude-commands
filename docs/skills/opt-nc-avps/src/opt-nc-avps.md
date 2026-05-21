@@ -91,12 +91,28 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
 - 2 questions à poser au jury (montrer engagement et maturité).
 
 ### Étape 5 — Lettre de candidature
+
+**Format de rédaction** : Proposer (AskUserQuestion) :
+1. **AsciiDoc (.adoc)** — format recommandé, structuré, exportable
+2. **Markdown (.md)** — format simple et universel
+
 Proposer de rédiger un brouillon personnalisé intégrant :
 - Accroche sur le lien OPT-NC / NC si pertinent.
 - Si employé actuel OPT : référence aux réalisations de l'EAE et alignement entre fiche de poste actuelle et AVP ciblé.
 - Atouts identifiés (étape 4A).
 - Réponse proactive aux points faibles (étape 4B).
 - Ton adapté à la fonction publique territoriale calédonienne.
+
+**Génération Word** : Une fois le fichier créé, proposer de générer un document Word via pandoc :
+```bash
+# Pour AsciiDoc
+pandoc lettre-motivation.adoc -o lettre-motivation.docx
+
+# Pour Markdown
+pandoc lettre-motivation.md -o lettre-motivation.docx
+```
+
+> Note : pandoc doit être installé via brew (`brew install pandoc`) si non disponible.
 
 ## Paramètres de recherche
 - Threshold par défaut : 30 — monter à 60+ si trop de bruit.
