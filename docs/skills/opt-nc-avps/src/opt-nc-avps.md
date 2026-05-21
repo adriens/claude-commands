@@ -97,6 +97,11 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
 1. **AsciiDoc (.adoc)** — format recommandé, structuré, exportable
 2. **Markdown (.md)** — format simple et universel
 
+**Signature** : Demander (AskUserQuestion) si le candidat dispose d'une image de signature :
+- Si oui : demander le chemin du fichier image (ex: `~/Documents/signature.png`)
+- Intégrer l'image dans le document (syntaxe AsciiDoc : `image::chemin/signature.png[width=200]` ou Markdown : `![Signature](chemin/signature.png)`)
+- Positionner la signature en fin de lettre, après la formule de politesse
+
 Proposer de rédiger un brouillon personnalisé intégrant :
 - **Mention obligatoire** : "sous couvert de [Responsable hiérarchique]" (extrait de l'EAE si disponible, sinon à demander).
 - Accroche sur le lien OPT-NC / NC si pertinent.
