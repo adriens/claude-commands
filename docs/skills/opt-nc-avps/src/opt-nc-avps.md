@@ -12,6 +12,7 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
 
 **Source du profil** (header: "Profil") :
 - J'ai un CV sur registry.jsonresume.org
+- J'ai un site portfolio (URL)
 - Décrire mon profil manuellement
 
 **Si JSON Resume** :
@@ -23,8 +24,16 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
    - `work[].position` et `work[].highlights` — postes et réalisations
    - `skills[].name` — compétences clés
    - `education[].studyType` + `education[].area` — niveau et domaine
-5. Construire une requête enrichie (description métier complète, 50-100 mots)
-6. **Mémoriser le CV chargé** pour les étapes ultérieures (CV optimisé étape 7, lettre)
+5. **Enrichissement portfolio** : si `basics.url` est présent et ne ressemble pas à un réseau social connu (dev.to, twitter, linkedin, github.com, kaggle, youtube, huggingface) → fetcher automatiquement via `WebFetch` et extraire les projets, compétences et réalisations supplémentaires pour enrichir la requête. Signaler à l'utilisateur les éléments trouvés en plus du CV.
+6. Construire une requête enrichie (description métier complète, 50-100 mots)
+7. **Mémoriser le CV et le portfolio chargés** pour les étapes ultérieures (CV optimisé étape 7, lettre)
+
+**Si portfolio URL** :
+1. Demander l'URL du site portfolio
+2. Fetcher via `WebFetch`
+3. Extraire : compétences, technologies, projets, expériences, niveaux, réalisations chiffrées
+4. Construire la requête enrichie depuis ces données
+5. **Mémoriser l'URL du portfolio** pour les étapes ultérieures
 
 **Si profil manuel** : demander le profil (métier, niveau, compétences clés), puis passer à l'étape 1.
 
