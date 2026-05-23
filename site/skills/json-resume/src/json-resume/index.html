@@ -520,16 +520,41 @@ SKIP: CV in Word/PDF without JSON Resume context, generic cover letter without a
 3. Si échec : <code>https://raw.githubusercontent.com/{username}/{username}/main/resume.json</code> via <code>WebFetch</code>
 4. Si tout échoue : demander à l'utilisateur l'URL directe ou le fichier local</p>
 <p>Informer l'utilisateur de la source effectivement utilisée.</p>
+<p><strong>Enrichissement portfolio</strong> : après chargement du CV, vérifier <code>basics.url</code> :
+- Si l'URL ressemble à un portfolio perso (ex: contient <code>github.io</code>, ou domaine non social — exclure : dev.to, twitter.com, linkedin.com, github.com, kaggle.com, huggingface.co, youtube.com, pypi.org) → fetcher automatiquement via <code>WebFetch</code>
+- Extraire les éléments complémentaires : projets, compétences, réalisations, publications, conférences non listées dans le CV
+- Signaler à l'utilisateur les éléments supplémentaires trouvés
+- Intégrer ces données dans la gap analysis (étape 4) comme atouts additionnels</p>
 <h3 id="etape-2-offre-demploi">Étape 2 — Offre d'emploi<a class="headerlink" href="#etape-2-offre-demploi" title="Permanent link">&para;</a></h3>
 <p>Demander immédiatement (AskUserQuestion, header: "Offre") :
 - URL de l'offre (le skill ira la lire)
-- Texte de l'offre (coller directement)</p>
+- Texte de l'offre (coller directement)
+- Numéro AVP OPT-NC (ex: <code>26-0689</code>) — fetcher via <code>mcp__avps-opt-nc__avps_on_card_click</code></p>
 <p><strong>Si URL</strong> : fetcher via <code>WebFetch</code> et extraire :
 - Titre du poste
 - Missions principales
 - Compétences et profil requis
 - Entreprise / contexte</p>
+<p><strong>Si numéro AVP OPT-NC</strong> : appeler <code>mcp__avps-opt-nc__avps_on_card_click</code> avec <code>job_id</code> = le numéro fourni. Si erreur, fallback sur <code>WebFetch</code> de l'<code>url_markdown</code> (<code>https://raw.githubusercontent.com/opt-nc/avps/refs/heads/main/data/{numero}.md</code>).</p>
 <p>Afficher une fiche synthèse de l'offre avant de continuer.</p>
+<p><strong>Si l'offre est un AVP OPT-NC</strong> (numéro ou URL <code>opt-nc.github.io/avps/</code>) : demander (AskUserQuestion, header: "Contexte OPT") :
+- Employé actuel OPT-NC (mobilité interne)
+- Fonctionnaire NC hors OPT (voie hiérarchique)
+- Ancien agent OPT
+- Candidat extérieur</p>
+<p><strong>Si "Employé actuel OPT-NC"</strong> : proposer de charger l'EAE :
+- Utilisez-vous le template EAE de l'OPT-NC (<a href="https://github.com/opt-nc/template-eae">https://github.com/opt-nc/template-eae</a>) ?
+- <strong>Si non</strong> : proposer de s'y mettre (guide : <a href="https://dev.to/adriens/versionner-et-builder-lebook-de-son-entretien-annuel-devaluation-sur-github-242k">https://dev.to/adriens/versionner-et-builder-lebook-de-son-entretien-annuel-devaluation-sur-github-242k</a>), puis passer à la saisie manuelle.
+- <strong>Si oui</strong> :
+  1. Demander le login GitHub
+  2. Fetcher <code>https://github.com/{login}/eae-opt</code> via <code>github-mcp-server-list_branches</code>
+  3. Si introuvable : demander l'URL complète en fallback
+  4. Sélectionner la branche (ex: <code>2025</code>, <code>main</code>) et récupérer <code>src/03_fiche-de-poste.md</code> via <code>github-mcp-server-get_file_contents</code>
+  5. Extraire : missions, activités principales/secondaires, compétences requises, <strong>lien hiérarchique</strong> (responsable pour la mention "sous couvert")
+- <strong>Saisie manuelle</strong> (si pas de template EAE) : points forts du dernier EAE, compétences valorisées par la hiérarchie, nom du responsable hiérarchique direct.</p>
+<blockquote>
+<p><strong>Mention obligatoire dans toute lettre OPT-NC</strong> : "sous couvert de [Responsable hiérarchique]" — extraire du fichier EAE ou demander explicitement.</p>
+</blockquote>
 <h3 id="etape-3-choix-du-livrable">Étape 3 — Choix du livrable<a class="headerlink" href="#etape-3-choix-du-livrable" title="Permanent link">&para;</a></h3>
 <p>Demander (AskUserQuestion, header: "Livrable") :
 - <strong>CV taillé sur mesure</strong> — extraire et réorganiser les éléments du JSON Resume pour coller au mieux à l'offre

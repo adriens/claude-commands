@@ -397,6 +397,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#etape-0-chargement-du-profil-candidat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Étape 0 — Chargement du profil candidat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#etape-1-recherche-des-postes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -419,82 +430,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#etape-2-detail-dun-poste" class="md-nav__link">
+  <a href="#etape-2-detail-dun-poste-et-handoff" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Étape 2 — Détail d'un poste
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#etape-3-profilage-candidat-askuserquestion-3-questions-simultanees" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Étape 3 — Profilage candidat (AskUserQuestion, 3 questions simultanées)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#etape-4-plan-de-preparation-personnalise" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Étape 4 — Plan de préparation personnalisé
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Étape 4 — Plan de préparation personnalisé">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#a-atouts-a-mettre-en-avant" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        A. Atouts à mettre en avant
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#b-points-a-renforcer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        B. Points à renforcer
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#c-preparation-a-lentretien" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        C. Préparation à l'entretien
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#etape-5-lettre-de-candidature" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Étape 5 — Lettre de candidature
+        Étape 2 — Détail d'un poste et handoff
       
     </span>
   </a>
@@ -554,10 +493,32 @@
 <h1 id="recherche-davps-opt-nc">Recherche d'AVPs OPT-NC<a class="headerlink" href="#recherche-davps-opt-nc" title="Permanent link">&para;</a></h1>
 <p>Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet à la préparation de candidature.</p>
 <h2 id="instructions">Instructions<a class="headerlink" href="#instructions" title="Permanent link">&para;</a></h2>
+<h3 id="etape-0-chargement-du-profil-candidat">Étape 0 — Chargement du profil candidat<a class="headerlink" href="#etape-0-chargement-du-profil-candidat" title="Permanent link">&para;</a></h3>
+<p><strong>Si <code>$ARGUMENTS</code> est fourni</strong> : l'utiliser directement comme requête (passer à l'étape 1).</p>
+<p><strong>Si <code>$ARGUMENTS</code> est vide</strong> : demander (AskUserQuestion) :</p>
+<p><strong>Source du profil</strong> (header: "Profil") :
+- J'ai un CV sur registry.jsonresume.org
+- Décrire mon profil manuellement</p>
+<p><strong>Si JSON Resume</strong> :
+1. Demander le username (ex: <code>adriens</code>)
+2. Fetcher <code>https://registry.jsonresume.org/{username}.json</code> via <code>WebFetch</code>
+3. Si échec : <code>https://gist.githubusercontent.com/{username}/resume.json/raw</code>
+4. Extraire pour construire la requête :
+   - <code>basics.summary</code> — résumé du profil
+   - <code>work[].position</code> et <code>work[].highlights</code> — postes et réalisations
+   - <code>skills[].name</code> — compétences clés
+   - <code>education[].studyType</code> + <code>education[].area</code> — niveau et domaine
+5. <strong>Enrichissement portfolio</strong> : si <code>basics.url</code> est présent et ne ressemble pas à un réseau social connu (dev.to, twitter, linkedin, github.com, kaggle, youtube, huggingface) → fetcher automatiquement via <code>WebFetch</code> et extraire les projets, compétences et réalisations supplémentaires pour enrichir la requête. Signaler à l'utilisateur les éléments trouvés en plus du CV.
+6. Construire une requête enrichie (description métier complète, 50-100 mots)
+7. <strong>Mémoriser le CV chargé</strong> pour les étapes ultérieures (CV optimisé étape 7, lettre)</p>
+<p><strong>Si profil manuel</strong> : demander le profil (métier, niveau, compétences clés), puis passer à l'étape 1.</p>
+<hr />
 <h3 id="etape-1-recherche-des-postes">Étape 1 — Recherche des postes<a class="headerlink" href="#etape-1-recherche-des-postes" title="Permanent link">&para;</a></h3>
 <ol>
-<li>Si l'utilisateur ne fournit pas de profil dans <code>$ARGUMENTS</code>, demande son profil (métier, niveau, compétences clés).</li>
 <li>Lance <code>mcp__avps-opt-nc__avps_search_avps</code> avec une requête enrichie.</li>
+<li><strong>Alerte urgence</strong> : calculer <code>date_cloture - date_du_jour</code> pour chaque résultat.</li>
+<li>Si au moins un poste clôture dans ≤ 7 jours : afficher ⚠️ <strong>URGENT — X poste(s) clôturent dans N jours</strong> avant le tableau.</li>
+<li>Si clôture ≤ 3 jours : ⛔ <strong>TRÈS URGENT — clôture imminente</strong></li>
 <li>Tableau markdown : titre, numéro, score, dispo immédiate, date clôture, lien.</li>
 <li>Mettre en avant : postes disponibles immédiatement et score &gt; 0.6.</li>
 <li>Si 3+ AVPs avec score &gt; 0.5 : proposer d'abord la comparaison (étape 1.5) avant de détailler.</li>
@@ -587,114 +548,27 @@
    - Timeline recommandée (quel poste traiter en premier)
 6. Laisser le candidat choisir l'AVP sur lequel continuer (étape 2)</p>
 <p><strong>Si non</strong> : Passer directement à l'étape 2 avec l'AVP choisi.</p>
-<h3 id="etape-2-detail-dun-poste">Étape 2 — Détail d'un poste<a class="headerlink" href="#etape-2-detail-dun-poste" title="Permanent link">&para;</a></h3>
+<h3 id="etape-2-detail-dun-poste-et-handoff">Étape 2 — Détail d'un poste et handoff<a class="headerlink" href="#etape-2-detail-dun-poste-et-handoff" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Appelle <code>mcp__avps-opt-nc__avps_on_card_click</code>. Si erreur, <code>WebFetch</code> sur l'<code>url_markdown</code>.</li>
 <li>Présente la fiche complète : missions, activités, profil requis, modalités.</li>
-<li>Enchaîne immédiatement avec l'étape 3.</li>
+<li><strong>Handoff vers <code>/json-resume</code></strong> pour la préparation de la candidature (gap analysis, CV ciblé, lettre, doc entretien) :</li>
+<li>Si un JSON Resume a été chargé à l'étape 0 :
+     &gt; 👉 Lance <code>/json-resume {username}</code> — quand la skill demande l'offre, réponds avec le numéro AVP <code>{numero}</code></li>
+<li>Si aucun CV chargé :
+     &gt; 👉 Lance <code>/json-resume</code> — la skill guidera le chargement de ton CV, puis donne le numéro AVP <code>{numero}</code> comme offre</li>
 </ol>
-<h3 id="etape-3-profilage-candidat-askuserquestion-3-questions-simultanees">Étape 3 — Profilage candidat (AskUserQuestion, 3 questions simultanées)<a class="headerlink" href="#etape-3-profilage-candidat-askuserquestion-3-questions-simultanees" title="Permanent link">&para;</a></h3>
-<p><strong>Q1 — Expérience</strong> (header: "Expérience") :
-- Chef de projet confirmé (5 ans+, bout en bout)
-- Chef de projet junior (2-5 ans)
-- Profil MOA/AMOA (besoins, specs, recette)
-- En reconversion (compétences transverses)</p>
-<p><strong>Q2 — Conduite du changement</strong> (header: "Conduite du chgt") :
-- Oui, formalisée (méthodologie, plan de com)
-- Oui, opérationnelle (animation terrain)
-- Partielle (ateliers ponctuels)
-- Non</p>
-<p><strong>Q3 — Lien NC / OPT-NC</strong> (header: "Contexte local") :
-- Résident en NC
-- Fonctionnaire NC (voie hiérarchique)
-- Employé actuel OPT (mobilité interne)
-- Ancien agent OPT
-- Candidat extérieur (mobilité)</p>
 <blockquote>
-<p>Adapter les options au domaine du poste (ex: technique réseau → certifications, terrain vs bureau).</p>
+<p><code>/json-resume</code> gère le matching CV↔offre, la gap analysis, le CV ciblé, la lettre et le doc préparation entretien — y compris les spécificités OPT-NC (EAE, lettre sous couvert hiérarchique).</p>
 </blockquote>
-<p><strong>Si "Employé actuel OPT"</strong> : Demander (AskUserQuestion, facultatif) :</p>
-<p><strong>Option A — Via le template EAE GitHub</strong> :
-- Utilisez-vous le template EAE de l'OPT-NC (<a href="https://github.com/opt-nc/template-eae">https://github.com/opt-nc/template-eae</a>) ?
-- Si non : Proposer de s'y mettre avec les ressources suivantes :
-  - Template : <a href="https://github.com/opt-nc/template-eae">https://github.com/opt-nc/template-eae</a>
-  - Guide complet : <a href="https://dev.to/adriens/versionner-et-builder-lebook-de-son-entretien-annuel-devaluation-sur-github-242k">https://dev.to/adriens/versionner-et-builder-lebook-de-son-entretien-annuel-devaluation-sur-github-242k</a>
-  - Avantages : versioning, suivi annuel, génération PDF automatique, réutilisable pour candidatures
-  - Puis passer à l'Option B (saisie manuelle) pour cette fois
-- Si oui :
-  1. Demander le login GitHub (ex: <code>username</code>)
-  2. Tenter avec la convention : <code>https://github.com/{login}/eae-opt</code>
-  3. Vérifier via <code>github-mcp-server-list_branches</code> (owner: login, repo: <code>eae-opt</code>)
-  4. Si échec (repo introuvable) : demander l'URL complète de la repo en fallback
-  5. Détecter les branches disponibles et proposer (ex: <code>2025</code>, <code>main</code>)
-  6. Récupérer automatiquement via <code>github-mcp-server-get_file_contents</code> :
-     - owner et repo (login + <code>eae-opt</code> ou extraits de l'URL)
-     - path: <code>src/03_fiche-de-poste.md</code>
-     - ref: <code>refs/heads/{branche}</code> (ex: <code>refs/heads/2025</code> ou <code>refs/heads/main</code>)
-  7. Extraire du fichier :
-     - <strong>Identification</strong> : Intitulé, Grade, Direction/Service
-     - <strong>Missions</strong> (section ## Missions)
-     - <strong>Activités principales</strong> (section ## Activités principales)
-     - <strong>Activités secondaires</strong> (section ## Activités secondaires)
-     - <strong>Compétences requises</strong> (section ## Compétences requises)
-     - <strong>Lien hiérarchique</strong> : Responsable hiérarchique et fonction (section # Lien hiérarchique)</p>
-<p><strong>Option B — Saisie manuelle</strong> :
-- Le contenu de la fiche de poste actuelle
-- Les éléments clés du dernier EAE (points forts, axes d'amélioration, objectifs atteints)
-- Les compétences ou réalisations valorisées par la hiérarchie</p>
-<blockquote>
-<p>Ces éléments permettent d'ancrer la candidature dans des faits évalués et reconnus en interne.</p>
-</blockquote>
-<h3 id="etape-4-plan-de-preparation-personnalise">Étape 4 — Plan de préparation personnalisé<a class="headerlink" href="#etape-4-plan-de-preparation-personnalise" title="Permanent link">&para;</a></h3>
-<h4 id="a-atouts-a-mettre-en-avant">A. Atouts à mettre en avant<a class="headerlink" href="#a-atouts-a-mettre-en-avant" title="Permanent link">&para;</a></h4>
-<ul>
-<li>2-3 points forts en lien avec les missions.</li>
-<li>Pour chaque atout : une phrase d'accroche prête à l'emploi (lettre ou entretien).</li>
-<li>Employé actuel OPT → valoriser la connaissance opérationnelle, réseau interne, maîtrise des processus et enjeux stratégiques.</li>
-<li>Ancien agent OPT → valoriser la connaissance terrain, processus internes, enjeux institutionnels.</li>
-</ul>
-<h4 id="b-points-a-renforcer">B. Points à renforcer<a class="headerlink" href="#b-points-a-renforcer" title="Permanent link">&para;</a></h4>
-<ul>
-<li>Écarts entre profil et exigences du poste.</li>
-<li>Pour chaque écart : stratégie concrète (formation courte, expérience indirecte, angle de com).</li>
-<li>Ne jamais laisser un écart sans solution.</li>
-</ul>
-<h4 id="c-preparation-a-lentretien">C. Préparation à l'entretien<a class="headerlink" href="#c-preparation-a-lentretien" title="Permanent link">&para;</a></h4>
-<ul>
-<li>5 questions types du jury, basées sur les missions du poste.</li>
-<li>Pour chaque question : structure STAR (Situation, Tâche, Action, Résultat) avec éléments à personnaliser.</li>
-<li>2 questions à poser au jury (montrer engagement et maturité).</li>
-</ul>
-<h3 id="etape-5-lettre-de-candidature">Étape 5 — Lettre de candidature<a class="headerlink" href="#etape-5-lettre-de-candidature" title="Permanent link">&para;</a></h3>
-<p><strong>Format de rédaction</strong> : Proposer (AskUserQuestion) :
-1. <strong>AsciiDoc (.adoc)</strong> — format recommandé, structuré, exportable
-2. <strong>Markdown (.md)</strong> — format simple et universel</p>
-<p><strong>Signature</strong> : Demander (AskUserQuestion) si le candidat dispose d'une image de signature :
-- Si oui : demander le chemin du fichier image (ex: <code>~/Documents/signature.png</code>)
-- Intégrer l'image dans le document (syntaxe AsciiDoc : <code>image::chemin/signature.png[width=200]</code> ou Markdown : <code>![Signature](chemin/signature.png)</code>)
-- Positionner la signature en fin de lettre, après la formule de politesse</p>
-<p>Proposer de rédiger un brouillon personnalisé intégrant :
-- <strong>Mention obligatoire</strong> : "sous couvert de [Responsable hiérarchique]" (extrait de l'EAE si disponible, sinon à demander).
-- Accroche sur le lien OPT-NC / NC si pertinent.
-- Si employé actuel OPT : référence aux réalisations de l'EAE et alignement entre fiche de poste actuelle et AVP ciblé.
-- Atouts identifiés (étape 4A).
-- Réponse proactive aux points faibles (étape 4B).
-- Ton adapté à la fonction publique territoriale calédonienne.</p>
-<p><strong>Génération Word</strong> : Une fois le fichier créé, proposer de générer un document Word via pandoc :
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Pour AsciiDoc</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pandoc<span class="w"> </span>lettre-motivation.adoc<span class="w"> </span>-o<span class="w"> </span>lettre-motivation.docx
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Pour Markdown</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>pandoc<span class="w"> </span>lettre-motivation.md<span class="w"> </span>-o<span class="w"> </span>lettre-motivation.docx
-</span></code></pre></div></p>
-<blockquote>
-<p><strong>Note importante</strong> : Les candidatures AVP à l'OPT-NC doivent être faites <strong>sous couvert du responsable hiérarchique</strong>. La lettre doit mentionner explicitement cette information (extraite automatiquement de l'EAE si disponible).</p>
-<p>Note technique : pandoc doit être installé via brew (<code>brew install pandoc</code>) si non disponible.</p>
-</blockquote>
+<hr />
 <h2 id="parametres-de-recherche">Paramètres de recherche<a class="headerlink" href="#parametres-de-recherche" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Threshold par défaut : 30 — monter à 60+ si trop de bruit.</li>
-<li>Requête : reformuler le profil en description métier complète.</li>
+<li>Threshold :</li>
+<li><strong>30</strong> = large (nombreux résultats, plus de bruit) — utile pour explorer un profil atypique</li>
+<li><strong>50</strong> = équilibré (défaut recommandé)</li>
+<li><strong>70+</strong> = strict (peu de résultats, très pertinents) — utile si trop de bruit à 50</li>
+<li>Requête : reformuler le profil en description métier complète (50-100 mots, pas de mots-clés isolés).</li>
 </ul>
 <h2 id="arguments">Arguments<a class="headerlink" href="#arguments" title="Permanent link">&para;</a></h2>
 <p><code>$ARGUMENTS</code> — profil recherché (ex: "chef de projet SI MOA transformation digitale")</p>
