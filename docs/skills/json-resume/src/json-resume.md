@@ -1,117 +1,107 @@
-# Analyse de CV JSON Resume
+# Candidature à une offre d'emploi via JSON Resume
 
-Charge un CV au format JSON Resume depuis le registry ou une URL, et propose un accompagnement complet : analyse, gap analysis avec une offre d'emploi, génération de lettre de motivation ciblée.
+Charge un CV au format JSON Resume et accompagne la rédaction d'une lettre de motivation ciblée sur une offre d'emploi.
 
 ## Instructions
 
 ### Étape 1 — Chargement du CV
 
-1. Si `$ARGUMENTS` contient un nom d'utilisateur ou une URL, l'utiliser directement.
-2. Sinon, demander (AskUserQuestion) :
+**Si `$ARGUMENTS` est fourni** :
+- Si c'est une URL (`http://` ou `https://`) : fetcher directement via `WebFetch`
+- Sinon, traiter comme un username et construire : `https://registry.jsonresume.org/$ARGUMENTS.json`
 
-**Q — Source du CV** (header: "Source CV") :
-- Registry JSON Resume (username)
+**Si `$ARGUMENTS` est vide** : demander (AskUserQuestion, header: "Source CV") :
+- Username JSON Resume registry
 - URL directe (raw JSON)
 - Fichier local (chemin)
 
-**Selon le choix** :
-- **Registry** : construire l'URL `https://registry.jsonresume.org/{username}.json` et fetcher via `WebFetch`
-- **URL directe** : fetcher directement via `WebFetch`
-- **Fichier local** : lire le fichier via `Read`
+**Ordre de tentative pour un username** :
+1. `https://registry.jsonresume.org/{username}.json` via `WebFetch`
+2. Si échec (4xx/5xx) : `https://gist.githubusercontent.com/{username}/resume.json/raw` via `WebFetch`
+3. Si échec : `https://raw.githubusercontent.com/{username}/{username}/main/resume.json` via `WebFetch`
+4. Si tout échoue : demander à l'utilisateur de fournir l'URL directe ou le fichier local
 
-3. Si le fetch échoue sur le registry, tenter `https://raw.githubusercontent.com/{username}/{username}/main/resume.json` comme fallback.
+**Informer l'utilisateur** de la source effectivement utilisée (registry ou fallback).
 
-### Étape 2 — Synthèse du profil
+### Étape 2 — Synthèse rapide du profil
 
-Présenter un résumé structuré du CV en markdown :
+Afficher en markdown (compact, pas de grands tableaux) :
 
-- **Identité** : nom, titre, localisation, email, profils (GitHub, LinkedIn, etc.)
-- **Résumé** : reformulation concise du `summary` (2-3 phrases)
-- **Compétences clés** : top 10 skills triés par niveau si disponible
-- **Expérience** : tableau avec poste, entreprise, durée, faits saillants
-- **Formation** : diplômes et certifications
-- **Réalisations notables** : publications, projets open source, conférences, articles
+- **Nom & titre** (depuis `basics`)
+- **Résumé** : 2 phrases extraites ou reformulées depuis `basics.summary`
+- **Dernière expérience** : poste + entreprise + durée
+- **Top 5 compétences** (par niveau décroissant depuis `skills`)
 
-Puis proposer (AskUserQuestion) :
+### Étape 3 — Offre d'emploi
 
-**Q — Que faire avec ce CV ?** (header: "Action") :
-- Analyser face à une offre d'emploi (gap analysis)
-- Générer un pitch / résumé exécutif
-- Rédiger une lettre de motivation ciblée
-- Les trois (dans cet ordre)
+Demander immédiatement (AskUserQuestion, header: "Offre") :
+- URL de l'offre (le skill ira la lire)
+- Texte de l'offre (coller directement)
 
-### Étape 3 — Gap analysis CV ↔ Offre (si demandé)
+**Si URL** : fetcher via `WebFetch` et extraire :
+- Titre du poste
+- Missions principales
+- Compétences et profil requis
+- Entreprise / contexte
 
-1. Demander l'offre d'emploi (AskUserQuestion) :
-   - URL de l'offre
-   - Texte collé directement
+**Afficher une fiche synthèse de l'offre** avant de continuer.
 
-2. Si URL : fetcher via `WebFetch` et extraire : titre, missions, compétences requises, profil recherché, avantages.
+### Étape 4 — Gap analysis automatique
 
-3. Produire un tableau de gap analysis :
+Produire un tableau de correspondance CV ↔ offre :
 
-| Critère | Requis par l'offre | Présent dans le CV | Niveau d'adéquation |
-|---|---|---|---|
-| ... | ... | ... | 🟢 / 🟡 / 🟠 / 🔴 |
+| Critère attendu | Ce que le CV apporte | Adéquation |
+|---|---|---|
+| ... | ... | 🟢 / 🟡 / 🟠 / 🔴 |
 
 Légende :
-- 🟢 Match parfait
-- 🟡 Match partiel (expérience indirecte ou transposable)
-- 🟠 Écart gérable (à travailler / à mettre en valeur différemment)
-- 🔴 Écart significatif (formation ou expérience manquante)
+- 🟢 Match direct et démontrable
+- 🟡 Match indirect ou transposable
+- 🟠 Écart gérable — à compenser dans la lettre
+- 🔴 Écart significatif — à mentionner honnêtement ou à ne pas soulever
 
-4. **Synthèse stratégique** :
-   - Points forts à mettre en avant (3-5 arguments)
-   - Points à compenser (avec stratégie de communication pour chacun)
-   - Verdict global : 🟢 Candidature solide / 🟡 Candidature à valoriser / 🟠 Candidature risquée
+**Synthèse en 3 points** :
+- Atouts principaux à mettre en avant (2-3 max, avec formulation prête à l'emploi)
+- Points à compenser et comment les tourner positivement
+- Verdict : 🟢 Candidature solide / 🟡 À valoriser / 🟠 Risquée
 
-### Étape 4 — Pitch / Résumé exécutif (si demandé)
+### Étape 5 — Lettre de motivation
 
-Générer 3 variantes de pitch selon le contexte :
+Demander (AskUserQuestion, 2 questions simultanées) :
 
-1. **Pitch LinkedIn** (300 caractères max) : accroche percutante pour "About"
-2. **Pitch entretien** (2 minutes, ~250 mots) : structure Passé → Présent → Futur
-3. **Pitch email de candidature spontanée** (5-6 lignes) : contexte, valeur ajoutée, appel à l'action
-
-Adapter le ton au domaine détecté dans le CV (tech, management, data, etc.).
-
-### Étape 5 — Lettre de motivation (si demandée)
-
-**Prérequis** : avoir une offre d'emploi (étape 3) ou en demander une.
-
-**Format** (AskUserQuestion, header: "Format lettre") :
+**Q1 — Format** (header: "Format") :
 - Markdown (.md)
 - AsciiDoc (.adoc)
 
-**Signature** (AskUserQuestion, header: "Signature") :
-- Oui, j'ai une image de signature (demander le chemin)
+**Q2 — Signature** (header: "Signature") :
+- Oui, j'ai une image (chemin à fournir)
 - Non, signature textuelle
 
-**Contenu de la lettre** :
-- En-tête : coordonnées du candidat (extraites du CV), destinataire si connu
-- Accroche : lien direct entre le profil et la mission centrale du poste
-- Paragraphe 1 — Qui je suis : synthèse du parcours en lien avec le poste
-- Paragraphe 2 — Ce que j'apporte : 2-3 réalisations concrètes issues du CV, quantifiées si possible
-- Paragraphe 3 — Pourquoi ce poste : motivation spécifique à l'entreprise/mission
-- Conclusion : disponibilité, appel à l'action
-- Signature (image ou textuelle)
+**Rédiger la lettre** en intégrant :
+- **En-tête** : coordonnées du candidat (depuis `basics`), date, destinataire si connu
+- **Accroche** : lien direct entre le profil et la mission centrale du poste (1-2 phrases percutantes)
+- **§1 — Qui je suis** : parcours synthétique ancré dans ce que le poste demande
+- **§2 — Ce que j'apporte** : 2-3 réalisations concrètes issues du CV, quantifiées si possible, en lien avec l'offre
+- **§3 — Pourquoi ce poste** : motivation spécifique (entreprise, mission, contexte) — pas générique
+- **Conclusion** : disponibilité, appel à l'action
+- **Signature** : image intégrée ou textuelle
 
-**Génération Word** : proposer après création du fichier :
+Créer le fichier (`lettre-motivation.md` ou `.adoc`) dans le répertoire courant.
+
+**Proposer la conversion Word** après création :
 ```bash
-# Markdown
 pandoc lettre-motivation.md -o lettre-motivation.docx
-
-# AsciiDoc
+# ou
 pandoc lettre-motivation.adoc -o lettre-motivation.docx
 ```
-
-> Note : pandoc doit être installé (`brew install pandoc` ou `sudo apt install pandoc`).
+> pandoc requis : `brew install pandoc` ou `sudo apt install pandoc`
 
 ## Arguments
 
-`$ARGUMENTS` — username JSON Resume registry ou URL directe vers un fichier `resume.json`
+`$ARGUMENTS` — username JSON Resume ou URL directe vers un `resume.json`
 
-Exemples :
-- `/json-resume adriens` — charge depuis `registry.jsonresume.org/adriens`
-- `/json-resume https://example.com/resume.json` — charge depuis une URL
-- `/json-resume` — demande interactivement la source
+```
+/json-resume adriens              # registry.jsonresume.org/adriens
+/json-resume https://…/resume.json  # URL directe
+/json-resume                      # demande interactive
+```
