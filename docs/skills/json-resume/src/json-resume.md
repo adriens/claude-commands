@@ -31,12 +31,15 @@ Informer l'utilisateur de la source effectivement utilisée.
 Demander immédiatement (AskUserQuestion, header: "Offre") :
 - URL de l'offre (le skill ira la lire)
 - Texte de l'offre (coller directement)
+- Numéro AVP OPT-NC (ex: `26-0689`) — fetcher via `mcp__avps-opt-nc__avps_on_card_click`
 
 **Si URL** : fetcher via `WebFetch` et extraire :
 - Titre du poste
 - Missions principales
 - Compétences et profil requis
 - Entreprise / contexte
+
+**Si numéro AVP OPT-NC** : appeler `mcp__avps-opt-nc__avps_on_card_click` avec `job_id` = le numéro fourni. Si erreur, fallback sur `WebFetch` de l'`url_markdown` (`https://raw.githubusercontent.com/opt-nc/avps/refs/heads/main/data/{numero}.md`).
 
 Afficher une fiche synthèse de l'offre avant de continuer.
 
