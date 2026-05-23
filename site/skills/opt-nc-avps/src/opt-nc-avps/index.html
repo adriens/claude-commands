@@ -552,14 +552,23 @@
 <ol>
 <li>Appelle <code>mcp__avps-opt-nc__avps_on_card_click</code>. Si erreur, <code>WebFetch</code> sur l'<code>url_markdown</code>.</li>
 <li>Présente la fiche complète : missions, activités, profil requis, modalités.</li>
-<li><strong>Handoff vers <code>/json-resume</code></strong> pour la préparation de la candidature (gap analysis, CV ciblé, lettre, doc entretien) :</li>
+<li><strong>Proposer explicitement les livrables disponibles</strong> (AskUserQuestion, header: "Livrables") :</li>
+<li><strong>Tout</strong> — CV ciblé (JSON + AsciiDoc + PDF) + lettre de motivation (AsciiDoc + PDF) + document de préparation d'entretien (AsciiDoc + PDF) <em>(recommandé)</em></li>
+<li><strong>CV + lettre</strong> — sans le document d'entretien</li>
+<li><strong>Document de préparation d'entretien uniquement</strong> — points forts/faibles, questions probables, réponses STAR, check-list</li>
+<li>
+<p><strong>Lettre uniquement</strong></p>
+</li>
+<li>
+<p><strong>Handoff vers <code>/json-resume</code></strong> :</p>
+</li>
 <li>Si un JSON Resume a été chargé à l'étape 0 :
-     &gt; 👉 Lance <code>/json-resume {username}</code> — quand la skill demande l'offre, réponds avec le numéro AVP <code>{numero}</code></li>
+     &gt; 👉 Lance <code>/json-resume {username}</code> — quand la skill demande l'offre, réponds avec le numéro AVP <code>{numero}</code> ; quand elle demande le livrable, choisis l'option correspondant à ta sélection ci-dessus</li>
 <li>Si aucun CV chargé :
      &gt; 👉 Lance <code>/json-resume</code> — la skill guidera le chargement de ton CV, puis donne le numéro AVP <code>{numero}</code> comme offre</li>
 </ol>
 <blockquote>
-<p><code>/json-resume</code> gère le matching CV↔offre, la gap analysis, le CV ciblé, la lettre et le doc préparation entretien — y compris les spécificités OPT-NC (EAE, lettre sous couvert hiérarchique).</p>
+<p><code>/json-resume</code> gère : gap analysis CV↔offre · CV ciblé JSON+AsciiDoc+PDF · lettre AsciiDoc+PDF · <strong>document de préparation d'entretien AsciiDoc+PDF</strong> (points forts/faibles, 12 questions probables, 5 réponses STAR, check-list) · spécificités OPT-NC (EAE, lettre sous couvert hiérarchique).</p>
 </blockquote>
 <hr />
 <h2 id="parametres-de-recherche">Paramètres de recherche<a class="headerlink" href="#parametres-de-recherche" title="Permanent link">&para;</a></h2>
