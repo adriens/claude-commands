@@ -25,7 +25,7 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
    - `education[].studyType` + `education[].area` — niveau et domaine
 5. **Enrichissement portfolio** : si `basics.url` est présent et ne ressemble pas à un réseau social connu (dev.to, twitter, linkedin, github.com, kaggle, youtube, huggingface) → fetcher automatiquement via `WebFetch` et extraire les projets, compétences et réalisations supplémentaires pour enrichir la requête. Signaler à l'utilisateur les éléments trouvés en plus du CV.
 6. Construire une requête enrichie (description métier complète, 50-100 mots)
-7. **Mémoriser le CV chargé** pour les étapes ultérieures (CV optimisé étape 7, lettre)
+7. **Mémoriser le CV chargé** pour le handoff vers `/json-resume` (gap analysis, CV ciblé, lettre, doc entretien)
 
 **Si profil manuel** : demander le profil (métier, niveau, compétences clés), puis passer à l'étape 1.
 
@@ -33,6 +33,7 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
 
 ### Étape 1 — Recherche des postes
 1. Lance `mcp__avps-opt-nc__avps_search_avps` avec une requête enrichie.
+   - **Si aucun résultat** : baisser le threshold à 30 et relancer. Si toujours vide, proposer de reformuler la requête en termes plus génériques (ex: domaine métier seul, sans les technologies).
 2. **Alerte urgence** : calculer `date_cloture - date_du_jour` pour chaque résultat.
    - Si au moins un poste clôture dans ≤ 7 jours : afficher ⚠️ **URGENT — X poste(s) clôturent dans N jours** avant le tableau.
    - Si clôture ≤ 3 jours : ⛔ **TRÈS URGENT — clôture imminente**
@@ -73,15 +74,9 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
 ### Étape 2 — Détail d'un poste et handoff
 1. Appelle `mcp__avps-opt-nc__avps_on_card_click`. Si erreur, `WebFetch` sur l'`url_markdown`.
 2. Présente la fiche complète : missions, activités, profil requis, modalités.
-3. **Proposer explicitement les livrables disponibles** (AskUserQuestion, header: "Livrables") :
-   - **Tout** — CV ciblé (JSON + AsciiDoc + PDF) + lettre de motivation (AsciiDoc + PDF) + document de préparation d'entretien (AsciiDoc + PDF) *(recommandé)*
-   - **CV + lettre** — sans le document d'entretien
-   - **Document de préparation d'entretien uniquement** — points forts/faibles, questions probables, réponses STAR, check-list
-   - **Lettre uniquement**
-
-4. **Handoff vers `/json-resume`** :
+3. **Handoff vers `/json-resume`** :
    - Si un JSON Resume a été chargé à l'étape 0 :
-     > 👉 Lance `/json-resume {username}` — quand la skill demande l'offre, réponds avec le numéro AVP `{numero}` ; quand elle demande le livrable, choisis l'option correspondant à ta sélection ci-dessus
+     > 👉 Lance `/json-resume {username}` — quand la skill demande l'offre, réponds avec le numéro AVP `{numero}` ; quand elle demande les livrables, choisis **Tout** pour obtenir CV + lettre + document de préparation d'entretien
    - Si aucun CV chargé :
      > 👉 Lance `/json-resume` — la skill guidera le chargement de ton CV, puis donne le numéro AVP `{numero}` comme offre
 
