@@ -530,9 +530,12 @@ SKIP: CV in Word/PDF without JSON Resume context, generic cover letter without a
 <h2 id="regle-de-formatage-asciidoc">Règle de formatage AsciiDoc<a class="headerlink" href="#regle-de-formatage-asciidoc" title="Permanent link">&para;</a></h2>
 <blockquote>
 <p><strong>Règle systématique</strong> : tout fichier <code>.adoc</code> produit par cette skill est <strong>immédiatement converti en PDF</strong> via <code>asciidoctor-pdf</code> après sa création.
-Installation : <code>gem install asciidoctor-pdf</code> (Linux/Mac) ou <code>brew install asciidoctor</code> (Mac).
-Commande : <code>asciidoctor-pdf {fichier}.adoc -o {fichier}.pdf</code>
+Installation : <code>gem install asciidoctor-pdf</code> (Linux/Mac) ou <code>brew install asciidoctor-pdf</code> (Mac).
 Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le seul outil utilisé.</p>
+<p><strong>Résolution du binaire</strong> : si <code>asciidoctor-pdf</code> n'est pas dans le PATH, le localiser avant toute conversion :
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">APDF</span><span class="o">=</span><span class="k">$(</span>find<span class="w"> </span>~<span class="w"> </span>/usr/local<span class="w"> </span>/usr<span class="w"> </span>-name<span class="w"> </span>asciidoctor-pdf<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-1<span class="k">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">$APDF</span><span class="w"> </span><span class="o">{</span>fichier<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span><span class="o">{</span>fichier<span class="o">}</span>.pdf
+</span></code></pre></div></p>
 </blockquote>
 <h2 id="instructions">Instructions<a class="headerlink" href="#instructions" title="Permanent link">&para;</a></h2>
 <h3 id="etape-1-chargement-du-cv">Étape 1 — Chargement du CV<a class="headerlink" href="#etape-1-chargement-du-cv" title="Permanent link">&para;</a></h3>
@@ -648,7 +651,7 @@ Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le 
 </li>
 <li>
 <p><strong>Générer le PDF</strong> immédiatement :
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>asciidoctor-pdf<span class="w"> </span>resume-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>resume-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.pdf
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>asciidoctor-pdf<span class="w"> </span>resume-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>resume-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.pdf
 </span></code></pre></div></p>
 </li>
 </ol>
@@ -669,7 +672,7 @@ Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le 
 - <strong>Signature</strong> : <code>image::{chemin}[Signature, 150]</code> ou textuelle</p>
 <p>Créer le fichier <code>lettre-motivation-{numero-avp}.adoc</code> dans le répertoire courant.</p>
 <p><strong>Générer le PDF immédiatement après création</strong> :
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>asciidoctor-pdf<span class="w"> </span>lettre-motivation-<span class="o">{</span>numero-avp<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>lettre-motivation-<span class="o">{</span>numero-avp<span class="o">}</span>.pdf
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>asciidoctor-pdf<span class="w"> </span>lettre-motivation-<span class="o">{</span>numero-avp<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>lettre-motivation-<span class="o">{</span>numero-avp<span class="o">}</span>.pdf
 </span></code></pre></div></p>
 <h3 id="etape-5c-document-de-preparation-dentretien-si-demande">Étape 5C — Document de préparation d'entretien (si demandé)<a class="headerlink" href="#etape-5c-document-de-preparation-dentretien-si-demande" title="Permanent link">&para;</a></h3>
 <p><strong>Principe</strong> : transformer la gap analysis en guide opérationnel pour l'entretien — ce qu'on dit, comment on le dit, avec quels exemples.</p>
@@ -695,13 +698,13 @@ Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le 
 - <strong>== Éléments de contexte à maîtriser</strong> : chiffres clés de l'offre, vocabulaire métier du poste, points d'attention sur la direction/BU cible
 - <strong>== Check-list pré-entretien</strong> : documents à apporter, points à réviser la veille</p>
 <p><strong>Générer le PDF immédiatement après création</strong> :
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>asciidoctor-pdf<span class="w"> </span>preparation-entretien-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>preparation-entretien-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.pdf
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>asciidoctor-pdf<span class="w"> </span>preparation-entretien-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>preparation-entretien-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.pdf
 </span></code></pre></div></p>
 <h2 id="arguments">Arguments<a class="headerlink" href="#arguments" title="Permanent link">&para;</a></h2>
 <p><code>$ARGUMENTS</code> — username JSON Resume ou URL directe vers un <code>resume.json</code></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>/json-resume adriens                 # registry.jsonresume.org/adriens
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>/json-resume https://…/resume.json   # URL directe
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>/json-resume                         # demande interactive
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>/json-resume adriens                 # registry.jsonresume.org/adriens
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>/json-resume https://…/resume.json   # URL directe
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>/json-resume                         # demande interactive
 </span></code></pre></div>
 
 

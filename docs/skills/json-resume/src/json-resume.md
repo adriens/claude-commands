@@ -8,9 +8,14 @@ SKIP: CV in Word/PDF without JSON Resume context, generic cover letter without a
 ## Règle de formatage AsciiDoc
 
 > **Règle systématique** : tout fichier `.adoc` produit par cette skill est **immédiatement converti en PDF** via `asciidoctor-pdf` après sa création.
-> Installation : `gem install asciidoctor-pdf` (Linux/Mac) ou `brew install asciidoctor` (Mac).
-> Commande : `asciidoctor-pdf {fichier}.adoc -o {fichier}.pdf`
+> Installation : `gem install asciidoctor-pdf` (Linux/Mac) ou `brew install asciidoctor-pdf` (Mac).
 > Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le seul outil utilisé.
+>
+> **Résolution du binaire** : si `asciidoctor-pdf` n'est pas dans le PATH, le localiser avant toute conversion :
+> ```bash
+> APDF=$(find ~ /usr/local /usr -name asciidoctor-pdf 2>/dev/null | head -1)
+> $APDF {fichier}.adoc -o {fichier}.pdf
+> ```
 
 ## Instructions
 
