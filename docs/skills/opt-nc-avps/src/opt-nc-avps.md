@@ -73,13 +73,19 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
 ### Étape 2 — Détail d'un poste et handoff
 1. Appelle `mcp__avps-opt-nc__avps_on_card_click`. Si erreur, `WebFetch` sur l'`url_markdown`.
 2. Présente la fiche complète : missions, activités, profil requis, modalités.
-3. **Handoff vers `/json-resume`** pour la préparation de la candidature (gap analysis, CV ciblé, lettre, doc entretien) :
+3. **Proposer explicitement les livrables disponibles** (AskUserQuestion, header: "Livrables") :
+   - **Tout** — CV ciblé (JSON + AsciiDoc + PDF) + lettre de motivation (AsciiDoc + PDF) + document de préparation d'entretien (AsciiDoc + PDF) *(recommandé)*
+   - **CV + lettre** — sans le document d'entretien
+   - **Document de préparation d'entretien uniquement** — points forts/faibles, questions probables, réponses STAR, check-list
+   - **Lettre uniquement**
+
+4. **Handoff vers `/json-resume`** :
    - Si un JSON Resume a été chargé à l'étape 0 :
-     > 👉 Lance `/json-resume {username}` — quand la skill demande l'offre, réponds avec le numéro AVP `{numero}`
+     > 👉 Lance `/json-resume {username}` — quand la skill demande l'offre, réponds avec le numéro AVP `{numero}` ; quand elle demande le livrable, choisis l'option correspondant à ta sélection ci-dessus
    - Si aucun CV chargé :
      > 👉 Lance `/json-resume` — la skill guidera le chargement de ton CV, puis donne le numéro AVP `{numero}` comme offre
 
-> `/json-resume` gère le matching CV↔offre, la gap analysis, le CV ciblé, la lettre et le doc préparation entretien — y compris les spécificités OPT-NC (EAE, lettre sous couvert hiérarchique).
+> `/json-resume` gère : gap analysis CV↔offre · CV ciblé JSON+AsciiDoc+PDF · lettre AsciiDoc+PDF · **document de préparation d'entretien AsciiDoc+PDF** (points forts/faibles, 12 questions probables, 5 réponses STAR, check-list) · spécificités OPT-NC (EAE, lettre sous couvert hiérarchique).
 
 ---
 
