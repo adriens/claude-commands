@@ -49,6 +49,25 @@ Demander immédiatement (AskUserQuestion, header: "Offre") :
 
 Afficher une fiche synthèse de l'offre avant de continuer.
 
+**Si l'offre est un AVP OPT-NC** (numéro ou URL `opt-nc.github.io/avps/`) : demander (AskUserQuestion, header: "Contexte OPT") :
+- Employé actuel OPT-NC (mobilité interne)
+- Fonctionnaire NC hors OPT (voie hiérarchique)
+- Ancien agent OPT
+- Candidat extérieur
+
+**Si "Employé actuel OPT-NC"** : proposer de charger l'EAE :
+- Utilisez-vous le template EAE de l'OPT-NC (https://github.com/opt-nc/template-eae) ?
+- **Si non** : proposer de s'y mettre (guide : https://dev.to/adriens/versionner-et-builder-lebook-de-son-entretien-annuel-devaluation-sur-github-242k), puis passer à la saisie manuelle.
+- **Si oui** :
+  1. Demander le login GitHub
+  2. Fetcher `https://github.com/{login}/eae-opt` via `github-mcp-server-list_branches`
+  3. Si introuvable : demander l'URL complète en fallback
+  4. Sélectionner la branche (ex: `2025`, `main`) et récupérer `src/03_fiche-de-poste.md` via `github-mcp-server-get_file_contents`
+  5. Extraire : missions, activités principales/secondaires, compétences requises, **lien hiérarchique** (responsable pour la mention "sous couvert")
+- **Saisie manuelle** (si pas de template EAE) : points forts du dernier EAE, compétences valorisées par la hiérarchie, nom du responsable hiérarchique direct.
+
+> **Mention obligatoire dans toute lettre OPT-NC** : "sous couvert de [Responsable hiérarchique]" — extraire du fichier EAE ou demander explicitement.
+
 ### Étape 3 — Choix du livrable
 
 Demander (AskUserQuestion, header: "Livrable") :
