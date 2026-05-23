@@ -4,9 +4,37 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
 
 ## Instructions
 
+### Étape 0 — Chargement du profil candidat
+
+**Si `$ARGUMENTS` est fourni** : l'utiliser directement comme requête (passer à l'étape 1).
+
+**Si `$ARGUMENTS` est vide** : demander (AskUserQuestion) :
+
+**Source du profil** (header: "Profil") :
+- J'ai un CV sur registry.jsonresume.org
+- Décrire mon profil manuellement
+
+**Si JSON Resume** :
+1. Demander le username (ex: `adriens`)
+2. Fetcher `https://registry.jsonresume.org/{username}.json` via `WebFetch`
+3. Si échec : `https://gist.githubusercontent.com/{username}/resume.json/raw`
+4. Extraire pour construire la requête :
+   - `basics.summary` — résumé du profil
+   - `work[].position` et `work[].highlights` — postes et réalisations
+   - `skills[].name` — compétences clés
+   - `education[].studyType` + `education[].area` — niveau et domaine
+5. Construire une requête enrichie (description métier complète, 50-100 mots)
+6. **Mémoriser le CV chargé** pour les étapes ultérieures (CV optimisé étape 7, lettre)
+
+**Si profil manuel** : demander le profil (métier, niveau, compétences clés), puis passer à l'étape 1.
+
+---
+
 ### Étape 1 — Recherche des postes
-1. Si l'utilisateur ne fournit pas de profil dans `$ARGUMENTS`, demande son profil (métier, niveau, compétences clés).
-2. Lance `mcp__avps-opt-nc__avps_search_avps` avec une requête enrichie.
+1. Lance `mcp__avps-opt-nc__avps_search_avps` avec une requête enrichie.
+2. **Alerte urgence** : calculer `date_cloture - date_du_jour` pour chaque résultat.
+   - Si au moins un poste clôture dans ≤ 7 jours : afficher ⚠️ **URGENT — X poste(s) clôturent dans N jours** avant le tableau.
+   - Si clôture ≤ 3 jours : ⛔ **TRÈS URGENT — clôture imminente**
 3. Tableau markdown : titre, numéro, score, dispo immédiate, date clôture, lien.
 4. Mettre en avant : postes disponibles immédiatement et score > 0.6.
 5. Si 3+ AVPs avec score > 0.5 : proposer d'abord la comparaison (étape 1.5) avant de détailler.
@@ -153,9 +181,67 @@ pandoc lettre-motivation.md -o lettre-motivation.docx
 
 > Note technique : pandoc doit être installé via brew (`brew install pandoc`) si non disponible.
 
+### Étape 6 — Document de préparation à l'entretien (optionnel)
+
+Proposer (AskUserQuestion, 2 questions simultanées) :
+
+**Q1 — Générer la doc entretien ?** (header: "Entretien") :
+- Oui, générer le document
+- Non, ce n'est pas nécessaire
+
+**Q2 — Format** (header: "Format entretien") :
+- AsciiDoc (.adoc) — recommandé, exportable PDF
+- Markdown (.md) — universel
+
+**Si oui, contenu du document** :
+- **Fiche poste synthétique** : missions clés, compétences attendues, enjeux
+- **Mon profil vs le poste** : tableau atouts / écarts (basé sur l'analyse étape 4)
+- **5 questions probables du jury** avec réponses structurées STAR (Situation, Tâche, Action, Résultat) — personnalisées avec les éléments du profil candidat
+- **2 questions à poser au jury** (posture proactive, montrer la maturité)
+- **Éléments différenciants** à mentionner impérativement
+- **Points de vigilance** (écarts à ne pas sous-estimer, comment les aborder)
+
+Créer le fichier `preparation-entretien-{slug-poste}.adoc` ou `.md` dans le répertoire courant.
+
+**Proposer la conversion Word** après création :
+```bash
+pandoc preparation-entretien-{slug-poste}.adoc -o preparation-entretien-{slug-poste}.docx
+# ou
+pandoc preparation-entretien-{slug-poste}.md -o preparation-entretien-{slug-poste}.docx
+```
+
+---
+
+### Étape 7 — CV optimisé pour le poste (conditionnel)
+
+**Conditionnel** : uniquement si un JSON Resume a été chargé à l'étape 0.
+
+Proposer (AskUserQuestion) :
+- Oui, générer un CV ciblé pour ce poste
+- Non
+
+**Principe** : sélectionner et reformuler — jamais inventer.
+
+**Ce qui change** :
+- Sélection des expériences, compétences et projets pertinents pour ce poste
+- Reformulation des highlights pour résonner avec le vocabulaire de l'AVP (sans inventer de faits)
+- Réordonnancement des sections pour mettre en avant ce que ce recruteur cherche
+- Réécriture de `basics.summary` pour répondre directement au profil attendu
+
+**Ce qui ne change pas** : faits, dates, employeurs, diplômes, chiffres — aucune fabrication.
+
+Produire le CV ciblé en JSON Resume valide, enregistré sous `resume-{slug-poste}.json`.
+
+> Objectif : maximiser le score de matching sémantique avec l'AVP, en valorisant honnêtement ce que le candidat a vraiment fait.
+
+---
+
 ## Paramètres de recherche
-- Threshold par défaut : 30 — monter à 60+ si trop de bruit.
-- Requête : reformuler le profil en description métier complète.
+- Threshold :
+  - **30** = large (nombreux résultats, plus de bruit) — utile pour explorer un profil atypique
+  - **50** = équilibré (défaut recommandé)
+  - **70+** = strict (peu de résultats, très pertinents) — utile si trop de bruit à 50
+- Requête : reformuler le profil en description métier complète (50-100 mots, pas de mots-clés isolés).
 
 ## Arguments
 `$ARGUMENTS` — profil recherché (ex: "chef de projet SI MOA transformation digitale")
