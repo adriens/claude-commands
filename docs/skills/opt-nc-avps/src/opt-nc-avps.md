@@ -73,7 +73,17 @@ Recherche des AVPs de l'OPT-NC adaptés au profil, avec accompagnement complet �
 ### Étape 2 — Détail d'un poste
 1. Appelle `mcp__avps-opt-nc__avps_on_card_click`. Si erreur, `WebFetch` sur l'`url_markdown`.
 2. Présente la fiche complète : missions, activités, profil requis, modalités.
-3. Enchaîne immédiatement avec l'étape 3.
+3. **Bifurcation** (AskUserQuestion, header: "Préparer la candidature") :
+   - **Continuer ici** — flow interne OPT-NC : profilage EAE, plan STAR, lettre sous couvert hiérarchique
+   - **Passer à `/json-resume`** — gap analysis structurée, CV ciblé JSON Resume, lettre de motivation enrichie depuis le portfolio
+
+**Si "Passer à `/json-resume`"** :
+- Si un JSON Resume a été chargé à l'étape 0 : indiquer à l'utilisateur de lancer `/json-resume {username}` — la skill demandera l'offre, répondre avec le numéro AVP (ex: `26-0689`) pour que json-resume le fetche via `mcp__avps-opt-nc__avps_on_card_click`
+- Si aucun CV chargé : indiquer `/json-resume` sans argument — la skill guidera le chargement du CV puis de l'offre
+
+> Les deux flows sont complémentaires : opt-nc-avps est optimisée pour le contexte OPT/fonction publique NC (EAE, voie hiérarchique) ; json-resume est optimisée pour le matching CV↔offre et la production de livrables structurés.
+
+**Si "Continuer ici"** : enchaîner avec l'étape 3.
 
 ### Étape 3 — Profilage candidat (AskUserQuestion, 3 questions simultanées)
 
