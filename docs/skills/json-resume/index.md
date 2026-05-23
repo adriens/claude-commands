@@ -56,6 +56,19 @@ curl -o ~/.claude/commands/json-resume.md \
 
 ---
 
+## 📖 Qu'est-ce que JSON Resume ?
+
+[JSON Resume](https://jsonresume.org/) est un standard open source communautaire qui définit un schéma JSON universel pour les CV. L'idée : stocker son CV dans un fichier `resume.json` structuré et interopérable, indépendant de tout outil de mise en forme.
+
+Avantages :
+- **Versionnable** : stocké dans un Gist ou un repo Git, l'historique est conservé
+- **Interopérable** : un seul fichier source, des dizaines de thèmes de rendu disponibles
+- **Exploitable par l'IA** : structure normalisée → facile à analyser, comparer, adapter
+
+Le registry officiel (`registry.jsonresume.org/{username}`) publie automatiquement tout Gist GitHub public nommé `resume.json`.
+
+---
+
 ## 🔗 Prérequis
 
 Un CV publié au format [JSON Resume](https://jsonresume.org/) :
