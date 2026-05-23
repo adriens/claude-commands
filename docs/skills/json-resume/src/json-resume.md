@@ -26,6 +26,12 @@ SKIP: CV in Word/PDF without JSON Resume context, generic cover letter without a
 
 Informer l'utilisateur de la source effectivement utilisée.
 
+**Enrichissement portfolio** : après chargement du CV, vérifier `basics.url` :
+- Si l'URL ressemble à un portfolio perso (ex: contient `github.io`, ou domaine non social — exclure : dev.to, twitter.com, linkedin.com, github.com, kaggle.com, huggingface.co, youtube.com, pypi.org) → fetcher automatiquement via `WebFetch`
+- Extraire les éléments complémentaires : projets, compétences, réalisations, publications, conférences non listées dans le CV
+- Signaler à l'utilisateur les éléments supplémentaires trouvés
+- Intégrer ces données dans la gap analysis (étape 4) comme atouts additionnels
+
 ### Étape 2 — Offre d'emploi
 
 Demander immédiatement (AskUserQuestion, header: "Offre") :
