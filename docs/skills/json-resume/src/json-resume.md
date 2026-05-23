@@ -1,6 +1,9 @@
 # Candidature à une offre d'emploi via JSON Resume
 
-Charge un CV au format JSON Resume et accompagne la candidature à une offre d'emploi : CV taillé sur mesure et/ou lettre de motivation qui démontre que le passé répond exactement à ce que le poste demande.
+Charge un CV au format JSON Resume (registry.jsonresume.org, Gist, URL ou fichier local) et accompagne la candidature à une offre d'emploi : CV taillé sur mesure et/ou lettre de motivation qui démontre que le passé répond exactement à ce que le poste demande.
+
+TRIGGER when: user mentions JSON Resume, resume.json, registry.jsonresume.org, a CV/résumé in JSON format, fetching or reading someone's resume/CV, job application with a structured CV, cover letter from a CV.
+SKIP: CV in Word/PDF without JSON Resume context, generic cover letter without a structured CV source.
 
 ## Instructions
 
