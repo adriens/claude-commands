@@ -1,9 +1,16 @@
 # Candidature à une offre d'emploi via JSON Resume
 
-Charge un CV au format JSON Resume (registry.jsonresume.org, Gist, URL ou fichier local) et accompagne la candidature à une offre d'emploi : CV taillé sur mesure et/ou lettre de motivation qui démontre que le passé répond exactement à ce que le poste demande.
+Charge un CV au format JSON Resume (registry.jsonresume.org, Gist, URL ou fichier local) et accompagne la candidature à une offre d'emploi : CV taillé sur mesure, lettre de motivation et document de préparation d'entretien qui démontrent que le passé répond exactement à ce que le poste demande.
 
 TRIGGER when: user mentions JSON Resume, resume.json, registry.jsonresume.org, a CV/résumé in JSON format, fetching or reading someone's resume/CV, job application with a structured CV, cover letter from a CV.
 SKIP: CV in Word/PDF without JSON Resume context, generic cover letter without a structured CV source.
+
+## Règle de formatage AsciiDoc
+
+> **Règle systématique** : tout fichier `.adoc` produit par cette skill est **immédiatement converti en PDF** via `asciidoctor-pdf` après sa création.
+> Installation : `gem install asciidoctor-pdf` (Linux/Mac) ou `brew install asciidoctor` (Mac).
+> Commande : `asciidoctor-pdf {fichier}.adoc -o {fichier}.pdf`
+> Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le seul outil utilisé.
 
 ## Instructions
 
@@ -60,9 +67,9 @@ Afficher une fiche synthèse de l'offre avant de continuer.
 - **Si non** : proposer de s'y mettre (guide : https://dev.to/adriens/versionner-et-builder-lebook-de-son-entretien-annuel-devaluation-sur-github-242k), puis passer à la saisie manuelle.
 - **Si oui** :
   1. Demander le login GitHub
-  2. Fetcher `https://github.com/{login}/eae-opt` via `github-mcp-server-list_branches`
+  2. Lister les branches via `gh api repos/{login}/eae-opt/branches --jq '.[].name'`
   3. Si introuvable : demander l'URL complète en fallback
-  4. Sélectionner la branche (ex: `2025`, `main`) et récupérer `src/03_fiche-de-poste.md` via `github-mcp-server-get_file_contents`
+  4. Récupérer `src/03_fiche-de-poste.md` via `gh api "repos/{login}/eae-opt/contents/src%2F03_fiche-de-poste.md?ref={branche}" --jq '.content' | base64 -d`
   5. Extraire : missions, activités principales/secondaires, compétences requises, **lien hiérarchique** (responsable pour la mention "sous couvert")
 - **Saisie manuelle** (si pas de template EAE) : points forts du dernier EAE, compétences valorisées par la hiérarchie, nom du responsable hiérarchique direct.
 
@@ -71,9 +78,10 @@ Afficher une fiche synthèse de l'offre avant de continuer.
 ### Étape 3 — Choix du livrable
 
 Demander (AskUserQuestion, header: "Livrable") :
-- **CV taillé sur mesure** — extraire et réorganiser les éléments du JSON Resume pour coller au mieux à l'offre
-- **Lettre de motivation** — rédiger une lettre qui démontre que les réalisations passées répondent point par point à l'offre
-- **Les deux** — CV ciblé puis lettre cohérente avec le CV produit
+- **CV taillé sur mesure** — JSON ciblé + version AsciiDoc mise en page + PDF
+- **Lettre de motivation** — lettre AsciiDoc + PDF qui démontre que les réalisations passées répondent point par point à l'offre
+- **Document de préparation d'entretien** — AsciiDoc + PDF avec points forts/faibles, questions probables et réponses préparées
+- **Tout** — CV + lettre + doc entretien (recommandé)
 
 ### Étape 4 — Gap analysis (automatique, avant tout livrable)
 
@@ -108,40 +116,76 @@ Synthèse :
 
 5. **Résumé personnalisé** : réécrire `basics.summary` pour qu'il réponde directement au profil recherché dans l'offre (2-3 phrases, sans mensonge).
 
-6. **Produire le CV ciblé** en JSON Resume valide (même schéma que l'original), enregistré sous `resume-{nom-du-poste-slug}.json`.
+6. **Produire le CV ciblé JSON** valide (même schéma que l'original), enregistré sous `resume-{nom-du-poste-slug}.json`.
+
+7. **Produire le CV ciblé AsciiDoc** (`resume-{nom-du-poste-slug}.adoc`) — version lisible et imprimable :
+   - En-tête : nom, titre ciblé, coordonnées
+   - Sections : Résumé · Expériences · Compétences · Projets · Formation · Distinctions
+   - Mise en page claire, adaptée à une lecture recruteur
+
+8. **Générer le PDF** immédiatement :
+   ```bash
+   asciidoctor-pdf resume-{nom-du-poste-slug}.adoc -o resume-{nom-du-poste-slug}.pdf
+   ```
 
 ### Étape 5B — Lettre de motivation (si demandée)
 
 **Principe** : chaque paragraphe répond à une exigence de l'offre avec une réalisation concrète du passé.
 
-Demander (AskUserQuestion, 2 questions simultanées) :
+Demander (AskUserQuestion) :
 
-**Q1 — Format** (header: "Format") :
-- Markdown (.md)
-- AsciiDoc (.adoc)
-
-**Q2 — Signature** (header: "Signature") :
+**Signature** (header: "Signature") :
 - Oui, j'ai une image (chemin à fournir)
 - Non, signature textuelle
 
-**Structure de la lettre** :
+**Structure de la lettre AsciiDoc** :
 - **En-tête** : coordonnées (depuis `basics`), date, destinataire si connu
+- **Objet + sous couvert** (si OPT-NC interne)
 - **Accroche** : lien immédiat entre le profil et la mission centrale — 1-2 phrases qui donnent envie de lire la suite
 - **§1 — Ce que j'ai fait** : 2-3 réalisations concrètes issues du CV, quantifiées si possible, choisies parce qu'elles répondent directement aux missions du poste
 - **§2 — Ce que ça prouve** : relier explicitement ces réalisations aux compétences et profil attendus dans l'offre — montrer que le passé garantit la capacité à réussir dans ce poste
 - **§3 — Pourquoi ce poste** : motivation spécifique à l'entreprise/mission/contexte — pas une formule générique
 - **Conclusion** : disponibilité, appel à l'action
-- **Signature** : image intégrée ou textuelle
+- **Signature** : `image::{chemin}[Signature, 150]` ou textuelle
 
-Créer le fichier (`lettre-motivation.md` ou `.adoc`) dans le répertoire courant.
+Créer le fichier `lettre-motivation-{numero-avp}.adoc` dans le répertoire courant.
 
-**Proposer la conversion Word** après création :
+**Générer le PDF immédiatement après création** :
 ```bash
-pandoc lettre-motivation.md -o lettre-motivation.docx
-# ou
-pandoc lettre-motivation.adoc -o lettre-motivation.docx
+asciidoctor-pdf lettre-motivation-{numero-avp}.adoc -o lettre-motivation-{numero-avp}.pdf
 ```
-> pandoc requis : `brew install pandoc` ou `sudo apt install pandoc`
+
+### Étape 5C — Document de préparation d'entretien (si demandé)
+
+**Principe** : transformer la gap analysis en guide opérationnel pour l'entretien — ce qu'on dit, comment on le dit, avec quels exemples.
+
+Créer `preparation-entretien-{nom-du-poste-slug}.adoc` dans le répertoire courant, structuré ainsi :
+
+**Structure du document AsciiDoc** :
+- **En-tête** : poste visé, date de l'entretien (si connue), candidat
+- **== Points forts à valoriser** : pour chaque match 🟢🟡 de la gap analysis
+  - Critère attendu par le jury
+  - Réalisation concrète à citer (issue du CV)
+  - Formulation recommandée (phrase prête à l'emploi, style STAR)
+- **== Points faibles / écarts à préparer** : pour chaque écart 🟠🔴
+  - Nature de l'écart
+  - Comment le reformuler positivement ou le relativiser
+  - Ce qu'on ne dit pas spontanément (mais qu'on peut concéder si on est pressé)
+- **== Questions probables du jury** : 8-12 questions inférées des critères de l'offre et du contexte
+  - Questions sur les compétences clés
+  - Questions sur la motivation / mobilité
+  - Questions sur le management ou la transversalité (si applicable)
+- **== Réponses préparées** : pour les 5 questions les plus probables
+  - Question
+  - Réponse structurée (méthode STAR : Situation → Tâche → Action → Résultat)
+  - Exemple tiré du CV
+- **== Éléments de contexte à maîtriser** : chiffres clés de l'offre, vocabulaire métier du poste, points d'attention sur la direction/BU cible
+- **== Check-list pré-entretien** : documents à apporter, points à réviser la veille
+
+**Générer le PDF immédiatement après création** :
+```bash
+asciidoctor-pdf preparation-entretien-{nom-du-poste-slug}.adoc -o preparation-entretien-{nom-du-poste-slug}.pdf
+```
 
 ## Arguments
 

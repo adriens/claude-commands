@@ -385,6 +385,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#regle-de-formatage-asciidoc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Règle de formatage AsciiDoc
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#instructions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -462,6 +473,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#etape-5c-document-de-preparation-dentretien-si-demande" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Étape 5C — Document de préparation d'entretien (si demandé)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -502,9 +524,16 @@
                   
 
 <h1 id="candidature-a-une-offre-demploi-via-json-resume">Candidature à une offre d'emploi via JSON Resume<a class="headerlink" href="#candidature-a-une-offre-demploi-via-json-resume" title="Permanent link">&para;</a></h1>
-<p>Charge un CV au format JSON Resume (registry.jsonresume.org, Gist, URL ou fichier local) et accompagne la candidature à une offre d'emploi : CV taillé sur mesure et/ou lettre de motivation qui démontre que le passé répond exactement à ce que le poste demande.</p>
+<p>Charge un CV au format JSON Resume (registry.jsonresume.org, Gist, URL ou fichier local) et accompagne la candidature à une offre d'emploi : CV taillé sur mesure, lettre de motivation et document de préparation d'entretien qui démontrent que le passé répond exactement à ce que le poste demande.</p>
 <p>TRIGGER when: user mentions JSON Resume, resume.json, registry.jsonresume.org, a CV/résumé in JSON format, fetching or reading someone's resume/CV, job application with a structured CV, cover letter from a CV.
 SKIP: CV in Word/PDF without JSON Resume context, generic cover letter without a structured CV source.</p>
+<h2 id="regle-de-formatage-asciidoc">Règle de formatage AsciiDoc<a class="headerlink" href="#regle-de-formatage-asciidoc" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Règle systématique</strong> : tout fichier <code>.adoc</code> produit par cette skill est <strong>immédiatement converti en PDF</strong> via <code>asciidoctor-pdf</code> après sa création.
+Installation : <code>gem install asciidoctor-pdf</code> (Linux/Mac) ou <code>brew install asciidoctor</code> (Mac).
+Commande : <code>asciidoctor-pdf {fichier}.adoc -o {fichier}.pdf</code>
+Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le seul outil utilisé.</p>
+</blockquote>
 <h2 id="instructions">Instructions<a class="headerlink" href="#instructions" title="Permanent link">&para;</a></h2>
 <h3 id="etape-1-chargement-du-cv">Étape 1 — Chargement du CV<a class="headerlink" href="#etape-1-chargement-du-cv" title="Permanent link">&para;</a></h3>
 <p><strong>Si <code>$ARGUMENTS</code> est fourni</strong> :
@@ -547,9 +576,9 @@ SKIP: CV in Word/PDF without JSON Resume context, generic cover letter without a
 - <strong>Si non</strong> : proposer de s'y mettre (guide : <a href="https://dev.to/adriens/versionner-et-builder-lebook-de-son-entretien-annuel-devaluation-sur-github-242k">https://dev.to/adriens/versionner-et-builder-lebook-de-son-entretien-annuel-devaluation-sur-github-242k</a>), puis passer à la saisie manuelle.
 - <strong>Si oui</strong> :
   1. Demander le login GitHub
-  2. Fetcher <code>https://github.com/{login}/eae-opt</code> via <code>github-mcp-server-list_branches</code>
+  2. Lister les branches via <code>gh api repos/{login}/eae-opt/branches --jq '.[].name'</code>
   3. Si introuvable : demander l'URL complète en fallback
-  4. Sélectionner la branche (ex: <code>2025</code>, <code>main</code>) et récupérer <code>src/03_fiche-de-poste.md</code> via <code>github-mcp-server-get_file_contents</code>
+  4. Récupérer <code>src/03_fiche-de-poste.md</code> via <code>gh api "repos/{login}/eae-opt/contents/src%2F03_fiche-de-poste.md?ref={branche}" --jq '.content' | base64 -d</code>
   5. Extraire : missions, activités principales/secondaires, compétences requises, <strong>lien hiérarchique</strong> (responsable pour la mention "sous couvert")
 - <strong>Saisie manuelle</strong> (si pas de template EAE) : points forts du dernier EAE, compétences valorisées par la hiérarchie, nom du responsable hiérarchique direct.</p>
 <blockquote>
@@ -557,9 +586,10 @@ SKIP: CV in Word/PDF without JSON Resume context, generic cover letter without a
 </blockquote>
 <h3 id="etape-3-choix-du-livrable">Étape 3 — Choix du livrable<a class="headerlink" href="#etape-3-choix-du-livrable" title="Permanent link">&para;</a></h3>
 <p>Demander (AskUserQuestion, header: "Livrable") :
-- <strong>CV taillé sur mesure</strong> — extraire et réorganiser les éléments du JSON Resume pour coller au mieux à l'offre
-- <strong>Lettre de motivation</strong> — rédiger une lettre qui démontre que les réalisations passées répondent point par point à l'offre
-- <strong>Les deux</strong> — CV ciblé puis lettre cohérente avec le CV produit</p>
+- <strong>CV taillé sur mesure</strong> — JSON ciblé + version AsciiDoc mise en page + PDF
+- <strong>Lettre de motivation</strong> — lettre AsciiDoc + PDF qui démontre que les réalisations passées répondent point par point à l'offre
+- <strong>Document de préparation d'entretien</strong> — AsciiDoc + PDF avec points forts/faibles, questions probables et réponses préparées
+- <strong>Tout</strong> — CV + lettre + doc entretien (recommandé)</p>
 <h3 id="etape-4-gap-analysis-automatique-avant-tout-livrable">Étape 4 — Gap analysis (automatique, avant tout livrable)<a class="headerlink" href="#etape-4-gap-analysis-automatique-avant-tout-livrable" title="Permanent link">&para;</a></h3>
 <p>Produire un tableau de correspondance CV ↔ offre :</p>
 <table>
@@ -606,40 +636,72 @@ SKIP: CV in Word/PDF without JSON Resume context, generic cover letter without a
 <p><strong>Résumé personnalisé</strong> : réécrire <code>basics.summary</code> pour qu'il réponde directement au profil recherché dans l'offre (2-3 phrases, sans mensonge).</p>
 </li>
 <li>
-<p><strong>Produire le CV ciblé</strong> en JSON Resume valide (même schéma que l'original), enregistré sous <code>resume-{nom-du-poste-slug}.json</code>.</p>
+<p><strong>Produire le CV ciblé JSON</strong> valide (même schéma que l'original), enregistré sous <code>resume-{nom-du-poste-slug}.json</code>.</p>
+</li>
+<li>
+<p><strong>Produire le CV ciblé AsciiDoc</strong> (<code>resume-{nom-du-poste-slug}.adoc</code>) — version lisible et imprimable :</p>
+</li>
+<li>En-tête : nom, titre ciblé, coordonnées</li>
+<li>Sections : Résumé · Expériences · Compétences · Projets · Formation · Distinctions</li>
+<li>
+<p>Mise en page claire, adaptée à une lecture recruteur</p>
+</li>
+<li>
+<p><strong>Générer le PDF</strong> immédiatement :
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>asciidoctor-pdf<span class="w"> </span>resume-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>resume-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.pdf
+</span></code></pre></div></p>
 </li>
 </ol>
 <h3 id="etape-5b-lettre-de-motivation-si-demandee">Étape 5B — Lettre de motivation (si demandée)<a class="headerlink" href="#etape-5b-lettre-de-motivation-si-demandee" title="Permanent link">&para;</a></h3>
 <p><strong>Principe</strong> : chaque paragraphe répond à une exigence de l'offre avec une réalisation concrète du passé.</p>
-<p>Demander (AskUserQuestion, 2 questions simultanées) :</p>
-<p><strong>Q1 — Format</strong> (header: "Format") :
-- Markdown (.md)
-- AsciiDoc (.adoc)</p>
-<p><strong>Q2 — Signature</strong> (header: "Signature") :
+<p>Demander (AskUserQuestion) :</p>
+<p><strong>Signature</strong> (header: "Signature") :
 - Oui, j'ai une image (chemin à fournir)
 - Non, signature textuelle</p>
-<p><strong>Structure de la lettre</strong> :
+<p><strong>Structure de la lettre AsciiDoc</strong> :
 - <strong>En-tête</strong> : coordonnées (depuis <code>basics</code>), date, destinataire si connu
+- <strong>Objet + sous couvert</strong> (si OPT-NC interne)
 - <strong>Accroche</strong> : lien immédiat entre le profil et la mission centrale — 1-2 phrases qui donnent envie de lire la suite
 - <strong>§1 — Ce que j'ai fait</strong> : 2-3 réalisations concrètes issues du CV, quantifiées si possible, choisies parce qu'elles répondent directement aux missions du poste
 - <strong>§2 — Ce que ça prouve</strong> : relier explicitement ces réalisations aux compétences et profil attendus dans l'offre — montrer que le passé garantit la capacité à réussir dans ce poste
 - <strong>§3 — Pourquoi ce poste</strong> : motivation spécifique à l'entreprise/mission/contexte — pas une formule générique
 - <strong>Conclusion</strong> : disponibilité, appel à l'action
-- <strong>Signature</strong> : image intégrée ou textuelle</p>
-<p>Créer le fichier (<code>lettre-motivation.md</code> ou <code>.adoc</code>) dans le répertoire courant.</p>
-<p><strong>Proposer la conversion Word</strong> après création :
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pandoc<span class="w"> </span>lettre-motivation.md<span class="w"> </span>-o<span class="w"> </span>lettre-motivation.docx
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># ou</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>pandoc<span class="w"> </span>lettre-motivation.adoc<span class="w"> </span>-o<span class="w"> </span>lettre-motivation.docx
+- <strong>Signature</strong> : <code>image::{chemin}[Signature, 150]</code> ou textuelle</p>
+<p>Créer le fichier <code>lettre-motivation-{numero-avp}.adoc</code> dans le répertoire courant.</p>
+<p><strong>Générer le PDF immédiatement après création</strong> :
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>asciidoctor-pdf<span class="w"> </span>lettre-motivation-<span class="o">{</span>numero-avp<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>lettre-motivation-<span class="o">{</span>numero-avp<span class="o">}</span>.pdf
 </span></code></pre></div></p>
-<blockquote>
-<p>pandoc requis : <code>brew install pandoc</code> ou <code>sudo apt install pandoc</code></p>
-</blockquote>
+<h3 id="etape-5c-document-de-preparation-dentretien-si-demande">Étape 5C — Document de préparation d'entretien (si demandé)<a class="headerlink" href="#etape-5c-document-de-preparation-dentretien-si-demande" title="Permanent link">&para;</a></h3>
+<p><strong>Principe</strong> : transformer la gap analysis en guide opérationnel pour l'entretien — ce qu'on dit, comment on le dit, avec quels exemples.</p>
+<p>Créer <code>preparation-entretien-{nom-du-poste-slug}.adoc</code> dans le répertoire courant, structuré ainsi :</p>
+<p><strong>Structure du document AsciiDoc</strong> :
+- <strong>En-tête</strong> : poste visé, date de l'entretien (si connue), candidat
+- <strong>== Points forts à valoriser</strong> : pour chaque match 🟢🟡 de la gap analysis
+  - Critère attendu par le jury
+  - Réalisation concrète à citer (issue du CV)
+  - Formulation recommandée (phrase prête à l'emploi, style STAR)
+- <strong>== Points faibles / écarts à préparer</strong> : pour chaque écart 🟠🔴
+  - Nature de l'écart
+  - Comment le reformuler positivement ou le relativiser
+  - Ce qu'on ne dit pas spontanément (mais qu'on peut concéder si on est pressé)
+- <strong>== Questions probables du jury</strong> : 8-12 questions inférées des critères de l'offre et du contexte
+  - Questions sur les compétences clés
+  - Questions sur la motivation / mobilité
+  - Questions sur le management ou la transversalité (si applicable)
+- <strong>== Réponses préparées</strong> : pour les 5 questions les plus probables
+  - Question
+  - Réponse structurée (méthode STAR : Situation → Tâche → Action → Résultat)
+  - Exemple tiré du CV
+- <strong>== Éléments de contexte à maîtriser</strong> : chiffres clés de l'offre, vocabulaire métier du poste, points d'attention sur la direction/BU cible
+- <strong>== Check-list pré-entretien</strong> : documents à apporter, points à réviser la veille</p>
+<p><strong>Générer le PDF immédiatement après création</strong> :
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>asciidoctor-pdf<span class="w"> </span>preparation-entretien-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>preparation-entretien-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.pdf
+</span></code></pre></div></p>
 <h2 id="arguments">Arguments<a class="headerlink" href="#arguments" title="Permanent link">&para;</a></h2>
 <p><code>$ARGUMENTS</code> — username JSON Resume ou URL directe vers un <code>resume.json</code></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>/json-resume adriens                 # registry.jsonresume.org/adriens
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>/json-resume https://…/resume.json   # URL directe
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>/json-resume                         # demande interactive
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>/json-resume adriens                 # registry.jsonresume.org/adriens
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>/json-resume https://…/resume.json   # URL directe
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>/json-resume                         # demande interactive
 </span></code></pre></div>
 
 
