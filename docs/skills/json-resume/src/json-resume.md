@@ -1,6 +1,6 @@
 # Candidature à une offre d'emploi via JSON Resume
 
-Charge un CV au format JSON Resume et accompagne la rédaction d'une lettre de motivation ciblée sur une offre d'emploi.
+Charge un CV au format JSON Resume et accompagne la candidature à une offre d'emploi : CV taillé sur mesure et/ou lettre de motivation qui démontre que le passé répond exactement à ce que le poste demande.
 
 ## Instructions
 
@@ -17,22 +17,13 @@ Charge un CV au format JSON Resume et accompagne la rédaction d'une lettre de m
 
 **Ordre de tentative pour un username** :
 1. `https://registry.jsonresume.org/{username}.json` via `WebFetch`
-2. Si échec (4xx/5xx) : `https://gist.githubusercontent.com/{username}/resume.json/raw` via `WebFetch`
+2. Si échec : `https://gist.githubusercontent.com/{username}/resume.json/raw` via `WebFetch`
 3. Si échec : `https://raw.githubusercontent.com/{username}/{username}/main/resume.json` via `WebFetch`
-4. Si tout échoue : demander à l'utilisateur de fournir l'URL directe ou le fichier local
+4. Si tout échoue : demander à l'utilisateur l'URL directe ou le fichier local
 
-**Informer l'utilisateur** de la source effectivement utilisée (registry ou fallback).
+Informer l'utilisateur de la source effectivement utilisée.
 
-### Étape 2 — Synthèse rapide du profil
-
-Afficher en markdown (compact, pas de grands tableaux) :
-
-- **Nom & titre** (depuis `basics`)
-- **Résumé** : 2 phrases extraites ou reformulées depuis `basics.summary`
-- **Dernière expérience** : poste + entreprise + durée
-- **Top 5 compétences** (par niveau décroissant depuis `skills`)
-
-### Étape 3 — Offre d'emploi
+### Étape 2 — Offre d'emploi
 
 Demander immédiatement (AskUserQuestion, header: "Offre") :
 - URL de l'offre (le skill ira la lire)
@@ -44,9 +35,16 @@ Demander immédiatement (AskUserQuestion, header: "Offre") :
 - Compétences et profil requis
 - Entreprise / contexte
 
-**Afficher une fiche synthèse de l'offre** avant de continuer.
+Afficher une fiche synthèse de l'offre avant de continuer.
 
-### Étape 4 — Gap analysis automatique
+### Étape 3 — Choix du livrable
+
+Demander (AskUserQuestion, header: "Livrable") :
+- **CV taillé sur mesure** — extraire et réorganiser les éléments du JSON Resume pour coller au mieux à l'offre
+- **Lettre de motivation** — rédiger une lettre qui démontre que les réalisations passées répondent point par point à l'offre
+- **Les deux** — CV ciblé puis lettre cohérente avec le CV produit
+
+### Étape 4 — Gap analysis (automatique, avant tout livrable)
 
 Produire un tableau de correspondance CV ↔ offre :
 
@@ -57,15 +55,33 @@ Produire un tableau de correspondance CV ↔ offre :
 Légende :
 - 🟢 Match direct et démontrable
 - 🟡 Match indirect ou transposable
-- 🟠 Écart gérable — à compenser dans la lettre
-- 🔴 Écart significatif — à mentionner honnêtement ou à ne pas soulever
+- 🟠 Écart gérable — à compenser dans le livrable
+- 🔴 Écart significatif — à ne pas soulever ou à mentionner honnêtement
 
-**Synthèse en 3 points** :
-- Atouts principaux à mettre en avant (2-3 max, avec formulation prête à l'emploi)
+Synthèse :
+- Atouts à mettre en avant (2-3, avec formulation prête à l'emploi)
 - Points à compenser et comment les tourner positivement
 - Verdict : 🟢 Candidature solide / 🟡 À valoriser / 🟠 Risquée
 
-### Étape 5 — Lettre de motivation
+### Étape 5A — CV taillé sur mesure (si demandé)
+
+**Principe** : ne garder que ce qui parle à ce recruteur, réordonner pour mettre en avant ce qui compte.
+
+1. **Sélection des expériences** : garder uniquement les postes et highlights en lien avec l'offre. Pour chaque expérience conservée, reformuler les highlights pour qu'ils résonnent avec le vocabulaire de l'offre (sans inventer).
+
+2. **Sélection des compétences** : ne lister que les skills pertinents pour le poste, triés par ordre de pertinence décroissante.
+
+3. **Sélection des projets** : garder les projets qui illustrent les compétences clés de l'offre. Pour chaque projet conservé, mettre en avant le highlight le plus en lien avec le poste.
+
+4. **Réalisations et awards** : ne garder que ceux qui apportent de la crédibilité pour ce poste.
+
+5. **Résumé personnalisé** : réécrire `basics.summary` pour qu'il réponde directement au profil recherché dans l'offre (2-3 phrases, sans mensonge).
+
+6. **Produire le CV ciblé** en JSON Resume valide (même schéma que l'original), enregistré sous `resume-{nom-du-poste-slug}.json`.
+
+### Étape 5B — Lettre de motivation (si demandée)
+
+**Principe** : chaque paragraphe répond à une exigence de l'offre avec une réalisation concrète du passé.
 
 Demander (AskUserQuestion, 2 questions simultanées) :
 
@@ -77,12 +93,12 @@ Demander (AskUserQuestion, 2 questions simultanées) :
 - Oui, j'ai une image (chemin à fournir)
 - Non, signature textuelle
 
-**Rédiger la lettre** en intégrant :
-- **En-tête** : coordonnées du candidat (depuis `basics`), date, destinataire si connu
-- **Accroche** : lien direct entre le profil et la mission centrale du poste (1-2 phrases percutantes)
-- **§1 — Qui je suis** : parcours synthétique ancré dans ce que le poste demande
-- **§2 — Ce que j'apporte** : 2-3 réalisations concrètes issues du CV, quantifiées si possible, en lien avec l'offre
-- **§3 — Pourquoi ce poste** : motivation spécifique (entreprise, mission, contexte) — pas générique
+**Structure de la lettre** :
+- **En-tête** : coordonnées (depuis `basics`), date, destinataire si connu
+- **Accroche** : lien immédiat entre le profil et la mission centrale — 1-2 phrases qui donnent envie de lire la suite
+- **§1 — Ce que j'ai fait** : 2-3 réalisations concrètes issues du CV, quantifiées si possible, choisies parce qu'elles répondent directement aux missions du poste
+- **§2 — Ce que ça prouve** : relier explicitement ces réalisations aux compétences et profil attendus dans l'offre — montrer que le passé garantit la capacité à réussir dans ce poste
+- **§3 — Pourquoi ce poste** : motivation spécifique à l'entreprise/mission/contexte — pas une formule générique
 - **Conclusion** : disponibilité, appel à l'action
 - **Signature** : image intégrée ou textuelle
 
@@ -101,7 +117,7 @@ pandoc lettre-motivation.adoc -o lettre-motivation.docx
 `$ARGUMENTS` — username JSON Resume ou URL directe vers un `resume.json`
 
 ```
-/json-resume adriens              # registry.jsonresume.org/adriens
-/json-resume https://…/resume.json  # URL directe
-/json-resume                      # demande interactive
+/json-resume adriens                 # registry.jsonresume.org/adriens
+/json-resume https://…/resume.json   # URL directe
+/json-resume                         # demande interactive
 ```
