@@ -2,6 +2,7 @@
 layout: default
 title: "Menus Aquavena"
 description: "Explore les menus et tarifs Aquavena, le service de gamelle healthy livré à domicile à Nouméa."
+icon: fontawesome/solid/utensils
 command: "/aquavena"
 tags:
   - alimentation
