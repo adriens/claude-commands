@@ -10,7 +10,7 @@ tags:
   - nouvelle-calédonie
   - nouméa
 source_url: "https://github.com/adriens/claude-commands/blob/main/docs/skills/aquavena/src/aquavena.md"
-datasource: "https://rastadidi-aquavena.hf.space/"
+datasource: "https://www.aquavena.nc/"
 ---
 # 🥗 Menus Aquavena
 
