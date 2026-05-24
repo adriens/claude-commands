@@ -12,7 +12,7 @@ tags:
 source_url: "https://github.com/adriens/claude-commands/blob/main/docs/skills/opt-nc-avps/src/opt-nc-avps.md"
 datasource: "https://data.gouv.nc/explore/dataset/avis-de-vacances-de-poste-avp-drhfpnc/"
 ---
-# Recherche d'AVPs OPT-NC
+# 🔍 Recherche d'AVPs OPT-NC
 
 !!! info "Commande Claude Code"
 

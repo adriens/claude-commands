@@ -13,7 +13,7 @@ tags:
 source_url: "https://github.com/adriens/claude-commands/blob/main/docs/skills/aquavena/src/aquavena.md"
 datasource: "https://www.aquavena.nc/"
 ---
-# Menus Aquavena
+# 🍴 Menus Aquavena
 
 !!! info "Commande Claude Code"
 
