@@ -1,0 +1,233 @@
+{
+  "basics": {
+    "name": "Adrien Sales",
+    "label": "Expert Innovation Digitale & Data | Architecte SI",
+    "email": "Adrien.Sales@gmail.com",
+    "location": {
+      "city": "Nouméa",
+      "countryCode": "NC",
+      "region": "Nouvelle-Calédonie"
+    },
+    "summary": "Expert en innovation digitale et valorisation des données, 20 ans d'expérience dont 7 à l'OPT-NC. Pilote la digitalisation des processus et l'exploitation de la donnée à la DSI depuis 2019 : stack data Airflow/DuckLake/Superset en production, Knowledge Graph SI Neo4j, API marketplace Apigee. DEA Mathématiques Appliquées, top 5% Kaggle, speaker NODES 2022–2024. Capacité avérée à concevoir des dispositifs concrets, analyser des situations complexes et entraîner les équipes vers les meilleures pratiques.",
+    "url": "https://adriens.github.io/whoami/",
+    "profiles": [
+      {
+        "network": "Dev.to",
+        "username": "adriens",
+        "url": "https://dev.to/adriens"
+      },
+      {
+        "network": "Kaggle",
+        "username": "adriens",
+        "url": "https://www.kaggle.com/adriens"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "OPT-NC",
+      "position": "Chef de Bureau Génie Logiciel Inter-Applicatif (GLIA) — DSI / Service des Moyens",
+      "startDate": "2019-01-01",
+      "summary": "Pilotage de la digitalisation des processus métiers et de la valorisation des données du SI OPT-NC.",
+      "highlights": [
+        "Mise en production de la stack data engineering complète : Apache Airflow (orchestration), DuckLake/MinIO (stockage), Apache Superset (restitution) — alimentation continue des tableaux de bord métiers",
+        "Conception et déploiement du Knowledge Graph SI OPT-NC (Neo4j) : cartographie automatisée, détection de SPOF, urbanisation data-driven — Speaker NODES 2022, 2023, 2024 (conférence mondiale Neo4j)",
+        "Création et exposition de l'API domaine.nc sur la marketplace Apigee : premier service open data .NC, ayant généré une application Flutter communautaire (Google Play Store, 25 releases)",
+        "Pilotage de la plateforme GitHub OPT-NC et déploiement de la culture DevSecOps (SBOM, Trivy, GitHub Actions — shift-left security)",
+        "Enseignement du module interopérabilité SI au Master MIAGE UNC — pédagogie par projet open source réel",
+        "Animation de la Commission DATA-IA de la Station N : évangélisation des pratiques data et IA sur le territoire"
+      ]
+    },
+    {
+      "name": "DSI Ville de Nouméa",
+      "position": "Architecte Logiciel",
+      "startDate": "2010-01-01",
+      "endDate": "2019-01-01",
+      "highlights": [
+        "Digitalisation des processus permis de construire et police municipale : analyse des besoins métiers, conception et déploiement d'applications Java/Spring Boot",
+        "Migration complète WebSphere/Windows → Tomcat/Spring Boot/Linux : modernisation du SI applicatif et organisation du transfert de compétences"
+      ]
+    },
+    {
+      "name": "Docaposte",
+      "position": "DBA Expert",
+      "startDate": "2008-01-01",
+      "endDate": "2010-01-01",
+      "highlights": [
+        "Analyse et exploitation de données complexes sur plateformes nationales Oracle/PostgreSQL à fort volume",
+        "Tuning avancé et optimisation des performances — garantie de disponibilité opérationnelle"
+      ]
+    },
+    {
+      "name": "Experian",
+      "position": "Consultant Développeur",
+      "startDate": "2003-01-01",
+      "endDate": "2008-01-01",
+      "highlights": [
+        "Conception et déploiement de dispositifs de gestion de l'information chez Orange, Bank of America, Crédit Lyonnais"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "name": "Data Engineering & Valorisation des données",
+      "level": "Expert",
+      "keywords": ["Apache Airflow", "DuckDB", "DuckLake", "Apache Superset", "ETL/ELT", "LakeHouse", "MinIO"]
+    },
+    {
+      "name": "Graph & Knowledge Engineering",
+      "level": "Expert",
+      "keywords": ["Neo4j", "Graph Data Science", "Knowledge Graph", "PageRank", "SPOF detection", "cartographie SI"]
+    },
+    {
+      "name": "Innovation Digitale & API",
+      "level": "Expert",
+      "keywords": ["Apigee", "API Management", "Open Data", "Interopérabilité SI", "Redocly", "Microcks"]
+    },
+    {
+      "name": "Architecture SI",
+      "level": "Expert",
+      "keywords": ["urbanisation SI", "cartographie applicative", "patterns architecturaux", "DORA", "NIS2"]
+    },
+    {
+      "name": "DevSecOps",
+      "level": "Avancé",
+      "keywords": ["GitHub Actions", "SBOM", "Trivy", "CI/CD", "shift-left security", "supply-chain logicielle"]
+    },
+    {
+      "name": "Data Analysis & Visualisation",
+      "level": "Expert",
+      "keywords": ["Python", "Jupyter", "Quarto", "Kaggle top 5%", "27 datasets publiés", "81 notebooks"]
+    },
+    {
+      "name": "Intelligence Artificielle",
+      "level": "Avancé",
+      "keywords": ["MCP", "RAG", "agents IA", "LLM", "Ollama", "LangChain", "semantic routing"]
+    },
+    {
+      "name": "Management & Pédagogie",
+      "level": "Expert",
+      "keywords": ["conduite de projet", "coaching technologique", "enseignement MIAGE", "hackathons", "DevRel"]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Knowledge Graph SI OPT-NC",
+      "description": "Cartographie automatisée du SI OPT-NC via Neo4j et Graph Data Science — détection de SPOF, communautés applicatives, urbanisation data-driven",
+      "highlights": [
+        "Speaker NODES 2022, 2023, 2024 (conférence mondiale Neo4j)",
+        "Automatisation complète via GitHub Actions CI/CD — releases automatisées"
+      ],
+      "keywords": ["Neo4j", "Graph Data Science", "Python", "GitHub Actions", "Quarto"]
+    },
+    {
+      "name": "API domaine.nc",
+      "description": "Premier service open data exposant le registre des noms de domaine .NC, conçu et déployé sur la marketplace Apigee OPT-NC",
+      "highlights": [
+        "Zéro interopérabilité avant → API publique en production sur Apigee",
+        "Application Flutter communautaire générée (Google Play Store, 25 releases)",
+        "Datasets Kaggle associés pour la communauté data"
+      ],
+      "keywords": ["API", "Apigee", "Open Data", "interopérabilité", "Flutter"]
+    },
+    {
+      "name": "Stack Data Engineering OPT-NC",
+      "description": "Mise en production de la plateforme data complète : ingestion (Airflow), stockage (DuckLake/MinIO), restitution (Superset)",
+      "highlights": [
+        "Pipelines ETL/ELT automatisés en production",
+        "Tableaux de bord métiers Superset alimentés en continu"
+      ],
+      "keywords": ["Apache Airflow", "DuckDB", "Apache Superset", "LakeHouse", "MinIO"]
+    },
+    {
+      "name": "geol",
+      "description": "CLI DevSecOps en Go : génération automatisée de SBOM et rapports de vulnérabilités (Trivy) au format Quarto",
+      "highlights": [
+        "1 300+ téléchargements",
+        "Hacktoberfest 2025 Maintainer Spotlight (mise en avant mondiale)"
+      ],
+      "keywords": ["Go", "DevSecOps", "Trivy", "SBOM", "Quarto", "open source"]
+    },
+    {
+      "name": "duckdb-brew",
+      "description": "Extension DuckDB Community officielle pour l'ingestion de données — publiée sur duckdb.org",
+      "highlights": [
+        "Extension officielle dans le catalogue DuckDB Community"
+      ],
+      "keywords": ["DuckDB", "open source", "data ingestion"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Université Nice Sophia-Antipolis",
+      "studyType": "DEA",
+      "area": "Mathématiques Appliquées",
+      "startDate": "2001-01-01",
+      "endDate": "2002-01-01"
+    },
+    {
+      "institution": "CERAM / Skema Business School",
+      "studyType": "Mastère Spécialisé",
+      "area": "Management des Systèmes et Bases de Données et de Connaissances (MSBDS)",
+      "startDate": "2002-01-01",
+      "endDate": "2003-01-01"
+    },
+    {
+      "institution": "Université Nice Sophia-Antipolis",
+      "studyType": "Maîtrise",
+      "area": "Mathématiques",
+      "startDate": "1998-01-01",
+      "endDate": "1999-01-01"
+    }
+  ],
+  "awards": [
+    {
+      "title": "Hacktoberfest 2025 Maintainer Spotlight",
+      "date": "2025-11-01",
+      "awarder": "DigitalOcean",
+      "summary": "Mise en avant mondiale pour la contribution open source (projet geol — CLI DevSecOps)"
+    },
+    {
+      "title": "Speaker NODES 2022, 2023, 2024",
+      "date": "2024-01-01",
+      "awarder": "Neo4j",
+      "summary": "Conférence mondiale Neo4j — présentation du Knowledge Graph SI OPT-NC trois années consécutives"
+    },
+    {
+      "title": "Top 5% Kaggle",
+      "date": "2024-01-01",
+      "awarder": "Kaggle",
+      "summary": "27 datasets publiés, 81 notebooks — contributions à l'open data calédonien et international"
+    }
+  ],
+  "volunteer": [
+    {
+      "organization": "Commission DATA-IA — Station N",
+      "position": "Membre contributeur",
+      "startDate": "2022-01-01",
+      "summary": "Évangélisation des pratiques data et IA sur le territoire calédonien, échanges avec les pairs et partenaires"
+    },
+    {
+      "organization": "Master MIAGE — Université de la Nouvelle-Calédonie",
+      "position": "Enseignant vacataire",
+      "startDate": "2020-01-01",
+      "summary": "Module interopérabilité SI — pédagogie Montessori par projet open source réel"
+    }
+  ],
+  "publications": [
+    {
+      "name": "206 articles techniques — Dev.to",
+      "publisher": "Dev.to",
+      "summary": "Data engineering, Neo4j, DevOps, open data — vulgarisation et retours d'expérience terrain OPT-NC"
+    },
+    {
+      "name": "286 vidéos de démonstration — YouTube",
+      "publisher": "YouTube",
+      "summary": "Démonstrations techniques live, DevOps, vulgarisation multilingue"
+    }
+  ],
+  "languages": [
+    {"language": "Français", "fluency": "Natif"},
+    {"language": "Anglais", "fluency": "Professionnel — lu, parlé, écrit (documentation, conférences internationales)"}
+  ]
+}

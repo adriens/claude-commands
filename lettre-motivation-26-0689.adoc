@@ -1,0 +1,68 @@
+= Lettre de motivation — AVP 26-0689
+:encoding: utf-8
+:lang: fr
+:doctype: article
+:pdf-theme: default
+
+[.text-right]
+Adrien Sales +
+Chef de Bureau Génie Logiciel Inter-Applicatif +
+DSI — Service des Moyens — OPT-NC +
+Nouméa, Nouvelle-Calédonie +
+Adrien.Sales@gmail.com
+
+[.text-right]
+Nouméa, le 23 mai 2026
+
+*À l'attention de la Direction des Ressources Humaines* +
+*OPT-NC*
+
+'''
+
+*Objet :* Candidature au poste de Chargé(e) de l'innovation digitale et data — Service support métiers, DPSP (AVP 26-0689) +
+*Sous couvert de M. EUZEN, Ronan, DSI Adjoint / Chef du Service des Moyens*
+
+'''
+
+Madame, Monsieur,
+
+Architecte SI et responsable du Bureau Génie Logiciel Inter-Applicatif à l'OPT-NC depuis 2019, je candidate au poste de Chargé(e) de l'innovation digitale et data au sein de la DPSP (AVP 26-0689).
+Ce poste résonne directement avec ce que je réalise au quotidien depuis sept ans : digitaliser des processus, valoriser la donnée, concevoir des dispositifs concrets et les ancrer dans les pratiques opérationnelles.
+
+== Ce que j'ai déjà livré à l'OPT-NC
+
+Les réalisations qui fondent ma candidature ne sont pas des projections — elles sont en production à l'OPT-NC même.
+
+J'ai *conçu et déployé la première API open data exposant le registre des noms de domaine .NC* sur la marketplace Apigee de l'Office.
+Ce projet, parti de zéro, a généré une application Flutter communautaire disponible sur le Google Play Store (25 releases publiées).
+Il illustre ma capacité à *piloter une digitalisation de bout en bout* : de l'analyse du besoin métier à la mise en production, jusqu'à l'adoption par des tiers extérieurs à l'Office.
+
+J'ai *mis en place la stack data engineering complète de la DSI* — Apache Airflow pour l'orchestration des pipelines, DuckLake/MinIO pour le stockage, Apache Superset pour la restitution — alimentant aujourd'hui les tableaux de bord des équipes métiers en continu.
+J'ai également *cartographié automatiquement le Système d'Information OPT-NC* sous forme de Knowledge Graph Neo4j, permettant d'analyser la donnée organisationnelle, de détecter les points de fragilité et d'éclairer les décisions d'architecture.
+Ces travaux ont été présentés à la conférence mondiale Neo4j NODES *trois années consécutives* (2022, 2023, 2024).
+
+== Ce que cela prouve pour le poste
+
+Le poste attend une capacité à *concevoir des dispositifs*, *analyser des données et des situations*, *piloter des projets* et *exploiter l'information*.
+Mon bilan à la DSI démontre précisément ces aptitudes avec des preuves mesurables : une API en production, une stack data opérationnelle, une cartographie SI automatisée.
+Mon DEA en Mathématiques Appliquées et mon classement *top 5% sur Kaggle* (27 datasets publiés, 81 notebooks) attestent d'une culture analytique rigoureuse.
+
+Ma participation à la *Commission DATA-IA de la Station N* et mon expérience d'enseignement au *Master MIAGE* illustrent par ailleurs ma capacité à transmettre et à entraîner, au-delà de la seule expertise technique — dimension essentielle pour porter l'innovation au sein d'une BU métier.
+
+== Pourquoi ce poste, pourquoi maintenant
+
+L'OPT-NC engage sa transformation digitale à une échelle et une vitesse inédites.
+La DPSP, en contact direct avec les usagers et les partenaires, est au cœur de cette transformation.
+Rejoindre ce service en tant que référent innovation digitale et data, c'est porter la culture de la donnée là où elle a le plus fort impact opérationnel — et contribuer à ce que les équipes métiers disposent des bons outils pour analyser, décider et agir.
+
+Cette mobilité est un choix délibéré : après sept années à construire les fondations techniques à la DSI, je souhaite les mettre au service des métiers de l'Office, et co-construire avec eux les dispositifs qui feront la différence pour les usagers.
+
+Je reste à votre disposition pour tout échange complémentaire et vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
+
+'''
+
+image::/home/adriens/Documents/signature_transparente.png[Signature Adrien Sales,150]
+
+*Adrien Sales* +
+Chef de Bureau Génie Logiciel Inter-Applicatif +
+OPT-NC — DSI / Service des Moyens

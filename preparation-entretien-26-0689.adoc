@@ -1,0 +1,304 @@
+= Document de préparation d'entretien
+Adrien Sales
+:doctype: article
+:encoding: utf-8
+:lang: fr
+:toc: left
+:toc-title: Sommaire
+:toclevels: 2
+:sectnums:
+:icons: font
+
+[.lead]
+*Poste visé :* Chargé(e) de l'innovation digitale et data — Service support métiers, DPSP +
+*Numéro AVP :* 26-0689 +
+*Date de clôture :* 28 mai 2026 +
+*Candidat :* Adrien Sales — Chef de Bureau GLIA, DSI / Service des Moyens, OPT-NC
+
+'''
+
+== Points forts à valoriser
+
+=== Digitalisation des processus métiers — Match direct
+
+*Critère du jury :* Piloter et mettre en œuvre des actions de digitalisation des processus métiers.
+
+*Réalisation à citer :* API domaine.nc — création de zéro du premier service open data exposant le registre des noms de domaine .NC sur la marketplace Apigee de l'OPT-NC.
+
+*Formulation recommandée :*
+____
+"J'ai conçu et livré de bout en bout la première API open data de l'OPT-NC.
+Avant ce projet, aucun service externe ne pouvait interroger le registre des noms de domaine .NC.
+Aujourd'hui, une application Flutter développée par un tiers est disponible sur le Google Play Store
+et s'appuie sur cette API — preuve que la digitalisation d'un processus interne peut générer de la valeur
+bien au-delà de la direction qui l'a initiée."
+____
+
+=== Valorisation des données — Match direct
+
+*Critère du jury :* Exploiter et valoriser les données au sein de la BU.
+
+*Réalisation à citer :* Stack data engineering complète en production — Airflow, DuckLake, Superset — et Knowledge Graph SI Neo4j présenté à NODES 2022, 2023, 2024.
+
+*Formulation recommandée :*
+____
+"J'ai mis en place la plateforme data de la DSI : collecte via Airflow, stockage DuckLake, restitution
+Superset. Les équipes disposent aujourd'hui de tableaux de bord alimentés en continu.
+En parallèle, j'ai cartographié le Système d'Information sous forme de graphe Neo4j pour rendre la donnée
+organisationnelle lisible par la direction — ces travaux ont été présentés à la conférence mondiale Neo4j
+trois années de suite."
+____
+
+=== Conception de dispositifs concrets — Match direct
+
+*Critère du jury :* Concevoir un outil, un dispositif.
+
+*Réalisations à citer :* geol (1 300+ téléchargements, Hacktoberfest Spotlight), duckdb-brew (extension officielle DuckDB), mobitag.
+
+*Formulation recommandée :*
+____
+"Concevoir un dispositif, pour moi, c'est partir d'un besoin terrain et livrer quelque chose d'utilisable.
+geol, par exemple, est un outil CLI que j'ai développé pour automatiser les audits de sécurité de la
+supply-chain logicielle — il a été téléchargé plus de 1 300 fois et mis en avant lors de l'Hacktoberfest 2025.
+Ce réflexe de 'livrer et mesurer' est au cœur de ma façon de travailler."
+____
+
+=== Analyse de données et de situations — Match direct
+
+*Critère du jury :* Analyser une information, une donnée, une situation, un dispositif.
+
+*Réalisation à citer :* DEA Mathématiques Appliquées + Graph Data Science (centralité, PageRank, détection de SPOF) + top 5% Kaggle (27 datasets, 81 notebooks).
+
+*Formulation recommandée :*
+____
+"Mon DEA de Mathématiques Appliquées m'a donné une culture de l'analyse rigoureuse que j'applique
+au quotidien : détecter les points de fragilité dans un SI via des algorithmes de graphe, ou analyser
+des datasets open data calédoniens sur Kaggle — les deux relèvent de la même démarche : transformer une
+donnée brute en insight actionnable."
+____
+
+=== Pilotage de projets — Match direct
+
+*Critère du jury :* Piloter et évaluer un projet.
+
+*Réalisations à citer :* Chef de Bureau GLIA depuis 2019, pilotage Apigee + GitHub OPT-NC, roadmaps technologiques.
+
+*Formulation recommandée :*
+____
+"Depuis 2019 je pilote simultanément plusieurs chantiers : la plateforme data, l'API Gateway Apigee,
+la sécurité de la supply-chain logicielle. Chacun avec sa roadmap, ses KPIs, ses jalons.
+J'utilise GitHub Projects et des pipelines CI/CD pour suivre l'avancement en temps réel et
+rendre compte objectivement à la direction."
+____
+
+=== Transmission et capacité à entraîner — Atout différenciant
+
+*Critère du jury :* Organisation, méthode et processus — et implicitement : porter la culture data dans une BU métier.
+
+*Réalisations à citer :* Enseignement Master MIAGE UNC, 206 articles Dev.to, Commission DATA-IA Station N, speaker NODES.
+
+*Formulation recommandée :*
+____
+"Porter l'innovation digitale dans une direction métier, c'est autant une question de pédagogie
+que de technique. J'enseigne l'interopérabilité SI au Master MIAGE, j'ai publié 206 articles techniques,
+je participe à la Commission DATA-IA de la Station N. Vulgariser, c'est ma façon de créer de l'adhésion."
+____
+
+'''
+
+== Points faibles / écarts à préparer
+
+=== Changement de BU : de DSI (technique) à DPSP (services de proximité)
+
+*Nature de l'écart :* Adrien connaît les processus SI mais pas nécessairement les métiers postaux et de services de proximité de la DPSP.
+
+*Comment le reformuler positivement :*
+____
+"C'est précisément pour cette raison que ce poste m'intéresse. Je viens de la DSI avec une maîtrise
+technique complète — data, APIs, architecture. Ce que j'apporte à la DPSP, c'est la capacité à
+comprendre rapidement un processus métier, à identifier où la donnée peut créer de la valeur,
+et à livrer des dispositifs concrets. La courbe d'apprentissage sur les métiers DPSP est rapide
+pour quelqu'un habitué à cartographier des SI complexes."
+____
+
+*Ce qu'on ne dit pas spontanément :* On n'a pas besoin de connaître la gestion du courrier ou les mandats pour concevoir des outils de valorisation des données — on a besoin de savoir écouter les équipes métiers et modéliser leurs besoins. C'est exactement ce que fait un architecte SI transverse.
+
+=== Poste "chargé" vs grade Ingénieur 2e / rôle actuel de Chef de Bureau
+
+*Nature de l'écart :* Le poste cible est un rôle d'expert/référent sans management direct d'équipe, alors que le poste actuel inclut l'encadrement d'une équipe technique.
+
+*Comment le reformuler positivement :*
+____
+"Ce que je cherche dans cette mobilité, c'est d'aller au contact des métiers et de maximiser
+l'impact de la donnée là où elle est produite et utilisée. Le management d'équipe, je le pratique
+depuis 2019 et je continuerai à accompagner des profils juniors — mais sous forme de conseil et
+de transfert de compétences plutôt que de hiérarchie directe. C'est un choix délibéré."
+____
+
+*Ce qu'on ne dit pas spontanément :* Ne pas aborder spontanément la question du grade ou de la rémunération. Si le jury la soulève, répondre calmement que c'est un choix assumé et que la question a été traitée avec le responsable hiérarchique (M. EUZEN, Ronan).
+
+=== Surqualification technique perçue
+
+*Nature de l'écart :* Un profil avec DEA Maths, 20 ans d'expérience, speaker international peut sembler surdimensionné pour un poste "chargé" cadre d'exploitation.
+
+*Comment le reformuler positivement :*
+____
+"L'innovation digitale réelle, c'est souvent trop d'expertise inutilisée dans des équipes qui
+n'ont pas les outils pour avancer. Apporter un niveau d'expertise élevé dans un rôle de référent,
+c'est démultiplier l'impact — pas le diluer. Je préfère construire quelque chose de durable
+pour la DPSP plutôt que de continuer à empiler des projets techniques côté DSI."
+____
+
+'''
+
+== Questions probables du jury
+
+=== Questions sur la motivation et la mobilité
+
+. *Pourquoi souhaitez-vous quitter la DSI pour rejoindre la DPSP ?*
+. *Ce poste est un poste de "chargé", pas de chef de section — est-ce un recul par rapport à votre situation actuelle ?*
+. *Qu'est-ce qui vous attire spécifiquement dans les métiers de la DPSP par rapport à d'autres directions ?*
+. *Avez-vous informé votre hiérarchie de cette candidature ?* _(répondre oui — lettre sous couvert de M. EUZEN, Ronan)_
+
+=== Questions sur les compétences clés
+
+[start=5]
+. *Donnez-nous un exemple concret d'action de digitalisation que vous avez menée et ses résultats mesurables.*
+. *Comment abordez-vous la valorisation des données dans une direction que vous ne connaissez pas encore ?*
+. *Quelle est votre méthode pour analyser un processus métier et identifier des axes d'amélioration ?*
+. *Comment travaillez-vous avec des équipes non techniques pour faire adopter un outil numérique ?*
+
+=== Questions sur la vision et le projet
+
+[start=9]
+. *Quelles seraient vos premières actions si vous êtes retenu ?*
+. *Comment voyez-vous le rôle de l'IA dans les métiers de la DPSP ?*
+. *Comment priorisez-vous les initiatives d'innovation quand les ressources sont limitées ?*
+. *Qu'est-ce que "l'innovation digitale frugale" signifie pour vous concrètement ?*
+
+'''
+
+== Réponses préparées (méthode STAR)
+
+=== Q1 — Pourquoi quitter la DSI pour rejoindre la DPSP ?
+
+*Situation :* Depuis 2019, j'ai construit les fondations techniques de la DSI — plateforme data, API Gateway, sécurité logicielle. Ces outils existent et fonctionnent.
+
+*Tâche :* Aujourd'hui, la vraie valeur n'est plus dans la construction de l'infrastructure, mais dans son exploitation au service des métiers.
+
+*Action :* Je veux rejoindre la DPSP pour porter directement la culture de la donnée là où les décisions opérationnelles sont prises — au contact des usagers et des partenaires.
+
+*Résultat attendu :* Des équipes métiers qui utilisent la donnée pour décider, et des processus digitalisés qui simplifient le quotidien des agents et des usagers.
+
+---
+
+=== Q2 — Exemple concret de digitalisation et résultats mesurables
+
+*Situation :* Le registre des noms de domaine .NC n'était accessible que via des requêtes manuelles internes — aucun service externe ne pouvait l'interroger.
+
+*Tâche :* Concevoir et déployer un service open data exposant ce registre sur la marketplace Apigee de l'OPT-NC.
+
+*Action :* Analyse du besoin, conception de l'API, développement, déploiement sur Apigee, publication des datasets associés sur Kaggle, documentation.
+
+*Résultat :* API en production, adoptée par un développeur externe qui a créé une application Flutter disponible sur le Google Play Store (25 releases). De zéro interopérabilité à un écosystème vivant — sans budget dédié.
+
+---
+
+=== Q3 — Comment abordez-vous des équipes métiers non techniques ?
+
+*Situation :* À la Ville de Nouméa, j'ai travaillé avec les équipes de la police municipale et du service permis de construire pour digitaliser leurs processus.
+
+*Tâche :* Comprendre leurs contraintes opérationnelles, pas seulement leurs besoins exprimés.
+
+*Action :* Shadowing terrain, ateliers de modélisation en langage métier (pas technique), prototypes rapides soumis à validation, itérations courtes. J'utilise la pédagogie Montessori que j'applique aussi dans mon enseignement au Master MIAGE : apprendre par le faire, pas par les slides.
+
+*Résultat :* Des applications adoptées par les agents parce qu'elles répondent à leurs vrais problèmes, pas à une interprétation technique de ceux-ci.
+
+---
+
+=== Q4 — Quelles seraient vos premières actions dans ce poste ?
+
+*Situation :* Arriver dans une direction métier que je connais par la cartographie SI mais pas de l'intérieur.
+
+*Tâche :* Comprendre rapidement les processus, les données disponibles, et les points de friction.
+
+*Action (90 premiers jours) :*
+
+. Semaines 1-2 : immersion terrain — rencontrer les chefs de section et les agents, cartographier les flux d'information existants
+. Semaines 3-4 : identifier les 3 processus avec le plus fort potentiel de digitalisation (ratio impact/effort)
+. Mois 2 : proposer une feuille de route priorisée avec des quick wins démontrables en moins de 3 mois
+. Mois 3 : livrer un premier prototype sur le quick win le plus impactant
+
+*Résultat attendu :* Une première réalisation visible dans les 90 jours — pour créer la confiance et montrer que "innovation digitale" ne signifie pas "projet qui dure 2 ans".
+
+---
+
+=== Q5 — Comment priorisez-vous l'innovation avec des ressources limitées ?
+
+*Situation :* À la DSI, j'ai développé plusieurs outils open source avec zéro budget dédié — uniquement du temps et de la créativité.
+
+*Tâche :* Maximiser l'impact en minimisant les coûts et la complexité.
+
+*Action :* J'applique le principe de "frugal innovation" : open source first, APIs publiques disponibles, données déjà collectées mais inexploitées. Je ne commence pas par les outils, je commence par les données existantes et les besoins réels.
+
+*Résultat :* geol, duckdb-brew, API domaine.nc — trois projets livrés en dehors des heures de bureau, avec un impact mesurable (1 300+ téléchargements, app communautaire, extension DuckDB officielle). L'innovation frugale, ce n'est pas faire moins — c'est faire mieux avec ce qu'on a déjà.
+
+'''
+
+== Éléments de contexte à maîtriser
+
+=== À propos du poste
+
+* Direction : *DPSP* (Direction de la Poste et des Services de Proximité)
+* Service : *Support métiers* — rôle transverse, pas opérationnel direct
+* Grade : *Cadre d'exploitation* — grille différente de "Ingénieur" (DSI)
+* Disponibilité : poste *non disponible immédiatement* (probable mobilité à terme)
+
+=== Vocabulaire métier à maîtriser pour l'entretien
+
+* *BU* (Business Unit) — terme utilisé dans la fiche, désigne une unité opérationnelle de la DPSP
+* *Digitalisation des processus* vs *dématérialisation* — ne pas confondre (la première transforme, la seconde transcrit)
+* *Valorisation des données* — terme clé de l'offre : avoir 2-3 exemples concrets prêts
+* *Support métiers* — rôle d'appui, pas de maîtrise d'ouvrage directe
+
+=== Points d'attention sur la DPSP
+
+* La DPSP gère les services postaux, les services de proximité (agences, mandats, colis)
+* Elle est en contact direct avec les usagers finaux — l'impact des outils numériques est visible rapidement
+* Les équipes sont mixtes : agents terrain et fonctions support
+* L'enjeu data DPSP : trafic courrier, performance des agences, satisfaction client, prévisions de charge
+
+'''
+
+== Check-list pré-entretien
+
+=== Documents à apporter
+
+* [ ] CV ciblé imprimé (`resume-innovation-digitale-data.pdf`)
+* [ ] Lettre de motivation imprimée (`lettre-motivation-26-0689.pdf`)
+* [ ] Copie du diplôme DEA Mathématiques Appliquées
+* [ ] 2-3 captures d'écran ou slides de réalisations (API domaine.nc, Superset dashboard, Knowledge Graph)
+* [ ] Liste des publications NODES 2022-2024 (liens)
+
+=== À réviser la veille
+
+* [ ] Relire la fiche de poste AVP 26-0689 (https://opt-nc.github.io/avps/26-0689/)
+* [ ] Relire les missions de la DPSP (site OPT-NC)
+* [ ] Préparer les 5 réponses STAR ci-dessus à voix haute
+* [ ] Vérifier que l'API domaine.nc est toujours en production (tester un appel)
+* [ ] Actualiser les stats Kaggle (datasets, vues) pour les citer avec précision
+
+=== Logistique
+
+* [ ] Confirmer la date et l'heure de la convocation
+* [ ] Identifier le bâtiment et la salle (OPT-NC, Nouméa)
+* [ ] Prévoir d'arriver 10 minutes en avance
+* [ ] Téléphone en mode silencieux
+
+=== Formulation finale à avoir en tête
+
+____
+"Je ne postule pas pour changer de poste. Je postule pour aller porter la culture de la donnée
+là où elle manque le plus — au contact des métiers de la DPSP. Ce que j'ai construit à la DSI,
+je veux maintenant le mettre au service des agents et des usagers."
+____
