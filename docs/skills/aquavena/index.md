@@ -25,6 +25,14 @@ datasource: "https://www.aquavena.nc/"
 
 ---
 
+## 🥗 Qu'est-ce qu'Aquavena ?
+
+[Aquavena](https://www.aquavena.nc/) est un service de gamelle healthy basé à **Nouméa, Nouvelle-Calédonie**. Ils proposent des repas équilibrés, savoureux et livrés à domicile, déclinés en plusieurs formules adaptées à différents objectifs alimentaires : sportifs, végétariens, low-carb, méditerranéen, et plus encore.
+
+Aquavena s'adresse à celles et ceux qui veulent bien manger sans sacrifier le temps ni le plaisir.
+
+---
+
 ## 📥 Installation
 
 L'installation se fait en deux étapes dans votre terminal Claude Code.
@@ -72,11 +80,3 @@ Ou directement avec un objectif :
 - 🍽️ **Menu de la semaine** : consultation par régime, présenté jour par jour
 - 💰 **Grille tarifaire** : prix HT et TTC en XPF pour toutes les formules
 - 🎯 **Conseil personnalisé** : recommandation de régime selon votre objectif (sport, minceur, végé, famille…)
-
----
-
-## 🥗 Qu'est-ce qu'Aquavena ?
-
-[Aquavena](https://www.aquavena.nc/) est un service de gamelle healthy basé à **Nouméa, Nouvelle-Calédonie**. Ils proposent des repas équilibrés, savoureux et livrés à domicile, déclinés en plusieurs formules adaptées à différents objectifs alimentaires : sportifs, végétariens, low-carb, méditerranéen, et plus encore.
-
-Aquavena s'adresse à celles et ceux qui veulent bien manger sans sacrifier le temps ni le plaisir.
