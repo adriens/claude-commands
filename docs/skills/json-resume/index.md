@@ -24,6 +24,28 @@ datasource: "https://registry.jsonresume.org/"
 
 ---
 
+## 📖 Qu'est-ce que JSON Resume ?
+
+[JSON Resume](https://jsonresume.org/) est un standard open source communautaire qui définit un schéma JSON universel pour les CV. L'idée : stocker son CV dans un fichier `resume.json` structuré et interopérable, indépendant de tout outil de mise en forme.
+
+Avantages :
+- **Versionnable** : stocké dans un Gist ou un repo Git, l'historique est conservé
+- **Interopérable** : un seul fichier source, des dizaines de thèmes de rendu disponibles
+- **Exploitable par l'IA** : structure normalisée → facile à analyser, comparer, adapter
+
+Le registry officiel (`registry.jsonresume.org/{username}`) publie automatiquement tout Gist GitHub public nommé `resume.json`.
+
+---
+
+## 🔗 Prérequis
+
+Un CV publié au format [JSON Resume](https://jsonresume.org/) :
+
+- Via le registry : créer un Gist public nommé `resume.json` → disponible sur `registry.jsonresume.org/{username}`
+- Ou via n'importe quelle URL publique pointant vers un fichier JSON conforme au schéma JSON Resume
+
+---
+
 ## 📥 Installation
 
 ```bash
@@ -56,25 +78,3 @@ curl -o ~/.claude/commands/json-resume.md \
 - 🎯 **Gap analysis** CV ↔ offre d'emploi avec tableau d'adéquation coloré
 - 🗣️ **Pitch** : 3 variantes (LinkedIn, entretien, email spontané)
 - ✍️ **Lettre de motivation** personnalisée en Markdown ou AsciiDoc, exportable en Word
-
----
-
-## 📖 Qu'est-ce que JSON Resume ?
-
-[JSON Resume](https://jsonresume.org/) est un standard open source communautaire qui définit un schéma JSON universel pour les CV. L'idée : stocker son CV dans un fichier `resume.json` structuré et interopérable, indépendant de tout outil de mise en forme.
-
-Avantages :
-- **Versionnable** : stocké dans un Gist ou un repo Git, l'historique est conservé
-- **Interopérable** : un seul fichier source, des dizaines de thèmes de rendu disponibles
-- **Exploitable par l'IA** : structure normalisée → facile à analyser, comparer, adapter
-
-Le registry officiel (`registry.jsonresume.org/{username}`) publie automatiquement tout Gist GitHub public nommé `resume.json`.
-
----
-
-## 🔗 Prérequis
-
-Un CV publié au format [JSON Resume](https://jsonresume.org/) :
-
-- Via le registry : créer un Gist public nommé `resume.json` → disponible sur `registry.jsonresume.org/{username}`
-- Ou via n'importe quelle URL publique pointant vers un fichier JSON conforme au schéma JSON Resume
