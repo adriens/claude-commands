@@ -9,7 +9,7 @@ tags:
   - opt-nc
   - nouvelle-calédonie
 source_url: "https://github.com/adriens/claude-commands/blob/main/docs/skills/opt-nc-avps/src/opt-nc-avps.md"
-homepage: "https://opt.nc/offres-demploi"
+datasource: "https://data.gouv.nc/explore/dataset/avis-de-vacances-de-poste-avp-drhfpnc/"
 ---
 # 🚀 Recherche d'AVPs OPT-NC
 
