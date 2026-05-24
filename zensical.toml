@@ -10,7 +10,8 @@ nav = [
     { "Accueil" = "index.md" },
     { "Skills" = [
         { "Recherche AVPs OPT-NC" = "skills/opt-nc-avps/index.md" },
-        { "Candidature JSON Resume" = "skills/json-resume/index.md" }
+        { "Candidature JSON Resume" = "skills/json-resume/index.md" },
+        { "Menus Aquavena" = "skills/aquavena/index.md" }
     ]}
 ]
 
