@@ -1,5 +1,5 @@
 [project]
-site_name = "Claude Code Skills"
+site_name = "Didi's Claude Code Skills"
 site_description = "Collection de slash commands (skills) pour Claude Code."
 site_author = "adriens"
 site_url = "https://adriens.github.io/claude-commands/"
