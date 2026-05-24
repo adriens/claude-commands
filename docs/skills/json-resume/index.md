@@ -2,6 +2,7 @@
 layout: default
 title: "Analyse CV JSON Resume"
 description: "Charge un CV JSON Resume depuis le registry ou une URL, et propose gap analysis, pitch et lettre de motivation ciblée."
+icon: fontawesome/solid/file-lines
 command: "/json-resume"
 tags:
   - cv
