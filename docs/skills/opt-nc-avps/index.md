@@ -14,6 +14,8 @@ datasource: "https://data.gouv.nc/explore/dataset/avis-de-vacances-de-poste-avp-
 ---
 # 🔍 Recherche d'AVPs OPT-NC
 
+![Logo OPT-NC](../../assets/logos/opt-nc.png)
+
 !!! info "Commande Claude Code"
 
     **Commande** : `/opt-nc-avps`  
