@@ -24,6 +24,26 @@ datasource: "https://data.gouv.nc/explore/dataset/avis-de-vacances-de-poste-avp-
 
 ---
 
+## 🏛️ Contexte : OPT-NC et AVPs
+
+### L'OPT-NC
+
+L'[Office des Postes et Télécommunications de Nouvelle-Calédonie (OPT-NC)](https://opt.nc/) est un établissement public calédonien qui gère les services postaux, les télécommunications et les services financiers (CCP) sur l'ensemble du territoire. C'est l'un des principaux employeurs publics de Nouvelle-Calédonie.
+
+### Qu'est-ce qu'un AVP ?
+
+Un **Avis de Vacance de Poste (AVP)** est l'équivalent calédonien d'une offre d'emploi dans la fonction publique. Les AVPs sont publiés par la **Direction des Ressources Humaines de la Fonction Publique de Nouvelle-Calédonie (DRHFPNC)** et recensent les postes ouverts au sein des administrations et établissements publics du territoire.
+
+Contrairement aux offres d'emploi privées, les AVPs obéissent à des règles spécifiques :
+
+- **Lettre sous couvert hiérarchique** : la candidature doit transiter par la hiérarchie de l'agent
+- **EAE (Entretien Annuel d'Évaluation)** : souvent demandé en pièce jointe
+- **Délai de clôture strict** : les candidatures hors délai ne sont pas acceptées
+
+Les AVPs de l'OPT-NC sont publiés en open data sur [data.gouv.nc](https://data.gouv.nc/explore/dataset/avis-de-vacances-de-poste-avp-drhfpnc/) et mis à jour régulièrement.
+
+---
+
 ## 📥 Installation
 
 L'installation se fait en deux étapes dans votre terminal Claude Code.
