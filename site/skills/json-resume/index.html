@@ -400,6 +400,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#quest-ce-que-json-resume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📖 Qu'est-ce que JSON Resume ?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔗 Prérequis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -426,28 +448,6 @@
     <span class="md-ellipsis">
       
         ✨ Fonctionnalités
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quest-ce-que-json-resume" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        📖 Qu'est-ce que JSON Resume ?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prerequis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔗 Prérequis
       
     </span>
   </a>
@@ -544,6 +544,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#quest-ce-que-json-resume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📖 Qu'est-ce que JSON Resume ?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔗 Prérequis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -570,28 +592,6 @@
     <span class="md-ellipsis">
       
         ✨ Fonctionnalités
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quest-ce-que-json-resume" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        📖 Qu'est-ce que JSON Resume ?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prerequis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔗 Prérequis
       
     </span>
   </a>
@@ -670,6 +670,21 @@
 <p><em>Analyse complète d'un CV JSON Resume : synthèse, gap analysis avec une offre, pitch et lettre de motivation.</em></p>
 </div>
 <hr />
+<h2 id="quest-ce-que-json-resume">📖 Qu'est-ce que JSON Resume ?<a class="headerlink" href="#quest-ce-que-json-resume" title="Permanent link">&para;</a></h2>
+<p><a href="https://jsonresume.org/">JSON Resume</a> est un standard open source communautaire qui définit un schéma JSON universel pour les CV. L'idée : stocker son CV dans un fichier <code>resume.json</code> structuré et interopérable, indépendant de tout outil de mise en forme.</p>
+<p>Avantages :
+- <strong>Versionnable</strong> : stocké dans un Gist ou un repo Git, l'historique est conservé
+- <strong>Interopérable</strong> : un seul fichier source, des dizaines de thèmes de rendu disponibles
+- <strong>Exploitable par l'IA</strong> : structure normalisée → facile à analyser, comparer, adapter</p>
+<p>Le registry officiel (<code>registry.jsonresume.org/{username}</code>) publie automatiquement tout Gist GitHub public nommé <code>resume.json</code>.</p>
+<hr />
+<h2 id="prerequis">🔗 Prérequis<a class="headerlink" href="#prerequis" title="Permanent link">&para;</a></h2>
+<p>Un CV publié au format <a href="https://jsonresume.org/">JSON Resume</a> :</p>
+<ul>
+<li>Via le registry : créer un Gist public nommé <code>resume.json</code> → disponible sur <code>registry.jsonresume.org/{username}</code></li>
+<li>Ou via n'importe quelle URL publique pointant vers un fichier JSON conforme au schéma JSON Resume</li>
+</ul>
+<hr />
 <h2 id="installation">📥 Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-o<span class="w"> </span>~/.claude/commands/json-resume.md<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/json-resume/src/json-resume.md
@@ -690,21 +705,6 @@
 <li>🎯 <strong>Gap analysis</strong> CV ↔ offre d'emploi avec tableau d'adéquation coloré</li>
 <li>🗣️ <strong>Pitch</strong> : 3 variantes (LinkedIn, entretien, email spontané)</li>
 <li>✍️ <strong>Lettre de motivation</strong> personnalisée en Markdown ou AsciiDoc, exportable en Word</li>
-</ul>
-<hr />
-<h2 id="quest-ce-que-json-resume">📖 Qu'est-ce que JSON Resume ?<a class="headerlink" href="#quest-ce-que-json-resume" title="Permanent link">&para;</a></h2>
-<p><a href="https://jsonresume.org/">JSON Resume</a> est un standard open source communautaire qui définit un schéma JSON universel pour les CV. L'idée : stocker son CV dans un fichier <code>resume.json</code> structuré et interopérable, indépendant de tout outil de mise en forme.</p>
-<p>Avantages :
-- <strong>Versionnable</strong> : stocké dans un Gist ou un repo Git, l'historique est conservé
-- <strong>Interopérable</strong> : un seul fichier source, des dizaines de thèmes de rendu disponibles
-- <strong>Exploitable par l'IA</strong> : structure normalisée → facile à analyser, comparer, adapter</p>
-<p>Le registry officiel (<code>registry.jsonresume.org/{username}</code>) publie automatiquement tout Gist GitHub public nommé <code>resume.json</code>.</p>
-<hr />
-<h2 id="prerequis">🔗 Prérequis<a class="headerlink" href="#prerequis" title="Permanent link">&para;</a></h2>
-<p>Un CV publié au format <a href="https://jsonresume.org/">JSON Resume</a> :</p>
-<ul>
-<li>Via le registry : créer un Gist public nommé <code>resume.json</code> → disponible sur <code>registry.jsonresume.org/{username}</code></li>
-<li>Ou via n'importe quelle URL publique pointant vers un fichier JSON conforme au schéma JSON Resume</li>
 </ul>
 
 
