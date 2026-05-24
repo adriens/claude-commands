@@ -19,7 +19,7 @@ nav = [
 language = "fr"
 features = [
     "navigation.footer",
-    "navigation.path",
+"navigation.path",
     "navigation.top",
     "navigation.tracking",
     "content.code.copy",
