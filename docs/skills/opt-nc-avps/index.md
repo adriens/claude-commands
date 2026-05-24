@@ -36,11 +36,9 @@ claude mcp add avps-opt-nc \
 ### 2️⃣ Skill (Slash Command)
 Téléchargez le skill dans votre répertoire de commandes :
 ```bash
-mkdir -p ~/.claude/commands \
+mkdir -p ~/.claude/commands && \
 curl -o ~/.claude/commands/opt-nc-avps.md \
-  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/src/opt-nc-avps.md
-```
-
+  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/src/opt-nc-avps.md```
 ---
 
 ## 📝 Utilisation
