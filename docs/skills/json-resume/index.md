@@ -14,6 +14,8 @@ datasource: "https://registry.jsonresume.org/"
 ---
 # 📄 Analyse CV JSON Resume
 
+![Logo JSON Resume](../../assets/logos/json-resume.png)
+
 !!! info "Commande Claude Code"
 
     **Commande** : `/json-resume`  

@@ -15,6 +15,8 @@ datasource: "https://www.aquavena.nc/"
 ---
 # 🍴 Menus Aquavena
 
+![Logo Aquavena](../../assets/logos/aquavena.png)
+
 !!! info "Commande Claude Code"
 
     **Commande** : `/aquavena`  
