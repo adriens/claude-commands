@@ -12,7 +12,7 @@ tags:
 source_url: "https://github.com/adriens/claude-commands/blob/main/docs/skills/json-resume/src/json-resume.md"
 datasource: "https://registry.jsonresume.org/"
 ---
-# 📄 Analyse CV JSON Resume
+# Analyse CV JSON Resume
 
 !!! info "Commande Claude Code"
 
