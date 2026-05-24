@@ -1,3 +1,6 @@
+---
+icon: fontawesome/solid/house
+---
 # Bibliothèque de Skills
 
 Bienvenue dans cette collection de commandes personnalisées pour **Claude Code**.
