@@ -9,6 +9,7 @@ tags:
   - emploi
   - json-resume
 source_url: "https://github.com/adriens/claude-commands/blob/main/docs/skills/json-resume/src/json-resume.md"
+homepage: "https://jsonresume.org/"
 ---
 # 📄 Analyse CV JSON Resume
 
