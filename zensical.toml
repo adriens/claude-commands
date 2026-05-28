@@ -3,7 +3,9 @@ site_name = "Didi's Claude Code Skills"
 site_description = "Collection de slash commands (skills) pour Claude Code."
 site_author = "adriens"
 site_url = "https://adriens.github.io/claude-commands/"
-copyright = "Copyright &copy; 2026 adriens"
+repo_url = "https://github.com/adriens/claude-commands"
+repo_name = "adriens/claude-commands"
+copyright = "Copyright &copy; 2026 adriens — v1.3.6"
 
 # Navigation explicite pour éviter les doublons
 nav = [

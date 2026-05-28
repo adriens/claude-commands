@@ -1,0 +1,18 @@
+version: '3'
+
+tasks:
+  default:
+    desc: Build le site avec le tag Git courant dans le footer
+    cmds:
+      - task: build
+
+  build:
+    desc: Injecte le tag Git dans zensical.toml et génère le site
+    vars:
+      TAG:
+        sh: git describe --tags --abbrev=0 2>/dev/null || echo "dev"
+      YEAR:
+        sh: date +%Y
+    cmds:
+      - sed -i 's/copyright = ".*"/copyright = "Copyright \&copy; {{.YEAR}} adriens — {{.TAG}}"/' zensical.toml
+      - uvx zensical build
