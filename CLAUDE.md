@@ -1,5 +1,15 @@
 # CLAUDE.md — Conventions du projet claude-commands
 
+## Licence
+
+Ce projet est publié sous licence **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**.
+
+- Tu peux utiliser, modifier et redistribuer les skills, y compris commercialement
+- Tu dois citer la source (`adriens/claude-commands`)
+- Toute dérivée doit être publiée sous la même licence CC BY-SA 4.0
+
+→ https://creativecommons.org/licenses/by-sa/4.0/
+
 ## Description
 
 Collection de skills (slash commands) pour Claude Code, dédiées à la Nouvelle-Calédonie et à la fonction publique NC.
