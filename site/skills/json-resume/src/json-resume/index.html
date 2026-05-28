@@ -712,6 +712,23 @@ Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le 
 3. Si échec : <code>https://raw.githubusercontent.com/{username}/{username}/main/resume.json</code> via <code>WebFetch</code>
 4. Si tout échoue : demander à l'utilisateur l'URL directe ou le fichier local</p>
 <p>Informer l'utilisateur de la source effectivement utilisée.</p>
+<p><strong>Enrichissement EAE</strong> : après chargement du CV, demander (AskUserQuestion, header: "EAE") :
+- J'ai un repo EAE sur GitHub (login/repo, ex: <code>adriens/eae-opt</code>)
+- Non, continuer sans EAE</p>
+<p><strong>Si EAE fourni</strong> :
+1. Lister les branches <code>EAE-{annee}</code> :
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>gh<span class="w"> </span>api<span class="w"> </span>repos/<span class="o">{</span>login<span class="o">}</span>/<span class="o">{</span>repo<span class="o">}</span>/branches<span class="w"> </span>--jq<span class="w"> </span><span class="s1">&#39;.[].name&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>EAE
+</span></code></pre></div>
+2. Prendre la branche la plus récente (ou demander laquelle si plusieurs).
+3. Lire la section 06 — Autoévaluation :
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>gh<span class="w"> </span>api<span class="w"> </span><span class="s2">&quot;repos/{login}/{repo}/contents/src/06_autoevaluation.md?ref={branche}&quot;</span><span class="w"> </span>--jq<span class="w"> </span><span class="s1">&#39;.content&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d
+</span></code></pre></div>
+4. Extraire les <strong>réalisations concrètes</strong> (objectifs atteints, succès, compétences acquises) et les reformuler comme <code>highlights</code> de CV (verbe d'action + résultat mesurable).
+5. Lire aussi la section 03 — Fiche de poste pour enrichir le contexte :
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>gh<span class="w"> </span>api<span class="w"> </span><span class="s2">&quot;repos/{login}/{repo}/contents/src/03_fiche-de-poste.md?ref={branche}&quot;</span><span class="w"> </span>--jq<span class="w"> </span><span class="s1">&#39;.content&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d
+</span></code></pre></div>
+6. Signaler à l'utilisateur les réalisations extraites et leur reformulation proposée.
+7. Intégrer ces highlights dans le CV ciblé (étape 5A) et dans la gap analysis (étape 4) comme atouts additionnels datés de l'année en cours.</p>
 <p><strong>Enrichissement portfolio</strong> : après chargement du CV, vérifier <code>basics.url</code> :
 - Si l'URL ressemble à un portfolio perso (ex: contient <code>github.io</code>, ou domaine non social — exclure : dev.to, twitter.com, linkedin.com, github.com, kaggle.com, huggingface.co, youtube.com, pypi.org) → fetcher automatiquement via <code>WebFetch</code>
 - Extraire les éléments complémentaires : projets, compétences, réalisations, publications, conférences non listées dans le CV
@@ -811,7 +828,7 @@ Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le 
 </li>
 <li>
 <p><strong>Générer le PDF</strong> immédiatement :
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>asciidoctor-pdf<span class="w"> </span>resume-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>resume-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.pdf
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>asciidoctor-pdf<span class="w"> </span>resume-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>resume-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.pdf
 </span></code></pre></div></p>
 </li>
 </ol>
@@ -832,7 +849,7 @@ Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le 
 - <strong>Signature</strong> : <code>image::{chemin}[Signature, 150]</code> ou textuelle</p>
 <p>Créer le fichier <code>lettre-motivation-{numero-avp}.adoc</code> dans le répertoire courant.</p>
 <p><strong>Générer le PDF immédiatement après création</strong> :
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>asciidoctor-pdf<span class="w"> </span>lettre-motivation-<span class="o">{</span>numero-avp<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>lettre-motivation-<span class="o">{</span>numero-avp<span class="o">}</span>.pdf
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>asciidoctor-pdf<span class="w"> </span>lettre-motivation-<span class="o">{</span>numero-avp<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>lettre-motivation-<span class="o">{</span>numero-avp<span class="o">}</span>.pdf
 </span></code></pre></div></p>
 <h3 id="etape-5c-document-de-preparation-dentretien-si-demande">Étape 5C — Document de préparation d'entretien (si demandé)<a class="headerlink" href="#etape-5c-document-de-preparation-dentretien-si-demande" title="Permanent link">&para;</a></h3>
 <p><strong>Principe</strong> : transformer la gap analysis en guide opérationnel pour l'entretien — ce qu'on dit, comment on le dit, avec quels exemples.</p>
@@ -858,13 +875,13 @@ Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le 
 - <strong>== Éléments de contexte à maîtriser</strong> : chiffres clés de l'offre, vocabulaire métier du poste, points d'attention sur la direction/BU cible
 - <strong>== Check-list pré-entretien</strong> : documents à apporter, points à réviser la veille</p>
 <p><strong>Générer le PDF immédiatement après création</strong> :
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>asciidoctor-pdf<span class="w"> </span>preparation-entretien-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>preparation-entretien-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.pdf
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>asciidoctor-pdf<span class="w"> </span>preparation-entretien-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.adoc<span class="w"> </span>-o<span class="w"> </span>preparation-entretien-<span class="o">{</span>nom-du-poste-slug<span class="o">}</span>.pdf
 </span></code></pre></div></p>
 <h2 id="arguments">Arguments<a class="headerlink" href="#arguments" title="Permanent link">&para;</a></h2>
 <p><code>$ARGUMENTS</code> — username JSON Resume ou URL directe vers un <code>resume.json</code></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>/json-resume adriens                 # registry.jsonresume.org/adriens
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>/json-resume https://…/resume.json   # URL directe
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>/json-resume                         # demande interactive
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>/json-resume adriens                 # registry.jsonresume.org/adriens
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>/json-resume https://…/resume.json   # URL directe
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>/json-resume                         # demande interactive
 </span></code></pre></div>
 
 
@@ -905,7 +922,7 @@ Ne jamais proposer pandoc pour les fichiers AsciiDoc — asciidoctor-pdf est le 
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2026 adriens — v1.3.6
+      Copyright &copy; 2026 adriens — v1.3.9
     </div>
   
   

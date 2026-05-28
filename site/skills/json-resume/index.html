@@ -449,6 +449,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#flow-de-travail" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔀 Flow de travail
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#utilisation" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -688,6 +699,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#flow-de-travail" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔀 Flow de travail
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#utilisation" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -810,6 +832,23 @@
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/json-resume/src/json-resume.md
 </span></code></pre></div>
 <hr />
+<h2 id="flow-de-travail">🔀 Flow de travail<a class="headerlink" href="#flow-de-travail" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>flowchart TD
+    A(["/json-resume"]) --&gt; B[Chargement CV\nregistry / URL / fichier]
+    B --&gt; C{Repo EAE\ndisponible ?}
+    C --&gt;|Oui| D[Lecture s.06 autoévaluation\n+ s.03 fiche de poste]
+    C --&gt;|Non| E[Enrichissement portfolio]
+    D --&gt; E
+    E --&gt; F[Chargement offre\nURL / texte / numéro AVP]
+    F --&gt; G{AVP OPT-NC\n+ agent interne ?}
+    G --&gt;|Oui| H[Lecture EAE GitHub\nresponsable hiérarchique]
+    G --&gt;|Non| I[Gap analysis CV ↔ offre]
+    H --&gt; I
+    I --&gt; J{Livrable}
+    J --&gt; K[CV ciblé\nJSON + AsciiDoc + PDF]
+    J --&gt; L[Lettre de motivation\nAsciiDoc + PDF]
+    J --&gt; M[Doc préparation entretien\n12 questions + STAR + check-list]
+    I --&gt;|Écarts 🟠🔴| N["👉 /template-eae\nplan d'action s.07"]</code></pre>
 <h2 id="utilisation">📝 Utilisation<a class="headerlink" href="#utilisation" title="Permanent link">&para;</a></h2>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>/json-resume adriens
 </span></code></pre></div>
@@ -931,7 +970,7 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2026 adriens — v1.3.6
+      Copyright &copy; 2026 adriens — v1.3.9
     </div>
   
   

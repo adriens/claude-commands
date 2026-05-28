@@ -66,6 +66,24 @@ curl -o ~/.claude/commands/opt-nc-avps.md \
   https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/src/opt-nc-avps.md```
 ---
 
+## 🔀 Flow de travail
+
+```mermaid
+flowchart TD
+    A(["/opt-nc-avps"]) --> B{Profil candidat}
+    B -->|JSON Resume username| C[Fetch CV + portfolio]
+    B -->|Description manuelle| D[Saisie profil]
+    C --> E[Recherche AVPs par similarité]
+    D --> E
+    E --> F{3+ bons résultats ?}
+    F -->|Oui| G[Tableau comparatif\nmulti-AVPs]
+    F -->|Non| H[Détail du meilleur AVP]
+    G --> H
+    H --> I[Handoff]
+    I --> J["/json-resume + numéro AVP"]
+    I --> K["/template-eae\nvérifier s.03 compétences"]
+```
+
 ## 📝 Utilisation
 
 Une fois installé, dans Claude, lancez simplement la commande en précisant votre profil ou le type de poste :
