@@ -70,9 +70,7 @@ gh auth status
 - Si OK → continuer.
 - Si `gh` non installé :
   ```bash
-  # Linux
-  sudo apt install gh
-  # Mac
+  # Linux et Mac
   brew install gh
   ```
   Puis : `gh auth login` (suivre le flow interactif)
@@ -85,9 +83,7 @@ which pandoc || echo "absent"
 ```
 Si absent :
 ```bash
-# Linux
-sudo apt-get install -y pandoc
-# Mac
+# Linux et Mac
 brew install pandoc
 ```
 
@@ -119,8 +115,19 @@ echo $PATH | grep -q ".local/bin" || echo 'export PATH="$HOME/.local/bin:$PATH"'
 brew install go-task
 ```
 
+**1e. Calibre (optionnel — pour lire l'ePub sur ordinateur ou transférer sur liseuse)**
+
+Calibre n'est pas disponible via brew. Téléchargement selon le système :
+```bash
+# Linux
+sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin
+```
+Pour macOS, Windows, Android, iOS → page de téléchargement : https://calibre-ebook.com/fr/download
+
+Calibre permet de lire l'ePub, de le transférer sur une liseuse (Kindle, Kobo…) et de convertir entre formats.
+
 Afficher un récapitulatif des prérequis :
-> ✅ GitHub CLI authentifié · ✅ pandoc · ✅ LaTeX (xelatex/lualatex) · ✅ task — tout est prêt !
+> ✅ GitHub CLI authentifié · ✅ pandoc · ✅ LaTeX (xelatex/lualatex) · ✅ task · ✅ Calibre (optionnel) — tout est prêt !
 
 #### Phase 2 — Créer le repo EAE
 
@@ -414,8 +421,7 @@ Légende : 🟢 Complet · 🟡 Partiel · 🔴 Non rempli
    ```
    Si `pandoc` absent :
    ```bash
-   sudo apt-get install pandoc   # Linux
-   brew install pandoc            # Mac
+   brew install pandoc
    ```
 4. Demander (AskUserQuestion, header: "Format") les formats à générer :
    - Tous les formats (`task`)
@@ -428,7 +434,13 @@ Légende : 🟢 Complet · 🟡 Partiel · 🔴 Non rempli
    cd {repo} && task {cible}
    ```
 6. Lister les fichiers générés dans `dist/`.
-7. Si erreur liée à lualatex/xelatex → proposer : `sudo apt-get install texlive-full` (Linux) ou `brew install --cask mactex` (Mac).
+7. Si erreur liée à lualatex/xelatex → proposer :
+   ```bash
+   # Linux
+   sudo apt-get install -y texlive-full
+   # Mac
+   brew install --cask mactex
+   ```
 
 ---
 
