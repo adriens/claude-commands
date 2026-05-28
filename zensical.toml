@@ -13,7 +13,8 @@ nav = [
         { "Candidature JSON Resume" = "skills/json-resume/index.md" },
         { "Menus Aquavena" = "skills/aquavena/index.md" },
         { "Eaux de Baignade Nouméa" = "skills/edb-noumea/index.md" },
-        { "Kalolo — Expressions caldoches" = "skills/kalolo/index.md" }
+        { "Kalolo — Expressions caldoches" = "skills/kalolo/index.md" },
+        { "EAE — Entretien Annuel d'Évaluation" = "skills/template-eae/index.md" }
     ]}
 ]
 
