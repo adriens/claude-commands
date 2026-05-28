@@ -18,11 +18,13 @@ Ce projet utilise les **Conventional Commits** (https://www.conventionalcommits.
 
 | Type | Usage |
 |---|---|
-| `feat` | Ajout d'un nouveau skill ou d'une nouvelle fonctionnalité |
-| `fix` | Correction d'un bug ou d'une instruction incorrecte dans un skill |
-| `docs` | Modification de la documentation uniquement (index.md, README, etc.) |
+| `feat` | Ajout d'un nouveau skill **ou amélioration** du contenu d'un skill existant |
+| `fix` | Correction d'une erreur (commande incorrecte, lien cassé, instruction fausse) |
+| `docs` | Modification de la documentation du site uniquement (index.md, README) — pas le skill lui-même |
 | `refactor` | Réécriture d'un skill sans changer son comportement |
 | `chore` | Mise à jour de config, dépendances, fichiers de build |
+
+> **Règle** : toute modification du fichier source d'un skill (`src/*.md` ou `~/.claude/commands/*.md`) est un `feat`, même si c'est un enrichissement mineur. Le `fix` est réservé aux vraies erreurs (mauvaise commande, faute, lien mort).
 
 ### Scopes
 
