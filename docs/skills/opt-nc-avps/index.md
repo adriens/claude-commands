@@ -66,24 +66,6 @@ curl -o ~/.claude/commands/opt-nc-avps.md \
   https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/opt-nc-avps/src/opt-nc-avps.md```
 ---
 
-## 🔀 Flow de travail
-
-```mermaid
-flowchart TD
-    A(["/opt-nc-avps"]) --> B{Profil candidat}
-    B -->|JSON Resume username| C[Fetch CV + portfolio]
-    B -->|Description manuelle| D[Saisie profil]
-    C --> E[Recherche AVPs par similarité]
-    D --> E
-    E --> F{3+ bons résultats ?}
-    F -->|Oui| G[Tableau comparatif\nmulti-AVPs]
-    F -->|Non| H[Détail du meilleur AVP]
-    G --> H
-    H --> I[Handoff]
-    I --> J["/json-resume + numéro AVP"]
-    I --> K["/template-eae\nvérifier s.03 compétences"]
-```
-
 ## 📝 Utilisation
 
 Une fois installé, dans Claude, lancez simplement la commande en précisant votre profil ou le type de poste :
@@ -97,3 +79,35 @@ Une fois installé, dans Claude, lancez simplement la commande en précisant vot
 *   🧠 **Profilage intelligent** via questionnaire.
 *   🛠️ **Plan de préparation** (atouts, points à renforcer, questions d'entretien STAR).
 *   ✍️ **Aide à la rédaction** de lettre de motivation personnalisée.
+
+---
+
+## 🔀 Flow de travail
+
+```mermaid
+flowchart TD
+    classDef input fill:#2980b9,stroke:#1a5276,color:#fff,rx:8
+    classDef process fill:#e67e22,stroke:#a04000,color:#fff
+    classDef result fill:#27ae60,stroke:#1a7a42,color:#fff
+    classDef crossref fill:#8e44ad,stroke:#5b2c6f,color:#fff
+    classDef decision fill:#c0392b,stroke:#7b241c,color:#fff,shape:diamond
+
+    A(["🔍 /opt-nc-avps"]):::input --> B{"👤 Profil candidat ?"}:::decision
+    B -->|"📄 JSON Resume"| C["📥 Fetch CV + portfolio"]:::input
+    B -->|"✍️ Manuel"| D["📝 Saisie profil"]:::input
+    C --> E["🤖 Recherche AVPs
+par similarité sémantique"]:::process
+    D --> E
+    E --> F{"📊 3+ bons
+résultats ?"}:::decision
+    F -->|"Oui"| G["⚖️ Tableau comparatif
+multi-AVPs"]:::process
+    F -->|"Non"| H["📋 Détail AVP
+missions + profil requis"]:::result
+    G --> H
+    H --> I["🚀 Handoff"]:::process
+    I --> J["📄 /json-resume
+CV ciblé + lettre + entretien"]:::crossref
+    I --> K["🤝 /template-eae
+vérifier s.03 compétences"]:::crossref
+```

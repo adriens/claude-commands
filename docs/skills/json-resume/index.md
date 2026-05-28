@@ -57,27 +57,6 @@ curl -o ~/.claude/commands/json-resume.md \
 
 ---
 
-## 🔀 Flow de travail
-
-```mermaid
-flowchart TD
-    A(["/json-resume"]) --> B[Chargement CV\nregistry / URL / fichier]
-    B --> C{Repo EAE\ndisponible ?}
-    C -->|Oui| D[Lecture s.06 autoévaluation\n+ s.03 fiche de poste]
-    C -->|Non| E[Enrichissement portfolio]
-    D --> E
-    E --> F[Chargement offre\nURL / texte / numéro AVP]
-    F --> G{AVP OPT-NC\n+ agent interne ?}
-    G -->|Oui| H[Lecture EAE GitHub\nresponsable hiérarchique]
-    G -->|Non| I[Gap analysis CV ↔ offre]
-    H --> I
-    I --> J{Livrable}
-    J --> K[CV ciblé\nJSON + AsciiDoc + PDF]
-    J --> L[Lettre de motivation\nAsciiDoc + PDF]
-    J --> M[Doc préparation entretien\n12 questions + STAR + check-list]
-    I -->|Écarts 🟠🔴| N["👉 /template-eae\nplan d'action s.07"]
-```
-
 ## 📝 Utilisation
 
 ```text
@@ -101,3 +80,33 @@ flowchart TD
 - 🎯 **Gap analysis** CV ↔ offre d'emploi avec tableau d'adéquation coloré
 - 🗣️ **Pitch** : 3 variantes (LinkedIn, entretien, email spontané)
 - ✍️ **Lettre de motivation** personnalisée en Markdown ou AsciiDoc, exportable en Word
+
+---
+
+## 🔀 Flow de travail
+
+```mermaid
+flowchart TD
+    classDef input fill:#2980b9,stroke:#1a5276,color:#fff
+    classDef enrich fill:#16a085,stroke:#0e6655,color:#fff
+    classDef process fill:#e67e22,stroke:#a04000,color:#fff
+    classDef output fill:#27ae60,stroke:#1a7a42,color:#fff
+    classDef crossref fill:#8e44ad,stroke:#5b2c6f,color:#fff
+    classDef decision fill:#c0392b,stroke:#7b241c,color:#fff
+
+    A(["📄 /json-resume"]):::input --> B["📥 Chargement CV\nregistry / URL / fichier"]:::input
+    B --> C{"🤝 Repo EAE\ndisponible ?"}:::decision
+    C -->|"Oui"| D["📖 Lecture s.06 réalisations\n+ s.03 fiche de poste"]:::enrich
+    C -->|"Non"| E["🌐 Enrichissement\nportfolio"]:::enrich
+    D --> E
+    E --> F["📋 Chargement offre\nURL / texte / numéro AVP"]:::input
+    F --> G{"🏛️ AVP OPT-NC\n+ agent interne ?"}:::decision
+    G -->|"Oui"| H["🔑 Lecture EAE GitHub\nresponsable hiérarchique"]:::enrich
+    G -->|"Non"| I["🎯 Gap analysis\nCV ↔ offre"]:::process
+    H --> I
+    I --> J{"📦 Livrable"}:::decision
+    J --> K["📄 CV ciblé\nJSON + AsciiDoc + PDF"]:::output
+    J --> L["✉️ Lettre de motivation\nAsciiDoc + PDF"]:::output
+    J --> M["🎤 Doc préparation entretien\n12 questions + STAR + check-list"]:::output
+    I -->|"Écarts 🟠🔴"| N["🤝 /template-eae\nplan d'action s.07"]:::crossref
+```

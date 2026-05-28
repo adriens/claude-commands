@@ -648,17 +648,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flow-de-travail" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        🔀 Flow de travail
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -766,6 +755,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flow-de-travail" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔀 Flow de travail
+      </span>
+    </span>
+  </a>
   
 </li>
       
@@ -932,17 +932,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flow-de-travail" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        🔀 Flow de travail
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -1050,6 +1039,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flow-de-travail" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        🔀 Flow de travail
+      </span>
+    </span>
+  </a>
   
 </li>
       
@@ -1288,23 +1288,6 @@
 <h2 id="presentation-video">📺 Présentation vidéo<a class="headerlink" href="#presentation-video" title="Permanent link">&para;</a></h2>
 <p><a href="https://www.youtube.com/watch?v=FRVsA7NoZv8">Visionner la vidéo — "Versionner et builder l'eBook de son EAE sur Git(Hub) avec l'IA"</a> par <strong>DevOPS LABS</strong>.</p>
 <hr />
-<h2 id="flow-de-travail">🔀 Flow de travail<a class="headerlink" href="#flow-de-travail" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>flowchart TD
-    A(["/template-eae"]) --&gt; B{Je suis...}
-    B --&gt;|Nouveau utilisateur| C[🎓 Onboarding\nprérequis + création repo]
-    B --&gt;|Utilisateur existant| D{Action}
-    C --&gt; E[Remplir s.00\nIdentification]
-    E --&gt; F[Remplir s.03\nFiche de poste]
-    F --&gt; G[Build PDF / ePub / DOCX]
-    D --&gt;|Analyser| H[Tableau de bord\ntaux de complétion]
-    D --&gt;|Compléter| I[Questions guidées\npar section]
-    D --&gt;|Builder| G
-    D --&gt;|Coach| J[Audit qualité STAR\ncohérence inter-sections]
-    H --&gt; I
-    I --&gt;|s.06 complétée| K["👉 /json-resume\nréalisations → highlights CV"]
-    I --&gt;|s.08 mobilité| L["👉 /opt-nc-avps\nrecherche AVPs"]
-    J --&gt; M[Préparation\nentretien oral]
-    G --&gt; N[Release GitHub\ntag + PDF + ePub]</code></pre>
 <h2 id="installation">📥 Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.claude/commands<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>curl<span class="w"> </span>-o<span class="w"> </span>~/.claude/commands/template-eae.md<span class="w"> </span><span class="se">\</span>
@@ -1348,6 +1331,36 @@ Choisir <strong>"Découvrir — je ne connais pas encore cette approche"</strong
 <li><a href="https://github.com/opt-nc/template-eae">opt-nc/template-eae</a></li>
 <li><a href="https://dev.to/adriens/versionner-et-builder-lebook-de-son-entretien-annuel-devaluation-sur-github-242k">Article dev.to</a></li>
 </ul>
+<hr />
+<h2 id="flow-de-travail">🔀 Flow de travail<a class="headerlink" href="#flow-de-travail" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>flowchart TD
+    classDef input fill:#2980b9,stroke:#1a5276,color:#fff
+    classDef process fill:#e67e22,stroke:#a04000,color:#fff
+    classDef output fill:#27ae60,stroke:#1a7a42,color:#fff
+    classDef crossref fill:#8e44ad,stroke:#5b2c6f,color:#fff
+    classDef decision fill:#c0392b,stroke:#7b241c,color:#fff
+    classDef warning fill:#c0392b,stroke:#7b241c,color:#fff
+
+    A(["🤝 /template-eae"]):::input --&gt; B{"👤 Utilisateur ?"}:::decision
+    B --&gt;|"🎓 Nouveau"| C["📋 Onboarding for dummies\nPhase 0 — Découverte"]:::process
+    B --&gt;|"✅ Existant"| D{"🎯 Action ?"}:::decision
+    C --&gt; E["🔍 Phase 1 — Prérequis\ngh · pandoc · go-task · calibre"]:::process
+    E --&gt; F["⚠️ Repo PRIVÉ obligatoire\n🔒 données personnelles"]:::warning
+    F --&gt; G["🆕 Phase 2 — Création repo\ngit clone + branche EAE-{année}"]:::process
+    G --&gt; H["📝 Phase 3 — s.00 Identification\n+ s.01 En-tête"]:::process
+    H --&gt; I["🏢 Phase 4 — s.03 Fiche de poste"]:::process
+    I --&gt; J["⭐ Phase 5 — s.05 Compétences\n+ s.06 Autoévaluation"]:::process
+    J --&gt; K["🎯 Phase 6 — s.07 Plan d'action\n+ s.08 Évolution professionnelle"]:::process
+    K --&gt; L["🏗️ Build — PDF · ePub · DOCX"]:::output
+    D --&gt;|"📊 Analyser"| M["📈 Tableau de bord\ntaux de complétion 🟢🟡🔴"]:::process
+    D --&gt;|"✏️ Compléter"| N["📝 Remplissage guidé\nquestions section par section"]:::process
+    D --&gt;|"🏗️ Builder"| L
+    D --&gt;|"🎓 Coach"| O["💡 Conseils rédactionnels\nformulation · objectifs SMART"]:::process
+    M --&gt; N
+    N --&gt; L
+    L --&gt; P["🏷️ Tag + Release GitHub\narchive officielle horodatée"]:::output
+    J --&gt;|"s.06 réalisations"| Q["📄 /json-resume\nhighlights CV ciblé"]:::crossref
+    K --&gt;|"s.08 mobilité"| R["🔍 /opt-nc-avps\nrecherche AVPs"]:::crossref</code></pre>
 
 
   <nav class="md-tags" >
@@ -1451,7 +1464,7 @@ Choisir <strong>"Découvrir — je ne connais pas encore cette approche"</strong
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2026 adriens — v1.3.9
+      Copyright &copy; 2026 adriens — v1.4.0
     </div>
   
   

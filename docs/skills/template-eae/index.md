@@ -131,27 +131,6 @@ gh release create EAE-2025-final \
 
 ---
 
-## 🔀 Flow de travail
-
-```mermaid
-flowchart TD
-    A(["/template-eae"]) --> B{Je suis...}
-    B -->|Nouveau utilisateur| C[🎓 Onboarding\nprérequis + création repo]
-    B -->|Utilisateur existant| D{Action}
-    C --> E[Remplir s.00\nIdentification]
-    E --> F[Remplir s.03\nFiche de poste]
-    F --> G[Build PDF / ePub / DOCX]
-    D -->|Analyser| H[Tableau de bord\ntaux de complétion]
-    D -->|Compléter| I[Questions guidées\npar section]
-    D -->|Builder| G
-    D -->|Coach| J[Audit qualité STAR\ncohérence inter-sections]
-    H --> I
-    I -->|s.06 complétée| K["👉 /json-resume\nréalisations → highlights CV"]
-    I -->|s.08 mobilité| L["👉 /opt-nc-avps\nrecherche AVPs"]
-    J --> M[Préparation\nentretien oral]
-    G --> N[Release GitHub\ntag + PDF + ePub]
-```
-
 ## 📥 Installation
 
 ```bash
@@ -209,3 +188,38 @@ Choisir **"Découvrir — je ne connais pas encore cette approche"** pour le par
 ### Template GitHub
 - [opt-nc/template-eae](https://github.com/opt-nc/template-eae)
 - [Article dev.to](https://dev.to/adriens/versionner-et-builder-lebook-de-son-entretien-annuel-devaluation-sur-github-242k)
+
+---
+
+## 🔀 Flow de travail
+
+```mermaid
+flowchart TD
+    classDef input fill:#2980b9,stroke:#1a5276,color:#fff
+    classDef process fill:#e67e22,stroke:#a04000,color:#fff
+    classDef output fill:#27ae60,stroke:#1a7a42,color:#fff
+    classDef crossref fill:#8e44ad,stroke:#5b2c6f,color:#fff
+    classDef decision fill:#c0392b,stroke:#7b241c,color:#fff
+    classDef warning fill:#c0392b,stroke:#7b241c,color:#fff
+
+    A(["🤝 /template-eae"]):::input --> B{"👤 Utilisateur ?"}:::decision
+    B -->|"🎓 Nouveau"| C["📋 Onboarding for dummies\nPhase 0 — Découverte"]:::process
+    B -->|"✅ Existant"| D{"🎯 Action ?"}:::decision
+    C --> E["🔍 Phase 1 — Prérequis\ngh · pandoc · go-task · calibre"]:::process
+    E --> F["⚠️ Repo PRIVÉ obligatoire\n🔒 données personnelles"]:::warning
+    F --> G["🆕 Phase 2 — Création repo\ngit clone + branche EAE-{année}"]:::process
+    G --> H["📝 Phase 3 — s.00 Identification\n+ s.01 En-tête"]:::process
+    H --> I["🏢 Phase 4 — s.03 Fiche de poste"]:::process
+    I --> J["⭐ Phase 5 — s.05 Compétences\n+ s.06 Autoévaluation"]:::process
+    J --> K["🎯 Phase 6 — s.07 Plan d'action\n+ s.08 Évolution professionnelle"]:::process
+    K --> L["🏗️ Build — PDF · ePub · DOCX"]:::output
+    D -->|"📊 Analyser"| M["📈 Tableau de bord\ntaux de complétion 🟢🟡🔴"]:::process
+    D -->|"✏️ Compléter"| N["📝 Remplissage guidé\nquestions section par section"]:::process
+    D -->|"🏗️ Builder"| L
+    D -->|"🎓 Coach"| O["💡 Conseils rédactionnels\nformulation · objectifs SMART"]:::process
+    M --> N
+    N --> L
+    L --> P["🏷️ Tag + Release GitHub\narchive officielle horodatée"]:::output
+    J -->|"s.06 réalisations"| Q["📄 /json-resume\nhighlights CV ciblé"]:::crossref
+    K -->|"s.08 mobilité"| R["🔍 /opt-nc-avps\nrecherche AVPs"]:::crossref
+```
