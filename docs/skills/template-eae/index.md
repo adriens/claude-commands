@@ -55,6 +55,17 @@ La plateforme officielle souffre de trois limitations :
 
 ### La solution : GitHub + Markdown
 
+#### Ce que ça change concrètement
+
+| Capacité | Ce que ça apporte |
+|---|---|
+| 📱 **Lecture partout** | Consultable depuis un téléphone, une tablette, une liseuse (ePub), n'importe quel navigateur |
+| ✍️ **Commits signés** | Chaque modification est horodatée et attribuée à son auteur — infalsifiable |
+| 🔍 **Diff entre deux années** | `git diff EAE-2024 EAE-2025 -- src/07_plan-action.md` — voir exactement ce qui a évolué dans les objectifs, les compétences ou les souhaits de carrière |
+| 📊 **Analyse IA** | Les fichiers Markdown sont idéaux pour des embeddings, de la recherche sémantique ou une analyse automatisée de l'évolution de carrière sur plusieurs années |
+| 🏷️ **Release officielle** | Le tag Git et la release GitHub constituent une archive horodatée et immuable, accessible à tout moment par les deux parties |
+| 🤝 **Collaboration fluide** | PRs, reviews inline, issues GitHub — les mêmes outils que les équipes logicielles |
+
 Le template [opt-nc/template-eae](https://github.com/opt-nc/template-eae) propose de versionner son EAE comme un développeur versionne son code :
 
 - **Un fichier Markdown par section** de l'EAE
