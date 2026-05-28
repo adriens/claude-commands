@@ -112,7 +112,7 @@ sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
 # Vérifier que ~/.local/bin est dans le PATH
 echo $PATH | grep -q ".local/bin" || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 # Mac
-brew install go-task
+brew install go-task/tap/go-task
 ```
 
 **1e. Calibre (optionnel — pour lire l'ePub sur ordinateur ou transférer sur liseuse)**
@@ -417,7 +417,7 @@ Légende : 🟢 Complet · 🟡 Partiel · 🔴 Non rempli
    # Linux
    sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
    # Mac
-   brew install go-task
+   brew install go-task/tap/go-task
    ```
    Si `pandoc` absent :
    ```bash
