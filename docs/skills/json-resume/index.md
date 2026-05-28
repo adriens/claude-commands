@@ -57,6 +57,27 @@ curl -o ~/.claude/commands/json-resume.md \
 
 ---
 
+## 🔀 Flow de travail
+
+```mermaid
+flowchart TD
+    A(["/json-resume"]) --> B[Chargement CV\nregistry / URL / fichier]
+    B --> C{Repo EAE\ndisponible ?}
+    C -->|Oui| D[Lecture s.06 autoévaluation\n+ s.03 fiche de poste]
+    C -->|Non| E[Enrichissement portfolio]
+    D --> E
+    E --> F[Chargement offre\nURL / texte / numéro AVP]
+    F --> G{AVP OPT-NC\n+ agent interne ?}
+    G -->|Oui| H[Lecture EAE GitHub\nresponsable hiérarchique]
+    G -->|Non| I[Gap analysis CV ↔ offre]
+    H --> I
+    I --> J{Livrable}
+    J --> K[CV ciblé\nJSON + AsciiDoc + PDF]
+    J --> L[Lettre de motivation\nAsciiDoc + PDF]
+    J --> M[Doc préparation entretien\n12 questions + STAR + check-list]
+    I -->|Écarts 🟠🔴| N["👉 /template-eae\nplan d'action s.07"]
+```
+
 ## 📝 Utilisation
 
 ```text

@@ -131,6 +131,27 @@ gh release create EAE-2025-final \
 
 ---
 
+## 🔀 Flow de travail
+
+```mermaid
+flowchart TD
+    A(["/template-eae"]) --> B{Je suis...}
+    B -->|Nouveau utilisateur| C[🎓 Onboarding\nprérequis + création repo]
+    B -->|Utilisateur existant| D{Action}
+    C --> E[Remplir s.00\nIdentification]
+    E --> F[Remplir s.03\nFiche de poste]
+    F --> G[Build PDF / ePub / DOCX]
+    D -->|Analyser| H[Tableau de bord\ntaux de complétion]
+    D -->|Compléter| I[Questions guidées\npar section]
+    D -->|Builder| G
+    D -->|Coach| J[Audit qualité STAR\ncohérence inter-sections]
+    H --> I
+    I -->|s.06 complétée| K["👉 /json-resume\nréalisations → highlights CV"]
+    I -->|s.08 mobilité| L["👉 /opt-nc-avps\nrecherche AVPs"]
+    J --> M[Préparation\nentretien oral]
+    G --> N[Release GitHub\ntag + PDF + ePub]
+```
+
 ## 📥 Installation
 
 ```bash
