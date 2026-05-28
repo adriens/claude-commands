@@ -39,6 +39,13 @@ Présenter ce pitch synthétique à l'utilisateur :
 
 **La solution :** versionner son EAE sur GitHub comme un développeur versionne son code. Un fichier Markdown par section, une branche par année, et on génère un beau PDF/ePub/Word d'un seul coup.
 
+Et ce qui est vraiment puissant :
+- 📱 **Consultable partout** — depuis un téléphone, une tablette, une liseuse (format ePub), n'importe quel navigateur
+- ✍️ **Commits signés** — chaque modification est horodatée et attribuée à son auteur, infalsifiable
+- 🔍 **Diff entre deux années** — `git diff EAE-2024 EAE-2025 -- src/07_plan-action.md` pour voir exactement ce qui a changé dans les objectifs d'une année à l'autre
+- 📊 **Analyse IA** — les fichiers Markdown sont parfaits pour faire des embeddings, de la recherche sémantique ou une analyse automatisée de l'évolution de carrière sur plusieurs années
+- 🏷️ **Release officielle** — le tag Git et la release GitHub servent d'archive horodatée et immuable, consultable à tout moment
+
 ⚠️ **Important** : ton repo doit être **privé**. Un repo public rendrait tes données personnelles, ta note et tes objectifs accessibles à tout le monde sur Internet.
 
 📺 Pour voir ça en action : https://www.youtube.com/watch?v=FRVsA7NoZv8
