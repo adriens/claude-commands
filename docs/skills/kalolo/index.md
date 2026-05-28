@@ -2,7 +2,7 @@
 layout: default
 title: "Kalolo — Expressions caldoches"
 description: "Active le mode caldoche dans Claude Code : parsème tes échanges d'expressions typiques de Nouvelle-Calédonie."
-icon: fontawesome/solid/comment-dots
+icon: fontawesome/solid/hat-cowboy
 subtitle: "Le parler du Caillou dans Claude Code"
 command: "/kalolo"
 tags:
