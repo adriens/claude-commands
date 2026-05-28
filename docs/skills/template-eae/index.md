@@ -2,7 +2,7 @@
 layout: default
 title: "EAE — Entretien Annuel d'Évaluation"
 description: "Prépare, complète et builde ton EAE versionné sur GitHub : onboarding guidé, remplissage section par section, export PDF/ePub/DOCX."
-icon: fontawesome/solid/file-contract
+icon: fontawesome/solid/hat-cowboy
 subtitle: "Fonction Publique de Nouvelle-Calédonie"
 command: "/template-eae"
 tags:
