@@ -398,6 +398,9 @@ Légende : 🟢 Complet · 🟡 Partiel · 🔴 Non rempli
 9. **Si section 03 complétée** :
    > 👉 Ces données sont directement exploitables par `/json-resume` pour cibler une candidature — ta fiche de poste sera chargée automatiquement et le responsable hiérarchique sera intégré dans la lettre de motivation (mention "sous couvert de…").
 
+10. **Si section 06 complétée** :
+    > 👉 Tes réalisations de l'autoévaluation peuvent enrichir directement ton CV. Lance `/json-resume` — quand la skill demande si tu as un repo EAE, indique `{login}/{repo}` : elle lira ta section 06 et reformulera tes réalisations comme highlights de CV (verbe d'action + résultat mesurable), plus récents et plus précis que ce qui est dans ton JSON Resume.
+
 ---
 
 ### Étape 4 — Builder les documents

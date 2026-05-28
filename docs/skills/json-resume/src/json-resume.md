@@ -38,6 +38,28 @@ SKIP: CV in Word/PDF without JSON Resume context, generic cover letter without a
 
 Informer l'utilisateur de la source effectivement utilisée.
 
+**Enrichissement EAE** : après chargement du CV, demander (AskUserQuestion, header: "EAE") :
+- J'ai un repo EAE sur GitHub (login/repo, ex: `adriens/eae-opt`)
+- Non, continuer sans EAE
+
+**Si EAE fourni** :
+1. Lister les branches `EAE-{annee}` :
+   ```bash
+   gh api repos/{login}/{repo}/branches --jq '.[].name' | grep EAE
+   ```
+2. Prendre la branche la plus récente (ou demander laquelle si plusieurs).
+3. Lire la section 06 — Autoévaluation :
+   ```bash
+   gh api "repos/{login}/{repo}/contents/src/06_autoevaluation.md?ref={branche}" --jq '.content' | base64 -d
+   ```
+4. Extraire les **réalisations concrètes** (objectifs atteints, succès, compétences acquises) et les reformuler comme `highlights` de CV (verbe d'action + résultat mesurable).
+5. Lire aussi la section 03 — Fiche de poste pour enrichir le contexte :
+   ```bash
+   gh api "repos/{login}/{repo}/contents/src/03_fiche-de-poste.md?ref={branche}" --jq '.content' | base64 -d
+   ```
+6. Signaler à l'utilisateur les réalisations extraites et leur reformulation proposée.
+7. Intégrer ces highlights dans le CV ciblé (étape 5A) et dans la gap analysis (étape 4) comme atouts additionnels datés de l'année en cours.
+
 **Enrichissement portfolio** : après chargement du CV, vérifier `basics.url` :
 - Si l'URL ressemble à un portfolio perso (ex: contient `github.io`, ou domaine non social — exclure : dev.to, twitter.com, linkedin.com, github.com, kaggle.com, huggingface.co, youtube.com, pypi.org) → fetcher automatiquement via `WebFetch`
 - Extraire les éléments complémentaires : projets, compétences, réalisations, publications, conférences non listées dans le CV
