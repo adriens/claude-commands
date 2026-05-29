@@ -106,7 +106,7 @@ Sans argument → tableau de bord réseau complet (latence, dispo, meilleures/pi
     /helia-reseau expert
     ```
 
-    Rapport de niveau **SLA / telecom** destiné aux profils techniques et décisionnels :
+    Rapport **PDF professionnel** (Quarto + R + XeLaTeX + FontAwesome5) — 3 pages max :
 
     | Profil | Ce qu'il y trouve |
     |---|---|
@@ -115,9 +115,11 @@ Sans argument → tableau de bord réseau complet (latence, dispo, meilleures/pi
     | OPS / SysAdmin | Distribution des temps de réponse, top 10 incidents horodatés, profil horaire |
     | Support OPT-NC | Données précises exportables pour ticket d'incident |
 
+    **Prérequis :** R, Quarto CLI, packages `duckdb` `ggplot2` `kableExtra` `dplyr` `scales` `gridExtra`, TinyTeX + `fontawesome5`
+
     Rapport écrit dans :
     ```
-    ~/Documents/helia/reseau/YYYY-MM-DD_rapport_expert_reseau.md
+    ~/Documents/helia/reseau/YYYY-MM-DD_rapport_expert_reseau.pdf
     ```
 
 ---
