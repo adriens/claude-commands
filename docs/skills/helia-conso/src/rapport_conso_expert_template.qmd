@@ -643,6 +643,8 @@ if (!is.null(recommande)) {
 {\small\textcolor{gray}{%
   \textbf{\faFlask\enspace Prototype op\'erationnel} --- con\c{c}u \& d\'evelopp\'e par \textbf{Adrien SALES}
   via la skill Claude \texttt{/helia-conso expert}\\[2pt]
+  \faLightbulb\enspace \textit{Issu d'un processus personnel de R\&D, design thinking,
+  innovation frugale et LEAN --- d\'evelopp\'e sur temps libre, comme hobby.}\\[2pt]
   \faTwitter\enspace \texttt{x.com/rastadidi}\quad
   \faLinkedinIn\enspace \texttt{linkedin.com/in/adrien-sales/}
   \hfill
