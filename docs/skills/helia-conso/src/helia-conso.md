@@ -18,7 +18,7 @@ Lire `$ARGUMENTS` et router vers la section correspondante.
 | `recharge` | → **FOCUS RECHARGE** : dois-je recharger ? quelle recharge ? |
 | `rythme` | → **FOCUS RYTHME** : je consomme normalement pour ce stade du mois ? |
 | `hf` | → **FOCUS HORS-FORFAIT** : frais hors-forfait via CLI |
-| `export` | → **EXPORT MARKDOWN** : synthèse complète avec charts Mermaid |
+| `report` | → **RAPPORT MARKDOWN** : synthèse complète avec charts Mermaid, écrite dans `~/Documents/helia/` |
 
 Si l'argument ne correspond à aucune commande, afficher la liste ci-dessus et produire le tableau de bord complet.
 
@@ -200,9 +200,9 @@ helia status --json | python3 -c "import sys,json; d=json.load(sys.stdin); print
 
 ---
 
-## FOCUS EXPORT
+## FOCUS REPORT
 
-> Déclenché par `/helia-conso export`
+> Déclenché par `/helia-conso report`
 
 Exécuter toutes les requêtes ci-dessous, puis produire **un seul bloc Markdown complet** à copier-coller.
 

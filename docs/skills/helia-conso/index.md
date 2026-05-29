@@ -68,12 +68,36 @@ curl -o ~/.claude/commands/helia-conso.md \
 
 Sans argument → tableau de bord complet (data, voix, SMS, hors-forfait, rythme, projection).
 
-```text
-/helia-conso data
-/helia-conso voix
-/helia-conso projection
-/helia-conso recharge
-```
+### Sous-commandes disponibles
+
+| Commande | Description |
+|---|---|
+| `/helia-conso` | Tableau de bord complet |
+| `/helia-conso data` | Focus data : Go restants, rythme, projection |
+| `/helia-conso voix` | Focus voix : minutes restantes, tient ? |
+| `/helia-conso projection` | Data et voix tiennent-elles jusqu'au renouvellement ? |
+| `/helia-conso recharge` | Dois-je recharger ? Quelle recharge ? |
+| `/helia-conso rythme` | Je consomme normalement pour ce stade du mois ? |
+| `/helia-conso hf` | Frais hors-forfait (via CLI) |
+| `/helia-conso report` | 📄 Rapport Markdown complet avec charts |
+
+---
+
+!!! tip "Générer un rapport mensuel"
+
+    ```text
+    /helia-conso report
+    ```
+
+    Produit un fichier Markdown complet avec **note d'analyse**, **tableau de synthèse** et **5 charts Mermaid** (pie data/voix, conso par jour, tendance, rythme).
+
+    Le rapport est écrit automatiquement dans :
+
+    ```
+    ~/Documents/helia/YYYY-MM-DD_rapport_conso.md
+    ```
+
+    Idéal pour garder une trace mensuelle ou partager un bilan de conso.
 
 ---
 
