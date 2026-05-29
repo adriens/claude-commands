@@ -348,6 +348,28 @@ xychart-beta
 *Données issues de `~/.config/helia/data/helia.db` · X snapshots depuis le JJ/MM/AAAA · dernier snapshot : JJ/MM/AAAA HH:MM*
 ````
 
+### Écriture du fichier
+
+Une fois le document Markdown construit, l'écrire sur disque :
+
+```bash
+mkdir -p ~/Documents/helia
+```
+
+Nom du fichier : `YYYY-MM-DD_rapport_conso.md` où la date est celle du jour en heure NC (UTC+11).
+
+```bash
+# Récupérer la date locale NC
+DATE_NC=$(date -u -d '+11 hours' '+%Y-%m-%d' 2>/dev/null || date -u -v+11H '+%Y-%m-%d')
+FICHIER=~/Documents/helia/${DATE_NC}_rapport_conso.md
+```
+
+Écrire le contenu Markdown dans `$FICHIER`, puis confirmer à l'utilisateur :
+
+```
+✅ Rapport écrit dans ~/Documents/helia/YYYY-MM-DD_rapport_conso.md
+```
+
 ### Règles de construction des charts
 
 - **Axes x** : utiliser le format `JJ/MM` pour les dates (convertir avec UTC+11)
