@@ -5,7 +5,7 @@ site_author = "adriens"
 site_url = "https://adriens.github.io/claude-commands/"
 repo_url = "https://github.com/adriens/claude-commands"
 repo_name = "adriens/claude-commands"
-copyright = "Copyright &copy; 2026 adriens — v1.4.0"
+copyright = "Copyright &copy; 2026 adriens — v1.7.0"
 
 # Navigation explicite pour éviter les doublons
 nav = [
@@ -16,7 +16,9 @@ nav = [
         { "Menus Aquavena" = "skills/aquavena/index.md" },
         { "Eaux de Baignade Nouméa" = "skills/edb-noumea/index.md" },
         { "Kalolo — Expressions caldoches" = "skills/kalolo/index.md" },
-        { "EAE — Entretien Annuel d'Évaluation" = "skills/template-eae/index.md" }
+        { "EAE — Entretien Annuel d'Évaluation" = "skills/template-eae/index.md" },
+        { "Helia NC — Consommation" = "skills/helia-conso/index.md" },
+        { "Helia NC — Réseau" = "skills/helia-reseau/index.md" }
     ]}
 ]
 
