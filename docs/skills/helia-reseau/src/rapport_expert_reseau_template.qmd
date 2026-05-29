@@ -230,6 +230,12 @@ cat(paste0(
 
 \vspace{0.3cm}
 
+## \faSearch\enspace Analyse contextuelle
+
+HELIA_ANALYSE_PLACEHOLDER
+
+\vspace{0.3cm}
+
 ## \faIcon{tachometer-alt}\enspace Tableau de bord SLA
 
 ```{r kpi-table}

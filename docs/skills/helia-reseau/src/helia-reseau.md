@@ -238,7 +238,14 @@ SELECT MIN(timestamp) + 11 * INTERVAL '1 hour' AS depuis,
 ### Écriture du fichier
 
 ```bash
-mkdir -p ~/Documents/helia/reseau
+# Initialisation complète de l'arborescence helia
+mkdir -p ~/Documents/helia/conso ~/Documents/helia/reseau
+[ ! -f ~/Documents/helia/helia.svg ] && \
+  curl -sL -o ~/Documents/helia/helia.svg \
+    https://raw.githubusercontent.com/adriens/claude-commands/main/docs/assets/logos/helia.svg
+[ ! -f ~/Documents/helia/README.md ] && \
+  curl -sL -o ~/Documents/helia/README.md \
+    https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/helia-conso/README_helia_dir.md
 DATE_NC=$(date -u -d '+11 hours' '+%Y-%m-%d' 2>/dev/null || date -u -v+11H '+%Y-%m-%d')
 FICHIER=~/Documents/helia/reseau/${DATE_NC}_rapport_reseau.md
 ```
@@ -366,8 +373,8 @@ FontAwesome5 est fourni par TeX Live système (`/usr/share/texlive/texmf-dist/te
 ### Écriture et compilation
 
 ```bash
-# Initialisation du répertoire (première fois)
-mkdir -p ~/Documents/helia/reseau
+# Initialisation complète de l'arborescence helia
+mkdir -p ~/Documents/helia/conso ~/Documents/helia/reseau
 [ ! -f ~/Documents/helia/helia.svg ] && \
   curl -sL -o ~/Documents/helia/helia.svg \
     https://raw.githubusercontent.com/adriens/claude-commands/main/docs/assets/logos/helia.svg
@@ -402,6 +409,89 @@ quarto render "$QMD" --to pdf
 - Toutes les métriques (SLA, latence, MTBF…) → requêtes DuckDB en temps réel ✅
 - Si `grep -n '[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' "$QMD"` retourne des dates dans des
   commentaires R ou des chaînes hardcodées, les remplacer par `$DATE_NC` avant le rendu.
+
+### Analyse contextuelle — injection obligatoire avant le rendu
+
+Le template contient le marqueur `HELIA_ANALYSE_PLACEHOLDER` dans la section **Analyse contextuelle**.
+**Ce marqueur doit être remplacé par un texte narratif avant `quarto render`**, sinon le PDF contiendra
+le marqueur brut.
+
+#### Requêtes DuckDB pour alimenter l'analyse
+
+```sql
+-- Résumé du jour J (heure NC)
+SELECT
+    CAST(timestamp + 11 * INTERVAL '1 hour' AS DATE) AS jour,
+    ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 2) AS dispo_pct,
+    COUNT(*) FILTER (WHERE timeout) AS nb_timeouts,
+    ROUND(AVG(response_ms) FILTER (WHERE NOT timeout), 0) AS latence_moy,
+    ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY response_ms)
+          FILTER (WHERE NOT timeout), 0) AS p50,
+    ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY response_ms)
+          FILTER (WHERE NOT timeout), 0) AS p95,
+    COUNT(*) AS nb_mesures
+FROM api_ping
+WHERE CAST(timestamp + 11 * INTERVAL '1 hour' AS DATE) = CURRENT_DATE
+GROUP BY 1;
+
+-- Moyenne historique (hors aujourd'hui) pour comparaison
+SELECT
+    ROUND(AVG(dispo_pct), 2) AS dispo_moy_hist,
+    ROUND(AVG(latence_moy), 0) AS latence_moy_hist
+FROM (
+    SELECT
+        CAST(timestamp + 11 * INTERVAL '1 hour' AS DATE) AS jour,
+        ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 2) AS dispo_pct,
+        ROUND(AVG(response_ms) FILTER (WHERE NOT timeout), 0) AS latence_moy
+    FROM api_ping
+    WHERE CAST(timestamp + 11 * INTERVAL '1 hour' AS DATE) < CURRENT_DATE
+    GROUP BY 1
+) hist;
+
+-- Heures critiques du jour (latence > 1 000 ms ou timeouts)
+SELECT
+    EXTRACT(HOUR FROM timestamp + 11 * INTERVAL '1 hour') AS heure,
+    COUNT(*) FILTER (WHERE timeout) AS nb_timeouts,
+    ROUND(AVG(response_ms) FILTER (WHERE NOT timeout), 0) AS latence_moy
+FROM api_ping
+WHERE CAST(timestamp + 11 * INTERVAL '1 hour' AS DATE) = CURRENT_DATE
+GROUP BY 1
+HAVING COUNT(*) FILTER (WHERE timeout) > 0
+    OR AVG(response_ms) FILTER (WHERE NOT timeout) > 1000
+ORDER BY 1;
+```
+
+#### Texte narratif à générer
+
+À partir des résultats, rédiger **3 à 5 paragraphes en français**, ton direct, sans jargon inutile :
+
+1. **Bilan global** — disponibilité du jour vs moyenne historique, verdict 🟢🟡🔴
+2. **Comportement de la latence** — P50/P95 du jour, comparaison au profil habituel, heures de pointe
+3. **Incidents** — si timeouts : quand, combien, durée estimée d'indisponibilité cumulée
+4. **Tendance** — le réseau est-il stable, en amélioration, en dégradation par rapport aux jours précédents ?
+5. **Recommandation** (si 🟡 ou 🔴) — action concrète (plage horaire à éviter, contacter le 1013, etc.)
+
+Si les données du jour sont insuffisantes (< 10 mesures), le signaler explicitement et baser l'analyse
+sur les dernières 24 heures disponibles.
+
+#### Injection dans le QMD
+
+```bash
+uv run python - <<'PYEOF'
+analyse = """[texte généré ci-dessus — paragraphes Markdown, sans LaTeX]"""
+
+with open(qmd_path, "r") as f:
+    content = f.read()
+
+content = content.replace("HELIA_ANALYSE_PLACEHOLDER", analyse)
+
+with open(qmd_path, "w") as f:
+    f.write(content)
+PYEOF
+```
+
+> Le texte doit être du **Markdown standard** (gras, listes, sauts de ligne) — Quarto le convertit
+> en LaTeX automatiquement. Ne pas injecter de commandes LaTeX brutes.
 
 Confirmer : `✅ PDF généré : ~/Documents/helia/reseau/YYYY-MM-DD_rapport_expert_reseau.pdf`
 

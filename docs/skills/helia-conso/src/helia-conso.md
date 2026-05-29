@@ -350,32 +350,81 @@ xychart-beta
 
 ### Écriture du fichier
 
-Une fois le document Markdown construit, l'écrire sur disque :
-
 ```bash
-# Initialisation du répertoire (première fois)
-mkdir -p ~/Documents/helia/conso
+# Initialisation complète de l'arborescence helia (première fois)
+mkdir -p ~/Documents/helia/conso ~/Documents/helia/reseau
 [ ! -f ~/Documents/helia/helia.svg ] && \
   curl -sL -o ~/Documents/helia/helia.svg \
     https://raw.githubusercontent.com/adriens/claude-commands/main/docs/assets/logos/helia.svg
 [ ! -f ~/Documents/helia/README.md ] && \
   curl -sL -o ~/Documents/helia/README.md \
     https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/helia-conso/README_helia_dir.md
-```
 
-Nom du fichier : `YYYY-MM-DD_rapport_conso.md` où la date est celle du jour en heure NC (UTC+11).
-
-```bash
-# Récupérer la date locale NC
+# Télécharger le template depuis le repo (source de vérité)
 DATE_NC=$(date -u -d '+11 hours' '+%Y-%m-%d' 2>/dev/null || date -u -v+11H '+%Y-%m-%d')
 FICHIER=~/Documents/helia/conso/${DATE_NC}_rapport_conso.md
+curl -sL -o "$FICHIER" \
+  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/helia-conso/src/rapport_conso_template.md
 ```
 
-Écrire le contenu Markdown dans `$FICHIER`, puis confirmer à l'utilisateur :
+Le template contient les placeholders suivants — **tous doivent être remplacés** avant de confirmer à l'utilisateur :
 
+| Placeholder | Contenu attendu |
+|---|---|
+| `HELIA_CONSO_HEADER` | `> Généré le JJ/MM/AAAA à HH:MM (heure NC) · Forfait M X Go · Renouvellement dans N jours` |
+| `HELIA_CONSO_ANALYSE` | Texte narratif contextuel (voir ci-dessous) |
+| `HELIA_CONSO_TABLE` | Tableau Markdown synthèse complet (6 lignes) |
+| `HELIA_CONSO_DATA` | Section data : pie + bar conso/jour + line tendance |
+| `HELIA_CONSO_VOIX` | Section voix : pie + bar conso/jour |
+| `HELIA_CONSO_PROJECTION` | Tableau projection data + voix |
+| `HELIA_CONSO_RYTHME` | Section rythme : xychart-beta |
+| `HELIA_CONSO_FOOTER` | `*Données issues de ... · X snapshots depuis le JJ/MM/AAAA · dernier : ...*` |
+
+#### Injection via uv
+
+```bash
+uv run python - <<'PYEOF'
+import re
+
+fichier = f"{FICHIER}"  # chemin défini ci-dessus
+
+replacements = {
+    "HELIA_CONSO_HEADER":     "...",  # généré depuis les données
+    "HELIA_CONSO_ANALYSE":    "...",  # texte narratif ci-dessous
+    "HELIA_CONSO_TABLE":      "...",
+    "HELIA_CONSO_DATA":       "...",
+    "HELIA_CONSO_VOIX":       "...",
+    "HELIA_CONSO_PROJECTION": "...",
+    "HELIA_CONSO_RYTHME":     "...",
+    "HELIA_CONSO_FOOTER":     "...",
+}
+
+with open(fichier, "r") as f:
+    content = f.read()
+
+for placeholder, value in replacements.items():
+    content = content.replace(placeholder, value)
+
+with open(fichier, "w") as f:
+    f.write(content)
+PYEOF
 ```
-✅ Rapport écrit dans ~/Documents/helia/conso/YYYY-MM-DD_rapport_conso.md
-```
+
+> **Ne jamais écrire le rapport directement avec le Write tool.** Toujours passer par le template + injection.
+
+Confirmer : `✅ Rapport écrit dans ~/Documents/helia/conso/YYYY-MM-DD_rapport_conso.md`
+
+### Analyse contextuelle — texte narratif à générer
+
+Rédiger **2 à 4 paragraphes en français**, ton direct, pour `HELIA_CONSO_ANALYSE` :
+
+1. **Bilan global** — data et voix : quel % consommé, verdict 🟢🟡🔴 vs stade du mois
+2. **Rythme** — en avance, dans les clous, ou en dépassement ? Comparaison % data / % temps écoulé
+3. **Projection** — la data va-t-elle tenir jusqu'au renouvellement ? La voix ?
+4. **Recommandation** (si 🟡 ou 🔴) — action concrète : réduire, recharger, attendre le renouvellement
+
+Si l'historique est < 3 jours, le signaler et baser la projection sur le débit manuel
+(`(data_initial - data_left) / jours_ecoules * jours_restants`).
 
 ### Règles de construction des charts
 
