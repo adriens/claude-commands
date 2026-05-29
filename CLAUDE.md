@@ -99,6 +99,11 @@ curl -o ~/.claude/commands/{nom-skill}.md \
 
 1. Créer `docs/skills/{nom}/src/{nom}.md` — le skill lui-même
 2. Créer `docs/skills/{nom}/index.md` — la page de documentation
-3. Committer : `feat(skill/{nom}): ajout skill {description}`
-4. Tagger si c'est un nouveau skill : `git tag -a vX.Y.0 -m "feat: ajout skill {nom}"`
-5. Pousser : `git push && git push origin vX.Y.0`
+3. **Ajouter le skill dans la navigation** de `zensical.toml` (section `nav`) :
+   ```toml
+   { "Nom du skill" = "skills/{nom}/index.md" }
+   ```
+   ⚠️ Sans cette étape, le skill n'apparaît pas dans le menu du site.
+4. Committer : `feat(skill/{nom}): ajout skill {description}`
+5. Tagger si c'est un nouveau skill : `git tag -a vX.Y.0 -m "feat: ajout skill {nom}"`
+6. Pousser : `git push && git push origin vX.Y.0`
