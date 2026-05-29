@@ -241,9 +241,10 @@ SELECT CAST(timestamp + 11 * INTERVAL '1 hour' AS DATE) AS jour,
 FROM conso_snapshot
 GROUP BY 1 ORDER BY 1 ASC;
 
--- Historique
+-- Historique + horodatage de génération
 SELECT MIN(timestamp) + 11 * INTERVAL '1 hour' AS depuis,
-       COUNT(*) AS nb_snapshots
+       COUNT(*) AS nb_snapshots,
+       MAX(timestamp) + 11 * INTERVAL '1 hour' AS dernier_snapshot_local
 FROM conso_snapshot;
 ```
 
@@ -253,7 +254,7 @@ Produire **exactement** ce document, en substituant toutes les valeurs réelles 
 
 ````markdown
 # 📱 Helia NC — Rapport de consommation
-> Généré le JJ/MM/AAAA · Forfait M X Go · Renouvellement dans N jours
+> Généré le JJ/MM/AAAA à HH:MM (heure NC) · Forfait M X Go · Renouvellement dans N jours
 
 ---
 
@@ -332,7 +333,7 @@ xychart-beta
 
 ---
 
-*Données issues de `~/.config/helia/data/helia.db` · X snapshots depuis le JJ/MM/AAAA*
+*Données issues de `~/.config/helia/data/helia.db` · X snapshots depuis le JJ/MM/AAAA · dernier snapshot : JJ/MM/AAAA HH:MM*
 ````
 
 ### Règles de construction des charts
