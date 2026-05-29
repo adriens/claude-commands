@@ -508,6 +508,53 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Helia NC
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Helia NC
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
     <li class="md-nav__item md-nav__item--active">
       
       
@@ -525,7 +572,7 @@
   <span class="md-ellipsis">
     
   
-  Helia NC — Consommation
+  Consommation
 
     
       <br>
@@ -547,7 +594,7 @@
   <span class="md-ellipsis">
     
   
-  Helia NC — Consommation
+  Consommation
 
     
       <br>
@@ -700,7 +747,7 @@
   <span class="md-ellipsis">
     
   
-  Helia NC — Réseau
+  Réseau
 
     
       <br>
@@ -711,6 +758,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -923,6 +978,28 @@
   
 
       
+        
+  
+  
+    
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="././" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Helia NC
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
     </ol>
   </nav>
 
@@ -935,7 +1012,7 @@
 
 
 <h1 id="helia-nc-ma-consommation-mobile">📱 Helia NC — Ma consommation mobile<a class="headerlink" href="#helia-nc-ma-consommation-mobile" title="Permanent link">&para;</a></h1>
-<p><img alt="Logo Helia" src="../../assets/logos/helia.svg" /></p>
+<p><img src="../../assets/logos/helia.svg" alt="Logo Helia" width="421"></p>
 <div class="admonition info">
 <p class="admonition-title">Commande Claude Code</p>
 <p><strong>Commande</strong> : <code>/helia-conso</code><br />
@@ -1012,6 +1089,10 @@
 <td><code>/helia-conso report</code></td>
 <td>📄 Rapport Markdown complet avec charts</td>
 </tr>
+<tr>
+<td><code>/helia-conso expert</code></td>
+<td>🔬 Rapport expert PDF — consommation, projection, conseil forfait</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -1024,6 +1105,56 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>~/Documents/helia/conso/YYYY-MM-DD_rapport_conso.md
 </span></code></pre></div>
 <p>Idéal pour garder une trace mensuelle ou partager un bilan de conso.</p>
+</div>
+<hr />
+<div class="admonition warning">
+<p class="admonition-title">Rapport expert PDF</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>/helia-conso expert
+</span></code></pre></div>
+<p>Rapport <strong>PDF professionnel</strong> (Quarto + R + XeLaTeX + FontAwesome5) — couverture Helia brand, analyse contextuelle narrative générée par Claude, charts interactifs :</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Synthèse exécutive</td>
+<td>Data/voix restantes, projection, rythme — en un coup d'œil</td>
+</tr>
+<tr>
+<td>Tableau de bord</td>
+<td>Tous les indicateurs avec verdict 🟢🟡🔴</td>
+</tr>
+<tr>
+<td>Consommation data</td>
+<td>Donut + conso par jour + tendance Go restants</td>
+</tr>
+<tr>
+<td>Consommation voix</td>
+<td>Donut + conso par jour</td>
+</tr>
+<tr>
+<td>Heatmaps DOW × heure</td>
+<td>Habitudes de conso data et voix par heure et jour de semaine</td>
+</tr>
+<tr>
+<td>Projection &amp; rythme</td>
+<td>% data vs % temps écoulé, jours avant épuisement</td>
+</tr>
+<tr>
+<td>Conseil forfait</td>
+<td>Comparatif M 2/10/30/100 Go — suis-je sur le bon forfait ?</td>
+</tr>
+</tbody>
+</table>
+<p>Conçu dans un esprit <strong>R&amp;D personnelle, design thinking, innovation frugale et LEAN</strong> — développé sur temps libre, comme hobby.</p>
+<p><strong>Prérequis :</strong> R, Quarto CLI, packages <code>duckdb</code> <code>ggplot2</code> <code>kableExtra</code> <code>tidyr</code> <code>dplyr</code> <code>scales</code> <code>gridExtra</code>, TeX Live + <code>fontawesome5</code></p>
+<p>Rapport écrit dans :
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>~/Documents/helia/conso/YYYY-MM-DD_rapport_conso_expert.pdf
+</span></code></pre></div></p>
 </div>
 <hr />
 <h2 id="fonctionnalites">✨ Fonctionnalités<a class="headerlink" href="#fonctionnalites" title="Permanent link">&para;</a></h2>
@@ -1153,13 +1284,13 @@
         
         
           
-          <a href="../helia-reseau/" class="md-footer__link md-footer__link--next" aria-label="Suivant: Helia NC — Réseau">
+          <a href="../helia-reseau/" class="md-footer__link md-footer__link--next" aria-label="Suivant: Réseau">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Suivant
               </span>
               <div class="md-ellipsis">
-                Helia NC — Réseau
+                Réseau
               </div>
             </div>
             <div class="md-footer__button md-icon">
