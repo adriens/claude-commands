@@ -18,7 +18,8 @@ Lire `$ARGUMENTS` et router vers la section correspondante.
 | `recharge` | → **FOCUS RECHARGE** : dois-je recharger ? quelle recharge ? |
 | `rythme` | → **FOCUS RYTHME** : je consomme normalement pour ce stade du mois ? |
 | `hf` | → **FOCUS HORS-FORFAIT** : frais hors-forfait via CLI |
-| `report` | → **RAPPORT MARKDOWN** : synthèse complète avec charts Mermaid, écrite dans `~/Documents/helia/` |
+| `report` | → **RAPPORT MARKDOWN** : synthèse complète avec charts Mermaid, écrite dans `~/Documents/helia/conso/` |
+| `expert` | → **RAPPORT EXPERT PDF** : Quarto + R + XeLaTeX — consommation, projection, heatmap, conseil forfait |
 
 Si l'argument ne correspond à aucune commande, afficher la liste ci-dessus et produire le tableau de bord complet.
 
@@ -433,6 +434,113 @@ Si l'historique est < 3 jours, le signaler et baser la projection sur le débit 
 - **Pie** : arrondir à 1 décimale, les deux segments doivent totaliser 100
 - **xychart-beta** : limiter à 10 points max — si plus, regrouper par semaine
 - Si une vue est vide (pas encore de données), remplacer le chart par `> Pas encore assez de données.`
+
+---
+
+## FOCUS EXPERT
+
+> Déclenché par `/helia-conso expert`
+
+Rapport **consommation PDF** destiné au client final : forfait, projection, heatmap d'usage, conseil d'offre.
+Même pipeline que `/helia-reseau expert` — template Quarto versionné dans le repo.
+
+### Prérequis à vérifier avant de générer
+
+```bash
+quarto --version
+xelatex --version
+Rscript -e "packageVersion('duckdb')"
+Rscript -e "packageVersion('ggplot2')"
+Rscript -e "packageVersion('kableExtra')"
+Rscript -e "packageVersion('scales')"
+Rscript -e "packageVersion('dplyr')"
+Rscript -e "packageVersion('gridExtra')"
+```
+
+Si un package manque :
+```r
+install.packages(c("duckdb", "ggplot2", "kableExtra", "scales", "dplyr", "gridExtra"))
+```
+
+### Écriture et compilation
+
+```bash
+# Initialisation complète de l'arborescence helia
+mkdir -p ~/Documents/helia/conso ~/Documents/helia/reseau
+[ ! -f ~/Documents/helia/helia.svg ] && \
+  curl -sL -o ~/Documents/helia/helia.svg \
+    https://raw.githubusercontent.com/adriens/claude-commands/main/docs/assets/logos/helia.svg
+[ ! -f ~/Documents/helia/helia.png ] && \
+  rsvg-convert -f png -w 400 ~/Documents/helia/helia.svg \
+    -o ~/Documents/helia/helia.png 2>/dev/null || true
+[ ! -f ~/Documents/helia/README.md ] && \
+  curl -sL -o ~/Documents/helia/README.md \
+    https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/helia-conso/README_helia_dir.md
+
+# Télécharger le template QMD depuis le repo (source de vérité)
+DATE_NC=$(date -u -d '+11 hours' '+%Y-%m-%d' 2>/dev/null || date -u -v+11H '+%Y-%m-%d')
+QMD=~/Documents/helia/conso/${DATE_NC}_rapport_conso_expert.qmd
+curl -sL -o "$QMD" \
+  https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/helia-conso/src/rapport_conso_expert_template.qmd
+
+# Remplacer toute date résiduelle du template par la date du jour
+sed -i "s/[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}_rapport_conso_expert/${DATE_NC}_rapport_conso_expert/g" "$QMD"
+
+quarto render "$QMD" --to pdf
+```
+
+> Le template QMD est versionné dans le repo.
+> Pour toute modification, éditer `docs/skills/helia-conso/src/rapport_conso_expert_template.qmd`.
+
+### Analyse contextuelle — injection obligatoire avant le rendu
+
+Le template contient `HELIA_CONSO_ANALYSE_PLACEHOLDER`. **Remplacer avant `quarto render`** :
+
+```bash
+uv run python - <<'PYEOF'
+analyse = """[texte narratif généré ci-dessous]"""
+
+with open(qmd_path, "r") as f:
+    content = f.read()
+content = content.replace("HELIA_CONSO_ANALYSE_PLACEHOLDER", analyse)
+with open(qmd_path, "w") as f:
+    f.write(content)
+PYEOF
+```
+
+#### Requêtes DuckDB pour l'analyse contextuelle
+
+```sql
+-- Snapshot instantané
+SELECT data_left_go, data_initial_go, voice_initial_sec, voice_left_sec, days_renewal
+FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1;
+
+-- Rythme
+SELECT
+    ROUND((1 - MIN(data_left_go)/MAX(data_initial_go))*100, 1) AS pct_data_conso,
+    ROUND((30 - MIN(days_renewal))/30.0*100, 1) AS pct_temps_ecoule
+FROM conso_snapshot;
+
+-- Conso journalière (7 derniers jours)
+SELECT jour, data_conso_mo FROM v_daily_conso ORDER BY jour DESC LIMIT 7;
+```
+
+#### Texte narratif à générer
+
+3 à 4 paragraphes en français, ton direct :
+1. **Bilan** — data et voix restantes, verdict 🟢🟡🔴
+2. **Rythme** — en avance / dans les clous / dépassement
+3. **Projection** — la data tient-elle jusqu'au renouvellement ?
+4. **Recommandation** — recharger / changer de forfait / rien à faire
+
+> Texte Markdown standard — Quarto le convertit en LaTeX automatiquement.
+
+**Vérifications avant rendu :**
+- `date: today` → Quarto injecte la date automatiquement ✅
+- Toutes les métriques (data, voix, projection) → R + DuckDB en temps réel ✅
+- `grep '[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' "$QMD"` → aucune date hardcodée ✅
+
+Confirmer : `✅ PDF généré : ~/Documents/helia/conso/YYYY-MM-DD_rapport_conso_expert.pdf`
 
 ---
 
