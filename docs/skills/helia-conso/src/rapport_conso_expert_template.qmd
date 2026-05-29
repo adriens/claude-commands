@@ -135,7 +135,7 @@ heatmap_voix <- dbGetQuery(con, "
     SELECT
       EXTRACT(DOW  FROM timestamp + 11 * INTERVAL '1 hour') AS dow,
       EXTRACT(HOUR FROM timestamp + 11 * INTERVAL '1 hour') AS heure,
-      GREATEST(voice_left_sec - LAG(voice_left_sec) OVER (ORDER BY timestamp), 0) / 60.0 AS conso_min
+      GREATEST(LAG(voice_left_sec) OVER (ORDER BY timestamp) - voice_left_sec, 0) / 60.0 AS conso_min
     FROM conso_snapshot
   )
   SELECT
