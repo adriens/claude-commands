@@ -1,0 +1,570 @@
+---
+title: "Rapport Expert — Consommation Helia NC"
+subtitle: "Analyse forfait · Projection · Conseil"
+author: "Adrien SALES"
+date: today
+lang: fr
+keywords: "Helia NC, OPT-NC, consommation, forfait mobile, data, voix, projection, Nouvelle-Calédonie"
+format:
+  pdf:
+    pdf-engine: xelatex
+    geometry: "top=2.8cm, bottom=2cm, left=2.5cm, right=2.5cm"
+    fontsize: 10pt
+    toc: false
+    number-sections: false
+    fig-pos: "H"
+    include-in-header:
+      text: |
+        \usepackage{booktabs}
+        \usepackage{xcolor}
+        \usepackage{colortbl}
+        \usepackage{fancyhdr}
+        \usepackage{graphicx}
+        \usepackage{fontawesome5}
+        \usepackage{tikz}
+        \usetikzlibrary{fadings}
+        \usepackage{mdframed}
+        % Helia brand gradient: #FF00E3 (fuchsia) -> #FF0010 (rouge cerise)
+        \definecolor{heliamagenta}{HTML}{FF00E3}
+        \definecolor{heliacrimson}{HTML}{FF0010}
+        \definecolor{heliamid}{HTML}{FF0078}
+        \definecolor{helialightbg}{HTML}{FFF0FE}
+        \definecolor{okgreen}{HTML}{27AE62}
+        \definecolor{warnred}{HTML}{C0392B}
+        \definecolor{warnorange}{HTML}{E67E22}
+        \definecolor{okbg}{HTML}{F0FFF5}
+        \definecolor{warnbg}{HTML}{FFF8F0}
+        \definecolor{alertbg}{HTML}{FFF0F0}
+        \pagestyle{fancy}
+        \fancyhf{}
+        \fancyhead[L]{\includegraphics[height=0.6cm]{/home/adriens/Documents/helia/helia.png}\quad\textcolor{heliamagenta}{\textbf{Helia NC}}\enspace\textcolor{heliamid}{|}\enspace Rapport Consommation}
+        \fancyhead[R]{\small\textcolor{gray}{\faIcon{calendar-alt}\enspace\today\quad p.\enspace\thepage}}
+        \renewcommand{\headrulewidth}{0pt}
+        \newcommand{\heliarule}{%
+          \par\noindent%
+          \begin{tikzpicture}%
+            \shade[left color=heliamagenta, right color=heliacrimson]%
+              (0,0) rectangle (\textwidth,2pt);%
+          \end{tikzpicture}\par}
+knitr:
+  opts_chunk:
+    dev: cairo_pdf
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(duckdb)
+library(dplyr)
+library(ggplot2)
+library(kableExtra)
+library(scales)
+library(gridExtra)
+
+DB_PATH <- path.expand("~/.config/helia/data/helia.db")
+con <- dbConnect(duckdb(), DB_PATH, read_only = TRUE)
+
+snap <- dbGetQuery(con, "
+  SELECT data_left_go, data_initial_go,
+         voice_initial_sec, voice_left_sec,
+         days_renewal,
+         timestamp + 11 * INTERVAL '1 hour' AS ts_local
+  FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1")
+
+proj <- dbGetQuery(con, "
+  WITH rate AS (
+    SELECT ((MAX(data_initial_go) - MIN(data_left_go)) /
+            NULLIF(datediff('hour', MIN(timestamp), MAX(timestamp)) / 24.0, 0)) AS go_par_jour
+    FROM conso_snapshot
+    WHERE timestamp >= CAST(NOW() AS TIMESTAMP) - INTERVAL '7 days'
+  ),
+  latest AS (
+    SELECT data_left_go, days_renewal FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1
+  )
+  SELECT
+    ROUND(rate.go_par_jour, 3) AS go_par_jour,
+    ROUND(latest.data_left_go / NULLIF(rate.go_par_jour, 0), 1) AS data_tient_jours,
+    latest.days_renewal AS jours_renouvellement,
+    CASE WHEN latest.data_left_go / NULLIF(rate.go_par_jour, 0) < latest.days_renewal
+         THEN 'ALERTE' ELSE 'OK' END AS statut
+  FROM rate, latest")
+
+daily_data <- dbGetQuery(con, "
+  SELECT jour, ROUND(data_conso_mo, 1) AS mo, data_restant_go
+  FROM v_daily_conso ORDER BY jour ASC")
+
+daily_voice <- dbGetQuery(con, "
+  SELECT jour, ROUND(voice_conso_min, 1) AS min_conso
+  FROM v_voice_daily ORDER BY jour ASC")
+
+rythme <- dbGetQuery(con, "
+  SELECT
+    ROUND((1 - MIN(data_left_go)/MAX(data_initial_go))*100, 1) AS pct_data_conso,
+    ROUND((30 - MIN(days_renewal))/30.0*100, 1) AS pct_temps_ecoule
+  FROM conso_snapshot")
+
+histo <- dbGetQuery(con, "
+  SELECT MIN(timestamp) + 11 * INTERVAL '1 hour' AS depuis,
+         COUNT(*) AS nb_snapshots,
+         COUNT(DISTINCT CAST(timestamp + 11 * INTERVAL '1 hour' AS DATE)) AS nb_jours
+  FROM conso_snapshot")
+
+heatmap_conso <- dbGetQuery(con, "
+  WITH diffs AS (
+    SELECT
+      EXTRACT(DOW  FROM timestamp + 11 * INTERVAL '1 hour') AS dow,
+      EXTRACT(HOUR FROM timestamp + 11 * INTERVAL '1 hour') AS heure,
+      GREATEST(LAG(data_left_go) OVER (ORDER BY timestamp) - data_left_go, 0) AS conso_go
+    FROM conso_snapshot
+  )
+  SELECT
+    dow,
+    heure,
+    ROUND(SUM(conso_go) * 1000, 1) AS conso_mo,
+    COUNT(*) AS nb_mesures
+  FROM diffs
+  WHERE conso_go IS NOT NULL
+  GROUP BY 1, 2
+  ORDER BY 1, 2")
+
+dbDisconnect(con)
+
+# Valeurs calculées
+data_conso_go   <- snap$data_initial_go - snap$data_left_go
+data_pct        <- round(100 * data_conso_go / snap$data_initial_go, 1)
+voix_restante_s <- snap$voice_initial_sec - snap$voice_left_sec
+voix_conso_s    <- snap$voice_left_sec
+voix_pct        <- round(100 * voix_conso_s / snap$voice_initial_sec, 1)
+voix_restante_h <- floor(voix_restante_s / 3600)
+voix_restante_m <- floor((voix_restante_s %% 3600) / 60)
+jours_restants  <- snap$days_renewal
+jours_ecoules   <- 30 - jours_restants
+
+periode_debut <- format(as.Date(min(daily_data$jour)), "%d/%m/%Y")
+periode_fin   <- format(as.Date(max(daily_data$jour)), "%d/%m/%Y")
+nb_jours_histo <- as.integer(histo$nb_jours)
+
+# Couleurs verdict
+col_data  <- ifelse(data_pct < 60, "okgreen", ifelse(data_pct < 80, "warnorange", "warnred"))
+col_voix  <- ifelse(voix_pct < 60, "okgreen", ifelse(voix_pct < 80, "warnorange", "warnred"))
+col_proj  <- ifelse(nrow(proj) > 0 && proj$statut == "OK", "okgreen", "warnred")
+
+# Colours R
+col_magenta <- "#FF00E3"
+col_crimson <- "#FF0010"
+col_mid     <- "#FF0078"
+col_ok      <- "#27ae62"
+col_warn    <- "#e67e22"
+col_crit    <- "#c0392b"
+col_stripe  <- "#FFF0FE"
+
+theme_helia <- theme_minimal(base_size = 9) +
+  theme(
+    plot.title       = element_text(face = "bold", size = 9, color = col_mid),
+    plot.subtitle    = element_text(size = 6.5, color = "gray50"),
+    axis.title       = element_text(size = 7, color = "gray40"),
+    axis.text        = element_text(size = 7),
+    panel.grid.minor = element_blank(),
+    plot.margin      = margin(4, 4, 4, 4))
+```
+
+\heliarule
+
+\begin{center}
+\vspace{0.2cm}
+\includegraphics[height=2cm]{/home/adriens/Documents/helia/helia.png}\\[0.4cm]
+{\Large\textbf{\textcolor{heliamagenta}{Rapport Expert} \textcolor{heliamid}{Consommation}}}\\[0.15cm]
+{\normalsize\textcolor{gray}{Forfait M `r snap$data_initial_go` Go \textbullet{} Renouvellement dans `r jours_restants` jours}}\\[0.2cm]
+\end{center}
+
+\heliarule
+
+\vspace{0.3cm}
+
+```{r exec-summary}
+#| output: asis
+proj_str <- if (nrow(proj) > 0 && !is.na(proj$data_tient_jours)) {
+  sprintf("%.0f jours", proj$data_tient_jours)
+} else { "N/A" }
+
+cat(paste0(
+  "\\begin{mdframed}[linecolor=heliamagenta, linewidth=1.5pt, ",
+  "backgroundcolor=helialightbg, ",
+  "innertopmargin=8pt, innerbottommargin=8pt, innerleftmargin=10pt]\n",
+  "\\textbf{\\faClipboardList\\enspace Synthèse exécutive}\\\\[6pt]\n",
+  "\\textbf{Période :} ", periode_debut, " -- ", periode_fin,
+  " (", nb_jours_histo, " jour(s) d'historique) \\textbullet{} ",
+  jours_restants, " jours avant renouvellement\\\\[4pt]\n",
+  "\\textbf{\\faIcon{signal}\\enspace Data :} ",
+  "\\textcolor{", col_data, "}{\\textbf{", sprintf("%.3f", snap$data_left_go), "~Go restants / ",
+  snap$data_initial_go, "~Go}} (", data_pct, "\\% consommé)\\\\[3pt]\n",
+  "\\textbf{\\faIcon{phone}\\enspace Voix :} ",
+  "\\textcolor{", col_voix, "}{\\textbf{",
+  voix_restante_h, "h\\enspace", sprintf("%02d", voix_restante_m), "min restantes}} (",
+  voix_pct, "\\% consommé)\\\\[3pt]\n",
+  "\\textbf{\\faIcon{chart-line}\\enspace Projection data :} ",
+  "\\textcolor{", col_proj, "}{\\textbf{tient ~", proj_str, "}} pour ",
+  jours_restants, " jours restants\\\\[4pt]\n",
+  "\\textbf{\\faIcon{tachometer-alt}\\enspace Rythme :} ",
+  rythme$pct_data_conso, "\\% data consommée \\textbullet{} ",
+  rythme$pct_temps_ecoule, "\\% du temps écoulé\n",
+  "\\end{mdframed}\n"
+))
+```
+
+\vspace{0.3cm}
+
+## \faSearch\enspace Analyse contextuelle
+
+HELIA_CONSO_ANALYSE_PLACEHOLDER
+
+\vspace{0.3cm}
+
+## \faIcon{tachometer-alt}\enspace Tableau de bord forfait
+
+```{r kpi-table}
+proj_jours_str <- if (nrow(proj) > 0 && !is.na(proj$data_tient_jours)) {
+  sprintf("~%.0f jours (renouvellement dans %d j)", proj$data_tient_jours, jours_restants)
+} else { "N/A" }
+
+tibble(
+  `Indicateur` = c("Data restante", "Data consommée", "Voix restante",
+                   "Voix consommée", "SMS", "Rythme data", "Projection data",
+                   "Renouvellement"),
+  `Valeur`     = c(
+    sprintf("%.3f Go / %g Go", snap$data_left_go, snap$data_initial_go),
+    sprintf("%.3f Go (%.1f%%)", data_conso_go, data_pct),
+    sprintf("%dh %02dmin", voix_restante_h, voix_restante_m),
+    sprintf("%.0f min (%.1f%%)", voix_conso_s / 60, voix_pct),
+    "Illimité",
+    sprintf("%.1f%% data / %.1f%% temps", rythme$pct_data_conso, rythme$pct_temps_ecoule),
+    proj_jours_str,
+    sprintf("Dans %d jours", jours_restants)),
+  `Statut`     = c(
+    ifelse(data_pct < 60, "OK", ifelse(data_pct < 80, "Attention", "Alerte")),
+    ifelse(data_pct < 60, "OK", ifelse(data_pct < 80, "Attention", "Alerte")),
+    ifelse(voix_pct < 60, "OK", ifelse(voix_pct < 80, "Attention", "Alerte")),
+    ifelse(voix_pct < 60, "OK", ifelse(voix_pct < 80, "Attention", "Alerte")),
+    "OK", "--",
+    ifelse(nrow(proj) > 0 && proj$statut == "OK", "OK", "Alerte"),
+    "--")
+) |>
+  kbl(booktabs = TRUE, linesep = "", align = "llc") |>
+  kable_styling(latex_options = c("striped", "hold_position"),
+                stripe_color = col_stripe, font_size = 9) |>
+  row_spec(0, bold = TRUE, color = "white", background = col_mid) |>
+  column_spec(3, bold = TRUE,
+              color = ifelse(
+                c(data_pct, data_pct, voix_pct, voix_pct,
+                  0, 50,
+                  ifelse(nrow(proj) > 0 && proj$statut == "OK", 0, 100),
+                  0) < 60,
+                col_ok, ifelse(
+                  c(data_pct, data_pct, voix_pct, voix_pct,
+                    0, 50,
+                    ifelse(nrow(proj) > 0 && proj$statut == "OK", 0, 100),
+                    0) < 80,
+                  col_warn, col_crit)))
+```
+
+\newpage
+
+\heliarule
+
+## \faIcon{signal}\enspace Consommation data
+
+```{r charts-data, fig.width=6.5, fig.height=2.4}
+# Pie data
+pie_data <- data.frame(
+  label = c(sprintf("Consommé (%.2f Go)", data_conso_go),
+            sprintf("Restant (%.2f Go)", snap$data_left_go)),
+  val   = c(data_conso_go, snap$data_left_go),
+  col   = c(ifelse(data_pct < 60, col_ok, ifelse(data_pct < 80, col_warn, col_crit)),
+            "gray85"))
+
+p1 <- ggplot(pie_data, aes(x = "", y = val, fill = col)) +
+  geom_col(width = 1, color = "white", linewidth = 0.5) +
+  coord_polar("y") +
+  scale_fill_identity() +
+  geom_text(aes(label = label),
+            position = position_stack(vjust = 0.5), size = 2.5) +
+  labs(title = sprintf("Data — Forfait M %g Go", snap$data_initial_go)) +
+  theme_void() +
+  theme(plot.title = element_text(face = "bold", size = 9,
+                                  color = col_mid, hjust = 0.5))
+
+# Bar conso/jour
+p2 <- ggplot(daily_data, aes(x = format(as.Date(jour), "%d/%m"), y = mo)) +
+  geom_col(fill = col_magenta, alpha = 0.75, width = 0.6) +
+  geom_text(aes(label = paste0(mo, " Mo")), vjust = -0.3, size = 2) +
+  labs(title = "Conso data par jour (Mo)", x = NULL, y = "Mo") +
+  theme_helia +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 6))
+
+grid.arrange(p1, p2, ncol = 2)
+```
+
+```{r chart-tendance, fig.width=6.5, fig.height=2.0}
+ggplot(daily_data, aes(x = as.Date(jour), y = data_restant_go)) +
+  geom_area(fill = col_magenta, alpha = 0.12) +
+  geom_line(color = col_mid, linewidth = 0.9) +
+  geom_point(color = col_mid, size = 1.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = col_crit,
+             linewidth = 0.4, alpha = 0.6) +
+  scale_x_date(date_labels = "%d/%m", date_breaks = "1 day") +
+  scale_y_continuous(labels = function(x) paste0(x, " Go"),
+                     limits = c(0, snap$data_initial_go)) +
+  labs(title = "Data restante au fil des jours",
+       subtitle = paste0("Objectif : tenir jusqu'au ", format(Sys.Date() + jours_restants, "%d/%m/%Y")),
+       x = NULL, y = NULL) +
+  theme_helia +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 6))
+```
+
+\newpage
+
+\heliarule
+
+## \faIcon{phone}\enspace Consommation voix
+
+```{r charts-voix, fig.width=6.5, fig.height=2.4}
+voix_init_min <- snap$voice_initial_sec / 60
+voix_conso_min <- voix_conso_s / 60
+voix_reste_min <- voix_restante_s / 60
+
+pie_voix <- data.frame(
+  label = c(sprintf("Consommé (%.0f min)", voix_conso_min),
+            sprintf("Restant (%.0f min)", voix_reste_min)),
+  val   = c(voix_conso_min, voix_reste_min),
+  col   = c(ifelse(voix_pct < 60, col_ok, ifelse(voix_pct < 80, col_warn, col_crit)),
+            "gray85"))
+
+p3 <- ggplot(pie_voix, aes(x = "", y = val, fill = col)) +
+  geom_col(width = 1, color = "white", linewidth = 0.5) +
+  coord_polar("y") +
+  scale_fill_identity() +
+  geom_text(aes(label = label),
+            position = position_stack(vjust = 0.5), size = 2.5) +
+  labs(title = sprintf("Voix — Forfait %.0f min", voix_init_min)) +
+  theme_void() +
+  theme(plot.title = element_text(face = "bold", size = 9,
+                                  color = col_mid, hjust = 0.5))
+
+p4 <- ggplot(daily_voice |> filter(min_conso > 0),
+             aes(x = format(as.Date(jour), "%d/%m"), y = min_conso)) +
+  geom_col(fill = col_crimson, alpha = 0.75, width = 0.6) +
+  geom_text(aes(label = paste0(min_conso, " min")), vjust = -0.3, size = 2) +
+  labs(title = "Conso voix par jour (min)", x = NULL, y = "min") +
+  theme_helia +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 6))
+
+grid.arrange(p3, p4, ncol = 2)
+```
+
+\newpage
+
+\heliarule
+
+## \faCalendarCheck\enspace Heatmap consommation data — heure par jour de la semaine
+
+```{r chart-heatmap-conso, fig.width=6.5, fig.height=2.2}
+jours_fr <- c("0" = "Dimanche", "1" = "Lundi", "2" = "Mardi",
+              "3" = "Mercredi", "4" = "Jeudi", "5" = "Vendredi", "6" = "Samedi")
+
+hm <- heatmap_conso |>
+  mutate(
+    jour_semaine = factor(
+      jours_fr[as.character(as.integer(dow))],
+      levels = c("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")),
+    conso_eff = ifelse(conso_mo == 0, NA_real_, conso_mo))
+
+ggplot(hm, aes(x = as.integer(heure), y = jour_semaine, fill = conso_eff)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  scale_fill_gradientn(
+    colors  = c("gray95", col_magenta, col_crimson),
+    values  = rescale(c(0, max(hm$conso_eff, na.rm = TRUE) * 0.3,
+                        max(hm$conso_eff, na.rm = TRUE))),
+    na.value = "gray95",
+    name    = "Conso (Mo)",
+    labels  = function(x) paste0(x, " Mo"),
+    limits  = c(0, max(hm$conso_eff, na.rm = TRUE)),
+    oob     = squish) +
+  scale_x_continuous(breaks = seq(0, 23, 3),
+                     labels = paste0(seq(0, 23, 3), "h"),
+                     expand = c(0.01, 0.01)) +
+  coord_equal() +
+  labs(title = "Consommation data par heure et jour de la semaine",
+       subtitle = paste0("Période : ", periode_debut, " au ", periode_fin,
+                         "  |  Plus foncé = plus de data consommée"),
+       x = NULL, y = NULL) +
+  theme_helia +
+  theme(legend.position   = "right",
+        legend.key.height = unit(0.8, "cm"),
+        legend.key.width  = unit(0.3, "cm"),
+        legend.title      = element_text(size = 7),
+        legend.text       = element_text(size = 7),
+        panel.grid        = element_blank())
+```
+
+\vspace{0.3cm}
+
+## \faIcon{chart-line}\enspace Projection & rythme
+
+```{r chart-projection, fig.width=6.5, fig.height=2.2}
+rythme_df <- data.frame(
+  label = c("% data\nconsommée", "% temps\nécoulé"),
+  pct   = c(rythme$pct_data_conso, rythme$pct_temps_ecoule),
+  col   = c(ifelse(rythme$pct_data_conso <= rythme$pct_temps_ecoule + 5, col_ok,
+                   ifelse(rythme$pct_data_conso <= rythme$pct_temps_ecoule + 15,
+                          col_warn, col_crit)),
+            col_mid))
+
+p5 <- ggplot(rythme_df, aes(x = label, y = pct, fill = col)) +
+  geom_col(width = 0.5) +
+  geom_text(aes(label = paste0(pct, "%")), vjust = -0.3, size = 3) +
+  scale_fill_identity() +
+  scale_y_continuous(limits = c(0, 110)) +
+  labs(title = "Rythme : data vs temps écoulé", x = NULL, y = "%") +
+  theme_helia
+
+proj_df <- if (nrow(proj) > 0 && !is.na(proj$data_tient_jours)) {
+  data.frame(
+    label = c("Data tient\n(jours estimés)", "Jours avant\nrenouvellement"),
+    val   = c(min(proj$data_tient_jours, 60), jours_restants),
+    col   = c(ifelse(proj$data_tient_jours >= jours_restants, col_ok, col_crit), col_mid))
+} else {
+  data.frame(label = character(0), val = numeric(0), col = character(0))
+}
+
+if (nrow(proj_df) > 0) {
+  p6 <- ggplot(proj_df, aes(x = label, y = val, fill = col)) +
+    geom_col(width = 0.5) +
+    geom_text(aes(label = paste0(round(val), " j")), vjust = -0.3, size = 3) +
+    scale_fill_identity() +
+    scale_y_continuous(limits = c(0, max(proj_df$val) * 1.2)) +
+    labs(title = "Projection data vs renouvellement", x = NULL, y = "Jours") +
+    theme_helia
+  grid.arrange(p5, p6, ncol = 2)
+} else {
+  print(p5)
+}
+```
+
+\newpage
+
+\heliarule
+
+## \faIcon{lightbulb}\enspace Conseil — Quel forfait pour moi ?
+
+```{r conseil-forfait}
+#| output: asis
+
+# Conso mensuelle estimée (débit actuel extrapolé sur 30 jours)
+go_par_jour_reel <- if (jours_ecoules > 0) data_conso_go / jours_ecoules else NA
+conso_mensuelle  <- if (!is.na(go_par_jour_reel)) round(go_par_jour_reel * 30, 2) else NA
+
+cat("\\small\\textcolor{gray}{")
+if (!is.na(conso_mensuelle)) {
+  cat(paste0("Sur la base de ", jours_ecoules, " jour(s) d\\'historique, ",
+             "ta consommation mensuelle estimée est de \\textbf{", conso_mensuelle,
+             "~Go/mois} (", round(go_par_jour_reel * 1000, 0), "~Mo/jour)."))
+} else {
+  cat("Historique insuffisant pour estimer la consommation mensuelle.")
+}
+cat("}\\par\\vspace{6pt}\n")
+```
+
+```{r table-forfaits}
+conso_mensuelle_r <- if (jours_ecoules > 0) round(data_conso_go / jours_ecoules * 30, 2) else NA
+
+forfaits <- tibble(
+  Forfait   = c("M 2 Go", "M 10 Go", "M 30 Go", "M 100 Go"),
+  Data      = c(2, 10, 30, 100),
+  Prix      = c("1 000 F", "3 000 F", "6 000 F", "10 000 F"),
+  Adapté    = c(
+    ifelse(!is.na(conso_mensuelle_r) && conso_mensuelle_r <= 2,   "Oui", "Non"),
+    ifelse(!is.na(conso_mensuelle_r) && conso_mensuelle_r <= 10 && conso_mensuelle_r > 2, "Oui",
+           ifelse(!is.na(conso_mensuelle_r) && conso_mensuelle_r <= 2, "Surdimensionné", "Non")),
+    ifelse(!is.na(conso_mensuelle_r) && conso_mensuelle_r <= 30 && conso_mensuelle_r > 10, "Oui",
+           ifelse(!is.na(conso_mensuelle_r) && conso_mensuelle_r <= 10, "Surdimensionné", "Non")),
+    ifelse(!is.na(conso_mensuelle_r) && conso_mensuelle_r > 30, "Oui", "Surdimensionné"))
+)
+
+# Colorer la ligne du forfait actuel et la recommandation
+is_current <- forfaits$Data == snap$data_initial_go
+is_recommande <- forfaits$Adapté == "Oui"
+
+forfaits |>
+  select(-Data) |>
+  kbl(booktabs = TRUE, linesep = "", align = "lrrc",
+      col.names = c("Forfait", "Prix TTC", "Adapté à ta conso ?")) |>
+  kable_styling(latex_options = c("striped", "hold_position"),
+                stripe_color = col_stripe, font_size = 9) |>
+  row_spec(0, bold = TRUE, color = "white", background = col_mid) |>
+  row_spec(which(is_current), background = "#FFF0FE", bold = TRUE) |>
+  column_spec(3, bold = TRUE,
+              color = case_when(
+                forfaits$Adapté == "Oui"           ~ col_ok,
+                forfaits$Adapté == "Surdimensionné" ~ col_warn,
+                TRUE                                ~ col_crit))
+```
+
+```{r recommandation}
+#| output: asis
+forfait_actuel_go <- snap$data_initial_go
+
+recommande <- if (!is.na(conso_mensuelle_r)) {
+  dplyr::case_when(
+    conso_mensuelle_r <= 2   ~ "M 2 Go (1 000 F)",
+    conso_mensuelle_r <= 10  ~ "M 10 Go (3 000 F)",
+    conso_mensuelle_r <= 30  ~ "M 30 Go (6 000 F)",
+    TRUE                     ~ "M 100 Go (10 000 F)")
+} else { NULL }
+
+recommande_go <- if (!is.na(conso_mensuelle_r)) {
+  dplyr::case_when(
+    conso_mensuelle_r <= 2   ~ 2,
+    conso_mensuelle_r <= 10  ~ 10,
+    conso_mensuelle_r <= 30  ~ 30,
+    TRUE                     ~ 100)
+} else { forfait_actuel_go }
+
+if (!is.null(recommande)) {
+  if (recommande_go == forfait_actuel_go) {
+    cat(paste0(
+      "\\vspace{4pt}\\begin{mdframed}[linecolor=okgreen, linewidth=1.5pt, ",
+      "backgroundcolor=okbg, innertopmargin=6pt, innerbottommargin=6pt, innerleftmargin=8pt]\n",
+      "\\textcolor{okgreen}{\\faIcon{check-circle}\\enspace\\textbf{Ton forfait actuel est adapté à ta consommation.}}\\\\[3pt]\n",
+      "Le \\textbf{", recommande, "} correspond bien à tes besoins réels (", conso_mensuelle_r, "~Go/mois estimés).\n",
+      "\\end{mdframed}\n"))
+  } else if (recommande_go < forfait_actuel_go) {
+    cat(paste0(
+      "\\vspace{4pt}\\begin{mdframed}[linecolor=warnorange, linewidth=1.5pt, ",
+      "backgroundcolor=warnbg, innertopmargin=6pt, innerbottommargin=6pt, innerleftmargin=8pt]\n",
+      "\\textcolor{warnorange}{\\faIcon{arrow-down}\\enspace\\textbf{Tu pourrais passer à un forfait plus petit.}}\\\\[3pt]\n",
+      "Ta conso estimée (", conso_mensuelle_r, "~Go/mois) correspond au \\textbf{", recommande, "}. ",
+      "Un changement de forfait est gratuit après le 1\\textsuperscript{er} mois ",
+      "sur \\texttt{helia.nc} $\\rightarrow$ Mes d\\'emarches en ligne.\n",
+      "\\end{mdframed}\n"))
+  } else {
+    cat(paste0(
+      "\\vspace{4pt}\\begin{mdframed}[linecolor=warnred, linewidth=1.5pt, ",
+      "backgroundcolor=alertbg, innertopmargin=6pt, innerbottommargin=6pt, innerleftmargin=8pt]\n",
+      "\\textcolor{warnred}{\\faIcon{arrow-up}\\enspace\\textbf{Ton forfait actuel est sous-dimensionn\\'e.}}\\\\[3pt]\n",
+      "Ta conso estim\\'ee (", conso_mensuelle_r, "~Go/mois) d\\'epasse ton forfait actuel. ",
+      "Le \\textbf{", recommande, "} serait plus adapt\\'e. ",
+      "Changement gratuit apr\\`es le 1\\textsuperscript{er} mois sur \\texttt{helia.nc}.\n",
+      "\\end{mdframed}\n"))
+  }
+}
+```
+
+\vfill
+\heliarule
+\textcolor{gray}{\small
+  \faDatabase\enspace \texttt{\textasciitilde/.config/helia/data/helia.db}\quad
+  \faClock\enspace Intervalle : 5~min\quad
+  \faRobot\enspace Auteur : Adrien SALES via \texttt{/helia-conso expert}
+}
