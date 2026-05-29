@@ -80,6 +80,7 @@ Sans argument → tableau de bord complet (data, voix, SMS, hors-forfait, rythme
 | `/helia-conso rythme` | Je consomme normalement pour ce stade du mois ? |
 | `/helia-conso hf` | Frais hors-forfait (via CLI) |
 | `/helia-conso report` | 📄 Rapport Markdown complet avec charts |
+| `/helia-conso expert` | 🔬 Rapport expert PDF — consommation, projection, conseil forfait |
 
 ---
 
@@ -98,6 +99,35 @@ Sans argument → tableau de bord complet (data, voix, SMS, hors-forfait, rythme
     ```
 
     Idéal pour garder une trace mensuelle ou partager un bilan de conso.
+
+---
+
+!!! warning "Rapport expert PDF"
+
+    ```text
+    /helia-conso expert
+    ```
+
+    Rapport **PDF professionnel** (Quarto + R + XeLaTeX + FontAwesome5) — couverture Helia brand, analyse contextuelle narrative générée par Claude, charts interactifs :
+
+    | Section | Contenu |
+    |---|---|
+    | Synthèse exécutive | Data/voix restantes, projection, rythme — en un coup d'œil |
+    | Tableau de bord | Tous les indicateurs avec verdict 🟢🟡🔴 |
+    | Consommation data | Donut + conso par jour + tendance Go restants |
+    | Consommation voix | Donut + conso par jour |
+    | Heatmaps DOW × heure | Habitudes de conso data et voix par heure et jour de semaine |
+    | Projection & rythme | % data vs % temps écoulé, jours avant épuisement |
+    | Conseil forfait | Comparatif M 2/10/30/100 Go — suis-je sur le bon forfait ? |
+
+    Conçu dans un esprit **R&D personnelle, design thinking, innovation frugale et LEAN** — développé sur temps libre, comme hobby.
+
+    **Prérequis :** R, Quarto CLI, packages `duckdb` `ggplot2` `kableExtra` `tidyr` `dplyr` `scales` `gridExtra`, TeX Live + `fontawesome5`
+
+    Rapport écrit dans :
+    ```
+    ~/Documents/helia/conso/YYYY-MM-DD_rapport_conso_expert.pdf
+    ```
 
 ---
 

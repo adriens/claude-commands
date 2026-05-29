@@ -1,0 +1,650 @@
+---
+title: "Rapport Expert — Qualité Réseau Helia NC"
+subtitle: "Analyse de disponibilité et performance API"
+author: "Adrien SALES"
+date: "HELIA_DATETIME_PLACEHOLDER"
+lang: fr
+keywords: "Helia NC, OPT-NC, réseau mobile, SLA, disponibilité, latence, API, performance, Nouvelle-Calédonie, qualité réseau, telecom"
+format:
+  pdf:
+    pdf-engine: xelatex
+    geometry: "top=2.8cm, bottom=2cm, left=2.5cm, right=2.5cm"
+    fontsize: 10pt
+    toc: false
+    number-sections: false
+    fig-pos: "H"
+    fig-height: 2.8
+    include-in-header:
+      text: |
+        \usepackage{booktabs}
+        \usepackage{xcolor}
+        \usepackage{colortbl}
+        \usepackage{fancyhdr}
+        \usepackage{graphicx}
+        \usepackage{fontawesome5}
+        \usepackage{tikz}
+        \usetikzlibrary{fadings}
+        \usepackage{mdframed}
+        % Helia brand gradient: #FF00E3 (fuchsia) -> #FF0010 (rouge cerise)
+        \definecolor{heliamagenta}{HTML}{FF00E3}
+        \definecolor{heliacrimson}{HTML}{FF0010}
+        \definecolor{heliamid}{HTML}{FF0078}
+        \definecolor{helialightbg}{HTML}{FFF0FE}
+        \definecolor{okgreen}{HTML}{27AE62}
+        \definecolor{warnred}{HTML}{C0392B}
+        \definecolor{warnorange}{HTML}{E67E22}
+        \pagestyle{fancy}
+        \fancyhf{}
+        \fancyhead[L]{\includegraphics[height=0.6cm]{/home/adriens/Documents/helia/helia.png}\quad\textcolor{heliamagenta}{\textbf{Helia NC}}\enspace\textcolor{heliamid}{|}\enspace Rapport Expert R\'eseau}
+        \fancyhead[R]{\small\textcolor{gray}{\faIcon{calendar-alt}\enspace\today\quad p.\enspace\thepage}}
+        \renewcommand{\headrulewidth}{0pt}
+        \AtBeginDocument{\let\maketitle\relax}
+        \newcommand{\heliarule}{%
+          \par\noindent%
+          \begin{tikzpicture}%
+            \shade[left color=heliamagenta, right color=heliacrimson]%
+              (0,0) rectangle (\textwidth,2pt);%
+          \end{tikzpicture}\par}
+knitr:
+  opts_chunk:
+    dev: cairo_pdf
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(duckdb)
+library(dplyr)
+library(ggplot2)
+library(kableExtra)
+library(scales)
+library(gridExtra)
+
+DB_PATH <- path.expand("~/.config/helia/data/helia.db")
+con <- dbConnect(duckdb(), DB_PATH, read_only = TRUE)
+
+api_ping <- dbGetQuery(con, "
+  SELECT timestamp + 11 * INTERVAL '1 hour' AS ts_local,
+         response_ms, timeout, http_status
+  FROM api_ping ORDER BY timestamp")
+
+sla <- dbGetQuery(con, "
+  SELECT
+    COUNT(*) AS nb_total,
+    COUNT(*) FILTER (WHERE NOT timeout) AS nb_ok,
+    COUNT(*) FILTER (WHERE timeout) AS nb_timeout,
+    ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 4) AS dispo_pct,
+    ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY response_ms)
+          FILTER (WHERE NOT timeout), 0) AS p50,
+    ROUND(PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY response_ms)
+          FILTER (WHERE NOT timeout), 0) AS p90,
+    ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY response_ms)
+          FILTER (WHERE NOT timeout), 0) AS p95,
+    ROUND(PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY response_ms)
+          FILTER (WHERE NOT timeout), 0) AS p99,
+    ROUND(AVG(response_ms) FILTER (WHERE NOT timeout), 0) AS moy,
+    MAX(response_ms) AS max_ms,
+    COUNT(*) FILTER (WHERE timeout) * 5 AS min_indispo,
+    MIN(timestamp + 11 * INTERVAL '1 hour') AS premiere_mesure,
+    MAX(timestamp + 11 * INTERVAL '1 hour') AS derniere_mesure
+  FROM api_ping")
+
+daily <- dbGetQuery(con, "
+  SELECT
+    CAST(timestamp + 11 * INTERVAL '1 hour' AS DATE) AS jour,
+    ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 2) AS dispo_pct,
+    COUNT(*) FILTER (WHERE timeout) AS nb_timeouts,
+    ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY response_ms)
+          FILTER (WHERE NOT timeout), 0) AS p50,
+    ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY response_ms)
+          FILTER (WHERE NOT timeout), 0) AS p95,
+    COUNT(*) AS nb_mesures
+  FROM api_ping GROUP BY 1 ORDER BY 1")
+
+hourly <- dbGetQuery(con, "
+  SELECT heure, latence_moy_ms, latence_p95_ms, nb_timeouts, nb_mesures
+  FROM v_hourly_latency ORDER BY heure")
+
+heatmap_data <- dbGetQuery(con, "
+  SELECT
+    EXTRACT(DOW FROM timestamp + 11 * INTERVAL '1 hour') AS dow,
+    EXTRACT(HOUR FROM timestamp + 11 * INTERVAL '1 hour') AS heure,
+    ROUND(AVG(response_ms) FILTER (WHERE NOT timeout), 0) AS latence_moy,
+    COUNT(*) FILTER (WHERE timeout) AS nb_timeouts,
+    COUNT(*) AS nb_mesures,
+    ROUND(100.0 * COUNT(*) FILTER (WHERE timeout) / COUNT(*), 1) AS pct_timeout
+  FROM api_ping
+  GROUP BY 1, 2
+  ORDER BY 1, 2")
+
+distrib <- dbGetQuery(con, "
+  SELECT
+    CASE
+      WHEN timeout            THEN 'Timeout'
+      WHEN response_ms <= 500  THEN '<= 500 ms'
+      WHEN response_ms <= 1000 THEN '501-1000 ms'
+      WHEN response_ms <= 2000 THEN '1001-2000 ms'
+      ELSE '> 2000 ms'
+    END AS plage,
+    COUNT(*) AS nb
+  FROM api_ping GROUP BY 1")
+
+top10 <- dbGetQuery(con, "
+  SELECT timestamp + 11 * INTERVAL '1 hour' AS heure_locale,
+         response_ms, timeout, http_status
+  FROM api_ping
+  ORDER BY CASE WHEN timeout THEN 999999 ELSE response_ms END DESC
+  LIMIT 10")
+
+mtbf <- dbGetQuery(con, "
+  WITH t AS (SELECT timestamp, LAG(timestamp) OVER (ORDER BY timestamp) AS prev
+             FROM api_ping WHERE timeout)
+  SELECT ROUND(AVG(EPOCH(timestamp - prev) / 60.0), 0) AS mtbf_min
+  FROM t WHERE prev IS NOT NULL")
+
+dbDisconnect(con)
+
+# Pre-computed summary values
+sla_niveau <- dplyr::case_when(
+  sla$dispo_pct >= 99.999 ~ ">= 99.999\\%",
+  sla$dispo_pct >= 99.99  ~ ">= 99.99\\%",
+  sla$dispo_pct >= 99.9   ~ ">= 99.9\\%",
+  sla$dispo_pct >= 99.0   ~ ">= 99\\%",
+  TRUE ~ "< 99\\%")
+sla_niveau_table <- dplyr::case_when(
+  sla$dispo_pct >= 99.999 ~ ">= 99.999%",
+  sla$dispo_pct >= 99.99  ~ ">= 99.99%",
+  sla$dispo_pct >= 99.9   ~ ">= 99.9%",
+  sla$dispo_pct >= 99.0   ~ ">= 99%",
+  TRUE ~ "< 99%")
+
+heures_indispo <- floor(sla$min_indispo / 60)
+min_indispo    <- sla$min_indispo %% 60
+periode_debut  <- format(min(as.Date(daily$jour)), "%d/%m/%Y")
+periode_fin    <- format(max(as.Date(daily$jour)), "%d/%m/%Y")
+nb_jours       <- as.integer(max(as.Date(daily$jour)) - min(as.Date(daily$jour))) + 1
+mtbf_str       <- ifelse(nrow(mtbf) > 0 && !is.na(mtbf$mtbf_min),
+                         paste0(mtbf$mtbf_min, " min"), "N/A")
+dispo_color    <- ifelse(sla$dispo_pct >= 99.9, "okgreen", "warnred")
+premiere_str   <- format(as.POSIXct(sla$premiere_mesure), "%d/%m/%Y %H:%M")
+derniere_str   <- format(as.POSIXct(sla$derniere_mesure), "%d/%m/%Y %H:%M")
+
+col_magenta <- "#FF00E3"
+col_crimson <- "#FF0010"
+col_mid     <- "#FF0078"
+col_ok      <- "#27ae62"
+col_warn    <- "#e67e22"
+col_crit    <- "#c0392b"
+col_stripe  <- "#FFF0FE"
+
+theme_helia <- theme_minimal(base_size = 9) +
+  theme(
+    plot.title       = element_text(face = "bold", size = 9, color = col_mid),
+    plot.subtitle    = element_text(size = 6.5, color = "gray50"),
+    axis.title       = element_text(size = 7, color = "gray40"),
+    axis.text        = element_text(size = 7),
+    panel.grid.minor = element_blank(),
+    plot.margin      = margin(4, 4, 4, 4))
+```
+
+\heliarule
+
+\begin{center}
+\vspace{0.2cm}
+\includegraphics[height=2cm]{/home/adriens/Documents/helia/helia.png}\\[0.4cm]
+{\Large\textbf{\textcolor{heliamagenta}{Rapport Expert} \textcolor{heliamid}{R\'eseau}}}\\[0.15cm]
+{\normalsize\textcolor{gray}{Analyse SLA \textbullet{} Disponibilit\'e \textbullet{} Performance API}}\\[0.1cm]
+{\small\textcolor{gray}{\faUser\enspace HELIA_OWNER_PLACEHOLDER \quad\faIcon{clock}\enspace G\'en\'er\'e le HELIA_DATETIME_PLACEHOLDER}}\\[0.2cm]
+\end{center}
+
+\heliarule
+
+\vspace{0.3cm}
+
+```{r exec-summary}
+#| output: asis
+dispo_pct_tex <- sprintf("%.4f\\%%", sla$dispo_pct)
+indispo_tex   <- sprintf("%dh\\enspace%02dmin", heures_indispo, min_indispo)
+
+cat(paste0(
+  "\\begin{mdframed}[linecolor=heliamagenta, linewidth=1.5pt, ",
+  "backgroundcolor=helialightbg, ",
+  "innertopmargin=8pt, innerbottommargin=8pt, innerleftmargin=10pt]\n",
+  "\\textbf{\\faClipboardList\\enspace Synthèse exécutive}\\\\[6pt]\n",
+  "\\textbf{Période analysée :} ", periode_debut, " -- ", periode_fin,
+  " (", nb_jours, " jour(s)) \\textbullet{} ",
+  sla$nb_total, " mesures (intervalle 5~min)\\\\[2pt]\n",
+  "\\small\\textcolor{gray}{Première mesure : ", premiere_str,
+  " \\textbullet{} Dernière : ", derniere_str, "}\\\\[4pt]\n",
+  "\\normalsize\\textbf{Disponibilité :} \\textcolor{", dispo_color, "}{\\textbf{",
+  dispo_pct_tex, "}} \\textbf{(", sla_niveau, ")}\\\\[3pt]\n",
+  "\\textbf{Indisponibilité cumulée :} \\textbf{", indispo_tex,
+  "} \\textbullet{} \\textbf{MTBF :} \\textbf{", mtbf_str, "}\\\\[4pt]\n",
+  "\\textbf{Latence :} P50~\\textbf{", as.integer(sla$p50), "\\,ms} \\textbullet{} ",
+  "P95~\\textbf{", as.integer(sla$p95), "\\,ms} \\textbullet{} ",
+  "P99~\\textbf{", as.integer(sla$p99), "\\,ms} \\textbullet{} ",
+  "Max~\\textbf{", as.integer(sla$max_ms), "\\,ms}\n",
+  "\\end{mdframed}\n"
+))
+```
+
+\vspace{0.3cm}
+
+## \faIcon{search}\enspace Analyse contextuelle
+
+HELIA_ANALYSE_PLACEHOLDER
+
+\vspace{0.3cm}
+
+## \faIcon{tachometer-alt}\enspace Tableau de bord SLA
+
+```{r kpi-table}
+tibble(
+  `Métrique`  = c("Disponibilité", "Niveau SLA", "Timeouts", "Indisponibilité cumulée",
+                  "P50", "P95", "P99", "MTBF"),
+  `Valeur`    = c(sprintf("%.4f%%", sla$dispo_pct), sla_niveau_table,
+                  sprintf("%d / %d (%.1f%%)", sla$nb_timeout, sla$nb_total,
+                          100 * sla$nb_timeout / sla$nb_total),
+                  sprintf("%dh %02dmin", heures_indispo, min_indispo),
+                  sprintf("%d ms", as.integer(sla$p50)),
+                  sprintf("%d ms", as.integer(sla$p95)),
+                  sprintf("%d ms", as.integer(sla$p99)),
+                  mtbf_str),
+  `Objectif`  = c(">= 99.9%", ">= Three nines", "< 1%", "--",
+                  "<= 500 ms", "<= 1 000 ms", "<= 2 000 ms", "--"),
+  `Statut`    = c(ifelse(sla$dispo_pct >= 99.9, "OK", ifelse(sla$dispo_pct >= 99.0, "Attention", "Alerte")),
+                  ifelse(sla$dispo_pct >= 99.0, "Attention", "Alerte"),
+                  ifelse(sla$nb_timeout / sla$nb_total < 0.01, "OK", "Alerte"),
+                  "--",
+                  ifelse(sla$p50 <= 500, "OK", ifelse(sla$p50 <= 1000, "Attention", "Alerte")),
+                  ifelse(sla$p95 <= 1000, "OK", ifelse(sla$p95 <= 2000, "Attention", "Alerte")),
+                  ifelse(sla$p99 <= 2000, "OK", "Alerte"),
+                  "--")
+) |>
+  kbl(booktabs = TRUE, linesep = "", align = "lllc",
+      col.names = c("Métrique", "Valeur", "Objectif", "Statut")) |>
+  kable_styling(latex_options = c("striped", "hold_position"),
+                stripe_color = col_stripe, font_size = 9) |>
+  row_spec(0, bold = TRUE, color = "white", background = col_mid) |>
+  column_spec(4, bold = TRUE,
+              color = ifelse(
+                c(sla$dispo_pct >= 99.9,
+                  sla$dispo_pct >= 99.9,
+                  sla$nb_timeout / sla$nb_total < 0.01,
+                  TRUE,
+                  sla$p50 <= 500, sla$p95 <= 1000, sla$p99 <= 2000, TRUE),
+                col_ok, col_crit))
+```
+
+\newpage
+
+\heliarule
+
+## \faChartLine\enspace Analyse des performances
+
+```{r explication-percentiles}
+#| output: asis
+cat(paste0(
+  "\\small\\textcolor{gray}{",
+  "\\textbf{Lire les percentiles :} ",
+  "P50 = ", as.integer(sla$p50), "\\,ms ",
+  "(la moitié des requêtes répondent en moins de ", as.integer(sla$p50), "\\,ms) ",
+  "\\textbullet{} ",
+  "P95 = ", as.integer(sla$p95), "\\,ms ",
+  "(19 requêtes sur 20 répondent sous ce seuil — seule 1 sur 20 le dépasse) ",
+  "\\textbullet{} ",
+  "P99 = ", as.integer(sla$p99), "\\,ms ",
+  "(seule 1 requête sur 100 est plus lente).",
+  "}\\par\\vspace{4pt}\n"
+))
+```
+
+```{r charts-perf, fig.width=6.5, fig.height=2.5}
+perc_df <- tibble(
+  pct    = c("P50", "P90", "P95", "P99"),
+  valeur = c(sla$p50, sla$p90, sla$p95, sla$p99),
+  couleur = c(
+    ifelse(sla$p50 <= 500,  col_ok, ifelse(sla$p50 <= 1000,  col_warn, col_crit)),
+    ifelse(sla$p90 <= 500,  col_ok, ifelse(sla$p90 <= 1000,  col_warn, col_crit)),
+    ifelse(sla$p95 <= 1000, col_ok, ifelse(sla$p95 <= 2000,  col_warn, col_crit)),
+    ifelse(sla$p99 <= 2000, col_ok, col_crit)))
+
+p1 <- ggplot(perc_df, aes(x = pct, y = valeur, fill = couleur)) +
+  geom_col(width = 0.5) +
+  geom_text(aes(label = paste0(valeur, " ms")), vjust = -0.3, size = 2.5) +
+  scale_fill_identity() +
+  labs(title = "Percentiles de latence", x = NULL, y = "ms") +
+  theme_helia
+
+p2 <- ggplot(hourly, aes(x = heure, y = latence_moy_ms)) +
+  geom_area(fill = col_magenta, alpha = 0.1) +
+  geom_line(color = col_mid, linewidth = 0.8) +
+  geom_point(aes(color = ifelse(latence_moy_ms <= 500, "ok",
+                         ifelse(latence_moy_ms <= 1000, "warn", "crit"))),
+             size = 1.5) +
+  scale_color_manual(values = c(ok = col_ok, warn = col_warn, crit = col_crit),
+                     guide = "none") +
+  geom_hline(yintercept = 1000, linetype = "dashed", color = col_warn, linewidth = 0.4) +
+  scale_x_continuous(breaks = seq(0, 23, 3), labels = paste0(seq(0, 23, 3), "h")) +
+  labs(title = "Latence moyenne par heure", x = NULL, y = "ms") +
+  theme_helia
+
+grid.arrange(p1, p2, ncol = 2)
+```
+
+```{r chart-distrib, fig.width=6.5, fig.height=2.2}
+distrib_ord <- c("<= 500 ms", "501-1000 ms", "1001-2000 ms", "> 2000 ms", "Timeout")
+distrib_col <- c(col_ok, "#f1c40f", col_warn, col_crit, "gray50")
+distrib$plage <- factor(distrib$plage, levels = distrib_ord)
+distrib$pct   <- round(100 * distrib$nb / sum(distrib$nb), 1)
+
+ggplot(distrib, aes(x = plage, y = pct, fill = plage)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = paste0(pct, "%")), vjust = -0.3, size = 2.5) +
+  scale_fill_manual(values = setNames(distrib_col, distrib_ord), guide = "none") +
+  labs(title = "Distribution des temps de réponse (classes)", x = NULL, y = "% des mesures") +
+  theme_helia
+```
+
+\newpage
+
+\heliarule
+
+## \faChartArea\enspace Profil de densité des latences
+
+```{r chart-density, fig.width=6.5, fig.height=3.0}
+resp_ok <- api_ping |>
+  filter(!timeout, !is.na(response_ms), response_ms <= 5000) |>
+  pull(response_ms)
+
+df_dens <- data.frame(ms = resp_ok)
+
+p_dens <- ggplot(df_dens, aes(x = ms)) +
+  geom_histogram(aes(y = after_stat(density)),
+                 bins = 60, fill = col_magenta, alpha = 0.25,
+                 color = "white", linewidth = 0.2) +
+  geom_density(color = col_mid, linewidth = 1, adjust = 1.2) +
+  geom_vline(xintercept = as.numeric(sla$p50), linetype = "solid",
+             color = col_ok,   linewidth = 0.7, alpha = 0.8) +
+  geom_vline(xintercept = as.numeric(sla$p95), linetype = "dashed",
+             color = col_warn, linewidth = 0.7, alpha = 0.8) +
+  geom_vline(xintercept = as.numeric(sla$p99), linetype = "dotted",
+             color = col_crit, linewidth = 0.7, alpha = 0.8) +
+  annotate("text", x = as.numeric(sla$p50) + 30, y = Inf, vjust = 2,
+           label = paste0("P50 ", as.integer(sla$p50), "ms"),
+           color = col_ok, size = 2.5, hjust = 0) +
+  annotate("text", x = as.numeric(sla$p95) + 30, y = Inf, vjust = 2,
+           label = paste0("P95 ", as.integer(sla$p95), "ms"),
+           color = col_warn, size = 2.5, hjust = 0) +
+  annotate("text", x = as.numeric(sla$p99) + 30, y = Inf, vjust = 2,
+           label = paste0("P99 ", as.integer(sla$p99), "ms"),
+           color = col_crit, size = 2.5, hjust = 0) +
+  scale_x_continuous(labels = function(x) paste0(x, "ms")) +
+  labs(title = "Densité des temps de réponse (pings OK, plafonné à 5 000 ms)",
+       subtitle = "Courbe = KDE  |  Trait plein = P50  |  Tiret = P95  |  Pointillé = P99",
+       x = "Temps de réponse (ms)", y = "Densité") +
+  theme_helia
+
+print(p_dens)
+```
+
+```{r chart-density-log, fig.width=6.5, fig.height=2.6}
+p_log <- ggplot(df_dens, aes(x = ms)) +
+  geom_histogram(aes(y = after_stat(density)),
+                 bins = 60, fill = col_crimson, alpha = 0.2,
+                 color = "white", linewidth = 0.2) +
+  geom_density(color = col_crimson, linewidth = 1, adjust = 1.0) +
+  geom_vline(xintercept = as.numeric(sla$p50),  linetype = "solid",
+             color = col_ok,   linewidth = 0.7) +
+  geom_vline(xintercept = as.numeric(sla$p95),  linetype = "dashed",
+             color = col_warn, linewidth = 0.7) +
+  scale_x_log10(labels = function(x) paste0(x, "ms"),
+                breaks  = c(50, 100, 200, 500, 1000, 2000, 5000)) +
+  labs(title = "Même distribution — échelle log",
+       subtitle = "L'échelle log révèle la bimodalité éventuelle et les queues lourdes",
+       x = "Temps de réponse (ms, log)", y = "Densité") +
+  theme_helia
+
+print(p_log)
+```
+
+\newpage
+
+\heliarule
+
+## \faCalendarCheck\enspace Heatmap latence heure par jour
+
+```{r chart-heatmap, fig.width=6.5, fig.height=2.2}
+jours_fr <- c("0" = "Dimanche", "1" = "Lundi", "2" = "Mardi",
+              "3" = "Mercredi", "4" = "Jeudi", "5" = "Vendredi", "6" = "Samedi")
+
+hm <- heatmap_data |>
+  mutate(
+    jour_semaine = factor(
+      jours_fr[as.character(as.integer(dow))],
+      levels = c("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")),
+    latence_eff = ifelse(nb_mesures == nb_timeouts, NA_real_, latence_moy))
+
+ggplot(hm, aes(x = as.integer(heure), y = jour_semaine, fill = latence_eff)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  geom_tile(data = hm |> filter(pct_timeout == 100),
+            aes(x = as.integer(heure), y = jour_semaine),
+            fill = "gray30", color = "white", linewidth = 0.4) +
+  scale_fill_gradientn(
+    colors = c(col_ok, "#f1c40f", col_warn, col_crit),
+    values = rescale(c(0, 500, 1000, 5000)),
+    na.value = col_crit,
+    name = "Latence moy.",
+    labels = function(x) paste0(x, " ms"),
+    limits = c(0, max(hm$latence_eff, na.rm = TRUE)),
+    oob = squish) +
+  scale_x_continuous(breaks = seq(0, 23, 3),
+                     labels = paste0(seq(0, 23, 3), "h"),
+                     expand = c(0.01, 0.01)) +
+  labs(title = "Latence moyenne par heure et jour de la semaine (gris = 100 % timeout)",
+       subtitle = paste0("Période : ", periode_debut, " au ", periode_fin,
+                         "  |  Source : ", sla$nb_total, " mesures DuckDB"),
+       x = NULL, y = NULL) +
+  coord_equal() +
+  theme_helia +
+  theme(legend.position   = "right",
+        legend.key.height = unit(0.8, "cm"),
+        legend.key.width  = unit(0.3, "cm"),
+        legend.title      = element_text(size = 7),
+        legend.text       = element_text(size = 7),
+        panel.grid        = element_blank())
+```
+
+\newpage
+
+\heliarule
+
+## \faCalendarCheck\enspace Disponibilité journalière et incidents
+
+```{r chart-daily, fig.width=6.5, fig.height=2.2}
+daily$jour_fmt <- format(as.Date(daily$jour), "%d/%m")
+
+ggplot(daily, aes(x = jour_fmt, y = dispo_pct,
+                  fill = ifelse(dispo_pct >= 99.9, "ok",
+                         ifelse(dispo_pct >= 99.0, "warn", "crit")))) +
+  geom_col(width = 0.6) +
+  geom_hline(yintercept = 99.9, linetype = "dashed", color = col_warn, linewidth = 0.5) +
+  geom_text(aes(label = sprintf("%.2f%%", dispo_pct)), vjust = -0.3, size = 2.3) +
+  scale_fill_manual(values = c(ok = col_ok, warn = col_warn, crit = col_crit),
+                    guide = "none") +
+  scale_y_continuous(limits = c(max(0, min(daily$dispo_pct) - 2), 101),
+                     labels = function(x) paste0(x, "%")) +
+  labs(title = "Disponibilité par jour (objectif 99.9 % = trait pointillé)", x = NULL, y = NULL) +
+  theme_helia
+```
+
+```{r table-daily}
+daily |>
+  mutate(
+    jour   = format(as.Date(jour), "%d/%m/%Y"),
+    dispo  = sprintf("%.2f%%", dispo_pct),
+    p50    = paste0(p50, " ms"),
+    p95    = paste0(p95, " ms"),
+    statut = ifelse(dispo_pct >= 99.9, "OK", ifelse(dispo_pct >= 99.0, "Attention", "Alerte"))) |>
+  select(Date = jour, Disponibilité = dispo, P50 = p50, P95 = p95,
+         Timeouts = nb_timeouts, Mesures = nb_mesures, Statut = statut) |>
+  kbl(booktabs = TRUE, linesep = "", align = "lrrrrrr") |>
+  kable_styling(latex_options = c("striped", "hold_position"),
+                stripe_color = col_stripe, font_size = 8) |>
+  row_spec(0, bold = TRUE, color = "white", background = col_mid)
+```
+
+## \faExclamationTriangle\enspace Chronologie des incidents
+
+```{r chart-incidents, fig.width=6.5, fig.height=2.8}
+# All pings: color-coded by severity for the timeline
+timeline_df <- api_ping |>
+  mutate(
+    ts   = as.POSIXct(ts_local),
+    type = case_when(
+      timeout           ~ "Timeout",
+      response_ms > 2000 ~ "Lenteur critique (>2s)",
+      response_ms > 1000 ~ "Lenteur modérée (>1s)",
+      TRUE               ~ "Normal"
+    ),
+    type = factor(type, levels = c("Normal", "Lenteur modérée (>1s)",
+                                    "Lenteur critique (>2s)", "Timeout"))
+  )
+
+color_map <- c(
+  "Normal"                  = "gray85",
+  "Lenteur modérée (>1s)"   = col_warn,
+  "Lenteur critique (>2s)"  = col_crit,
+  "Timeout"                 = "black"
+)
+size_map  <- c("Normal" = 0.4, "Lenteur modérée (>1s)" = 1.0,
+               "Lenteur critique (>2s)" = 1.5, "Timeout" = 2.0)
+
+ggplot(timeline_df, aes(x = ts, y = ifelse(timeout, 15000, response_ms),
+                         color = type, size = type)) +
+  geom_point(alpha = 0.7, shape = 16) +
+  scale_color_manual(values = color_map, name = NULL) +
+  scale_size_manual(values  = size_map,  name = NULL) +
+  scale_y_continuous(labels = function(x) paste0(x, " ms"),
+                     limits = c(0, NA)) +
+  scale_x_datetime(date_labels = "%d/%m %Hh", date_breaks = "12 hours") +
+  geom_hline(yintercept = 1000, linetype = "dashed", color = col_warn,
+             linewidth = 0.4, alpha = 0.6) +
+  geom_hline(yintercept = 2000, linetype = "dotted", color = col_crit,
+             linewidth = 0.4, alpha = 0.6) +
+  labs(
+    title    = "Chronologie des mesures — chaque point = 1 sonde toutes les 5 min",
+    subtitle = "Noir = timeout  |  Tiret = seuil 1s  |  Pointillé = seuil 2s  |  Timeouts tracés à 15 000 ms",
+    x = NULL, y = "Temps de réponse") +
+  theme_helia +
+  theme(legend.position  = "bottom",
+        legend.text      = element_text(size = 7),
+        axis.text.x      = element_text(angle = 30, hjust = 1, size = 6))
+```
+
+
+\vfill
+\heliarule
+{\small\textcolor{gray}{%
+  \textbf{\faFlask\enspace Prototype op\'erationnel} --- con\c{c}u \& d\'evelopp\'e par \textbf{Adrien SALES}
+  via la skill Claude \texttt{/helia-reseau expert}\\[2pt]
+  \faLightbulb\enspace \textit{Issu d'un processus personnel de R\&D, design thinking,
+  innovation frugale et LEAN --- d\'evelopp\'e sur temps libre, comme hobby.}\\[2pt]
+  \faTwitter\enspace \texttt{x.com/rastadidi}\quad
+  \faLinkedinIn\enspace \texttt{linkedin.com/in/adrien-sales/}
+  \hfill
+  \faDatabase\enspace \texttt{\textasciitilde/.config/helia/data/helia.db}\quad
+  \faClock\enspace 5~min
+}}
+
+\newpage
+
+\heliarule
+
+## \faClipboardList\enspace Glossaire — Pour comprendre ce rapport
+
+```{r glossaire}
+glossaire <- tibble::tibble(
+  Terme = c(
+    "Latence (ms)",
+    "Disponibilité (%)",
+    "Two / Three / Four / Five nines",
+    "P50 (médiane)",
+    "P95",
+    "P99",
+    "Timeout",
+    "MTBF",
+    "Indisponibilité cumulée",
+    "KDE (densité noyau)",
+    "Bimodalité",
+    "SLA"
+  ),
+  Explication = c(
+    "Temps écoulé entre l'envoi d'une requête et la réception de la réponse, exprimé en millisecondes (ms). 1 000 ms = 1 seconde. Une latence faible signifie un service réactif ; une latence élevée indique une lenteur ou une surcharge.",
+    "Proportion des requêtes qui ont réussi (sans timeout). 100% = service parfait.",
+    "Niveaux de disponibilité standards : deux neuf = 99% (~ 87h d'arrêt/an), trois neuf = 99.9% (~ 8.7h/an), quatre neuf = 99.99% (~ 52min/an), cinq neuf = 99.999% (~ 5min/an).",
+    paste0("Temps de réponse médian : la moitié des requêtes répondent en moins de ce seuil, l'autre moitié au-dessus. Sur cette période : P50 = ", as.integer(sla$p50), " ms. C'est l'expérience typique de l'utilisateur."),
+    paste0("Percentile 95 : 95 requêtes sur 100 répondent en moins de ce seuil. Seule 1 sur 20 le dépasse. Sur cette période : P95 = ", as.integer(sla$p95), " ms. Mesure les pics habituels sans être biaisé par les cas extrêmes."),
+    paste0("Percentile 99 : 99 requêtes sur 100 répondent en moins de ce seuil. Seule 1 sur 100 est plus lente. Sur cette période : P99 = ", as.integer(sla$p99), " ms. Révèle les queues lourdes et les expériences les plus dégradées."),
+    "La requête n'a pas reçu de réponse dans le délai imparti. Compte comme indisponibilité.",
+    paste0("Mean Time Between Failures : temps moyen écoulé entre deux pannes consécutives (timeouts). Sur cette période : MTBF = ", mtbf_str, ". Plus c'est élevé, plus les pannes sont rares et le service stable. Un MTBF court signale une instabilité récurrente."),
+    "Durée totale pendant laquelle le service était en timeout, calculée en multipliant le nombre de timeouts par l'intervalle de mesure (5 min).",
+    "Courbe de densité qui montre la forme de la distribution des temps de réponse. Permet de voir si la distribution est normale, asymétrique ou bimodale.",
+    "Distribution avec deux pics distincts sur la courbe de densité. Sur un réseau, cela peut signifier deux régimes coexistants : ex. la majorité des requêtes répondent rapidement (pic à 200 ms) mais une fraction notable est lente (pic à 2 000 ms). À l'inverse, une distribution unimodale (un seul pic) indique un comportement homogène.",
+    "Service Level Agreement : engagement contractuel ou objectif interne sur la qualité du service (ici : disponibilité et latence)."
+  )
+)
+
+glossaire |>
+  kbl(booktabs = TRUE, linesep = "", align = "ll", longtable = TRUE) |>
+  kable_styling(latex_options = c("striped", "hold_position", "repeat_header"),
+                stripe_color = col_stripe, font_size = 8) |>
+  row_spec(0, bold = TRUE, color = "white", background = col_mid) |>
+  column_spec(1, bold = TRUE, width = "3.5cm") |>
+  column_spec(2, width = "12cm")
+```
+
+\vspace{0.5cm}
+
+## \faDatabase\enspace Stack technique
+
+```{r stack-table}
+r_version  <- paste0(R.Version()$major, ".", R.Version()$minor)
+duckdb_ver <- as.character(packageVersion("duckdb"))
+ggplot_ver <- as.character(packageVersion("ggplot2"))
+kable_ver  <- as.character(packageVersion("kableExtra"))
+scales_ver <- as.character(packageVersion("scales"))
+quarto_ver <- tryCatch(system("quarto --version", intern = TRUE), error = function(e) "N/A")
+xelatex_info <- tryCatch({
+  out <- system("xelatex --version 2>&1 | head -1", intern = TRUE)
+  sub(".*?(\\d+\\.\\d+[-\\d]*).*", "\\1", out[1])
+}, error = function(e) "N/A")
+
+stack <- tibble::tibble(
+  Composant   = c("DuckDB", "R", "ggplot2", "kableExtra", "scales", "gridExtra",
+                  "Quarto", "XeLaTeX (TeX Live)", "FontAwesome5"),
+  Version     = c(duckdb_ver, r_version, ggplot_ver, kable_ver, scales_ver,
+                  as.character(packageVersion("gridExtra")),
+                  quarto_ver, xelatex_info, "FA 5 (système)"),
+  Rôle        = c(
+    "Base de données analytique in-process : stocke et interroge les mesures de latence",
+    "Langage de calcul statistique et visualisation",
+    "Graphiques vectoriels (barres, courbes, heatmap, densité)",
+    "Tableaux PDF professionnels (booktabs, coloration)",
+    "Formatage des axes et palettes de couleurs",
+    "Mise en page multi-colonnes des graphiques",
+    "Rendu du document .qmd en PDF via pipeline knitr + pandoc",
+    "Moteur LaTeX Unicode : composition typographique du PDF final",
+    "Icônes vectorielles dans les en-têtes de section et pied de page"
+  )
+)
+
+stack |>
+  kbl(booktabs = TRUE, linesep = "", align = "lll") |>
+  kable_styling(latex_options = c("striped", "hold_position", "scale_down"),
+                stripe_color = col_stripe, font_size = 8) |>
+  row_spec(0, bold = TRUE, color = "white", background = col_mid) |>
+  column_spec(1, bold = TRUE)
+```
