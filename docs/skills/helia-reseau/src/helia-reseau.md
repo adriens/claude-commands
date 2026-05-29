@@ -385,6 +385,9 @@ QMD=~/Documents/helia/reseau/${DATE_NC}_rapport_expert_reseau.qmd
 curl -sL -o "$QMD" \
   https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/helia-reseau/src/rapport_expert_reseau_template.qmd
 
+# Remplacer toute date résiduelle du template par la date du jour (NC)
+sed -i "s/[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}_rapport_expert/${DATE_NC}_rapport_expert/g" "$QMD"
+
 quarto render "$QMD" --to pdf
 ```
 
@@ -392,6 +395,13 @@ quarto render "$QMD" --to pdf
 > Ne pas réécrire le `.qmd` manuellement — utiliser le template via `curl` ci-dessus.
 > Si une modification est nécessaire (nouveau chart, nouvelle section), modifier
 > `docs/skills/helia-reseau/src/rapport_expert_reseau_template.qmd` dans le repo.
+
+**Vérifications obligatoires avant `quarto render` :**
+- `date: today` dans le YAML → Quarto injecte automatiquement la date du jour ✅
+- Période analysée (`periode_debut` / `periode_fin`) → calculée en live depuis DuckDB ✅
+- Toutes les métriques (SLA, latence, MTBF…) → requêtes DuckDB en temps réel ✅
+- Si `grep -n '[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}' "$QMD"` retourne des dates dans des
+  commentaires R ou des chaînes hardcodées, les remplacer par `$DATE_NC` avant le rendu.
 
 Confirmer : `✅ PDF généré : ~/Documents/helia/reseau/YYYY-MM-DD_rapport_expert_reseau.pdf`
 
