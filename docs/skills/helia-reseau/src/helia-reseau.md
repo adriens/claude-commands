@@ -506,7 +506,7 @@ analyse = """[texte généré ci-dessus — paragraphes Markdown, sans LaTeX]"""
 proprietaire = "[alias saisi par l'utilisateur — défaut : Tonton Marcel]"
 
 tz_nc = timezone(timedelta(hours=11))
-dt_nc = datetime.now(tz_nc).strftime("%d/%m/%Y à %Hh%M")
+dt_nc = datetime.now(tz_nc).strftime("%Y-%m-%dT%H:%M:%S")
 
 with open(qmd_path, "r", encoding="utf-8") as f:
     content = f.read()

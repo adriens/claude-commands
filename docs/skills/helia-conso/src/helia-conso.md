@@ -526,7 +526,7 @@ analyse = """[texte narratif généré ci-dessous]"""
 proprietaire = "[alias saisi par l'utilisateur à l'étape 0]"
 
 tz_nc = timezone(timedelta(hours=11))
-dt_nc = datetime.now(tz_nc).strftime("%d/%m/%Y à %Hh%M")
+dt_nc = datetime.now(tz_nc).strftime("%Y-%m-%dT%H:%M:%S")
 
 with open(qmd_path, "r", encoding="utf-8") as f:
     content = f.read()

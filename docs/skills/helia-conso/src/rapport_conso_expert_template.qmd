@@ -3,6 +3,7 @@ title: "Rapport Expert — Consommation Helia NC"
 subtitle: "Analyse forfait · Projection · Conseil"
 author: "Adrien SALES"
 date: "HELIA_DATETIME_PLACEHOLDER"
+date-format: "dd/MM/yyyy 'à' HH'h'mm"
 lang: fr
 keywords: "Helia NC, OPT-NC, consommation, forfait mobile, data, voix, projection, Nouvelle-Calédonie"
 format:
