@@ -129,6 +129,129 @@ Si l'historique est trop récent (< 3 jours), le signaler clairement et indiquer
 
 ---
 
+## QUESTIONS FRÉQUENTES — Consommateur lambda
+
+Répondre directement et simplement à ces questions du quotidien. Pas de jargon, réponse en 1-2 phrases + verdict 🟢🟡🔴.
+
+### "Est-ce que ma data va tenir jusqu'au renouvellement ?"
+
+```sql
+SELECT data_tient_jours, jours_renouvellement, statut FROM v_projection;
+```
+
+- `statut = 'OK'` → ✅ "Oui, ta data tient encore ~X jours pour N jours restants."
+- `statut = 'ALERTE'` → 🔴 "Non, elle s'épuise dans ~X jours, renouvellement dans N jours. Envisage une recharge."
+- Si < 3 jours de snapshots → calculer manuellement et signaler l'incertitude.
+
+### "Est-ce que mes minutes vont tenir ?"
+
+```sql
+SELECT voice_initial_sec, voice_left_sec, days_renewal FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1;
+SELECT SUM(voice_conso_sec) / COUNT(DISTINCT jour) AS moy_sec_par_jour FROM v_voice_daily;
+```
+
+Calculer : `voix_restante_sec = voice_initial_sec - voice_left_sec`, puis `voix_tient_jours = voix_restante_sec / moy_sec_par_jour`.
+- `voix_tient_jours >= days_renewal` → ✅ "Oui, il te reste ~X min pour N jours."
+- `voix_tient_jours < days_renewal` → 🔴 "Non, tu risques de manquer de minutes. Il reste X min pour N jours."
+
+### "Dans combien de jours je renouvelle ?"
+
+```sql
+SELECT days_renewal FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1;
+```
+
+Répondre simplement : "Ton forfait se renouvelle dans **N jours**."
+
+### "Combien de Go il me reste ?"
+
+```sql
+SELECT data_left_go, data_initial_go FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1;
+```
+
+"Il te reste **X,XX Go** sur X Go (XX% consommé)."
+
+### "Combien de minutes il me reste ?"
+
+```sql
+SELECT voice_initial_sec, voice_left_sec FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1;
+```
+
+Calculer `voix_restante_sec = voice_initial_sec - voice_left_sec`, convertir en min/sec.
+"Il te reste **X min X sec** de voix (XX% consommé)."
+
+### "J'ai consommé combien depuis le début du mois ?"
+
+```sql
+SELECT ROUND(MAX(data_initial_go) - MIN(data_left_go), 3) AS data_conso_go,
+       ROUND((MAX(voice_left_sec)) / 60.0, 1) AS voix_conso_min
+FROM conso_snapshot;
+```
+
+"Tu as consommé **X,XXX Go** de data et **X min** de voix ce mois-ci."
+
+### "Je consomme trop vite ou j'ai de la marge ?"
+
+```sql
+SELECT
+    ROUND((1 - MIN(data_left_go)/MAX(data_initial_go))*100, 1) AS pct_data_conso,
+    ROUND((30 - MIN(days_renewal))/30.0*100, 1) AS pct_temps_ecoule
+FROM conso_snapshot;
+```
+
+- `pct_data_conso < pct_temps_ecoule - 10` → 🟢 "Tu es très en avance : X% de data consommé pour X% du temps écoulé."
+- `ABS(pct_data_conso - pct_temps_ecoule) <= 10` → 🟡 "Tu es dans les clous : rythme conforme au temps écoulé."
+- `pct_data_conso > pct_temps_ecoule + 10` → 🔴 "Tu consommes trop vite : X% de data pour seulement X% du temps écoulé."
+
+### "Quel jour j'ai le plus consommé ?"
+
+```sql
+SELECT jour, data_conso_mo FROM v_daily_conso ORDER BY data_conso_mo DESC LIMIT 1;
+```
+
+"Le jour le plus gourmand était le **JJ/MM** avec **X Mo** consommés."
+Si toutes les valeurs sont à 0 → "Pas encore assez de données pour identifier un pic."
+
+### "Quel est mon rythme moyen ?"
+
+```sql
+SELECT go_par_jour FROM v_projection;
+SELECT SUM(voice_conso_min) / COUNT(DISTINCT jour) AS moy_voix_min_par_jour FROM v_voice_daily;
+```
+
+"Tu consommes en moyenne **X,XX Go/jour** de data et **X,X min/jour** de voix."
+
+### "Est-ce que j'ai des frais hors-forfait ?"
+
+Le champ `amountHF` n'est pas stocké dans DuckDB. Lancer le CLI :
+```bash
+helia status --json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('amountHF', 0))"
+```
+- `amountHF == 0` → ✅ "Aucun frais hors-forfait."
+- `amountHF > 0` → 🔴 "Tu as **X F** de hors-forfait."
+
+### "Est-ce que je dois recharger ?"
+
+Logique de décision :
+
+| Situation | Recommandation |
+|---|---|
+| `v_projection.statut = 'OK'` ET voix tient | 🟢 Non, attends le renouvellement |
+| `v_projection.statut = 'ALERTE'` | 🔴 Oui → recharge Internet Mobile 1 Go / 24h (400 F) ou packagée 1h+1Go (1 000 F) |
+| Voix épuisée avant renouvellement | 🔴 Oui → recharge packagée 1h+1Go+SMS illim. (1 000 F) |
+| `amountHF > 0` | ⚠️ Signaler — pas de recharge recommandée, attendre le renouvellement |
+
+### "Quelle recharge me conseilles-tu ?"
+
+| Besoin | Recharge recommandée | Prix |
+|---|---|---|
+| Data seulement (urgence 24h) | Internet Mobile 1 Go / 24h | 400 F |
+| Data + voix + SMS | Packagée 1h + 1 Go + SMS illim. / 30j | 1 000 F |
+| Data + voix + SMS (plus confortable) | Packagée 2h + 5 Go + SMS illim. / 30j | 3 000 F |
+
+Disponible via : 📱 App Helia · 🌐 helia.nc · 📞 1013 · 🏪 agence
+
+---
+
 ## DOMAINE 1 — Ma consommation (data & voix)
 
 ### Router la commande
