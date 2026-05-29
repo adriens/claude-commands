@@ -2,7 +2,7 @@
 title: "Rapport Expert — Qualité Réseau Helia NC"
 subtitle: "Analyse de disponibilité et performance API"
 author: "Adrien SALES"
-date: today
+date: "HELIA_DATETIME_PLACEHOLDER"
 lang: fr
 keywords: "Helia NC, OPT-NC, réseau mobile, SLA, disponibilité, latence, API, performance, Nouvelle-Calédonie, qualité réseau, telecom"
 format:
