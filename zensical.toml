@@ -17,7 +17,7 @@ nav = [
         { "Eaux de Baignade Nouméa" = "skills/edb-noumea/index.md" },
         { "Kalolo — Expressions caldoches" = "skills/kalolo/index.md" },
         { "EAE — Entretien Annuel d'Évaluation" = "skills/template-eae/index.md" },
-        { "Helia NC" = [
+        { ":fontawesome-solid-signal: Helia NC" = [
             { "Consommation" = "skills/helia-conso/index.md" },
             { "Réseau" = "skills/helia-reseau/index.md" }
         ]}
