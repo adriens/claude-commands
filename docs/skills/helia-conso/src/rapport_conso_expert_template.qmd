@@ -301,8 +301,7 @@ pie_data <- data.frame(
   label = c(sprintf("Consommé (%.2f Go)", data_conso_go),
             sprintf("Restant (%.2f Go)", snap$data_left_go)),
   val   = c(data_conso_go, snap$data_left_go),
-  col   = c(ifelse(data_pct < 60, col_ok, ifelse(data_pct < 80, col_warn, col_crit)),
-            "gray85"))
+  col   = c(col_magenta, "#FFF0FE"))
 
 p1 <- ggplot(pie_data, aes(x = 2, y = val, fill = col)) +
   geom_col(width = 0.85, color = "white", linewidth = 0.5) +
@@ -313,7 +312,8 @@ p1 <- ggplot(pie_data, aes(x = 2, y = val, fill = col)) +
             position = position_stack(vjust = 0.5), size = 2.2) +
   annotate("text", x = 0.5, y = 0,
            label = paste0(data_pct, "%"),
-           size = 4, fontface = "bold", color = col_mid) +
+           size = 4, fontface = "bold",
+           color = ifelse(data_pct < 60, col_ok, ifelse(data_pct < 80, col_warn, col_crit))) +
   labs(title = sprintf("Data — Forfait M %g Go", snap$data_initial_go)) +
   theme_void() +
   theme(plot.title = element_text(face = "bold", size = 9,
@@ -362,8 +362,7 @@ pie_voix <- data.frame(
   label = c(sprintf("Consommé (%.0f min)", voix_conso_min),
             sprintf("Restant (%.0f min)", voix_reste_min)),
   val   = c(voix_conso_min, voix_reste_min),
-  col   = c(ifelse(voix_pct < 60, col_ok, ifelse(voix_pct < 80, col_warn, col_crit)),
-            "gray85"))
+  col   = c(col_crimson, "#FFF0FE"))
 
 p3 <- ggplot(pie_voix, aes(x = 2, y = val, fill = col)) +
   geom_col(width = 0.85, color = "white", linewidth = 0.5) +
@@ -374,7 +373,8 @@ p3 <- ggplot(pie_voix, aes(x = 2, y = val, fill = col)) +
             position = position_stack(vjust = 0.5), size = 2.2) +
   annotate("text", x = 0.5, y = 0,
            label = paste0(voix_pct, "%"),
-           size = 4, fontface = "bold", color = col_mid) +
+           size = 4, fontface = "bold",
+           color = ifelse(voix_pct < 60, col_ok, ifelse(voix_pct < 80, col_warn, col_crit))) +
   labs(title = sprintf("Voix — Forfait %.0f min", voix_init_min)) +
   theme_void() +
   theme(plot.title = element_text(face = "bold", size = 9,
