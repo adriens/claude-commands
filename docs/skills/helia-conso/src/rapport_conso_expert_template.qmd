@@ -3,7 +3,6 @@ title: "Rapport Expert — Consommation Helia NC"
 subtitle: "Analyse forfait · Projection · Conseil"
 author: "Adrien SALES"
 date: "HELIA_DATETIME_PLACEHOLDER"
-date-format: "dd/MM/yyyy 'à' HH'h'mm"
 lang: fr
 keywords: "Helia NC, OPT-NC, consommation, forfait mobile, data, voix, projection, Nouvelle-Calédonie"
 format:
@@ -41,6 +40,7 @@ format:
         \fancyhead[L]{\includegraphics[height=0.6cm]{/home/adriens/Documents/helia/helia.png}\quad\textcolor{heliamagenta}{\textbf{Helia NC}}\enspace\textcolor{heliamid}{|}\enspace Rapport Consommation}
         \fancyhead[R]{\small\textcolor{gray}{\faIcon{calendar-alt}\enspace\today\quad p.\enspace\thepage}}
         \renewcommand{\headrulewidth}{0pt}
+        \AtBeginDocument{\let\maketitle\relax}
         \newcommand{\heliarule}{%
           \par\noindent%
           \begin{tikzpicture}%
