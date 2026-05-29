@@ -520,13 +520,19 @@ Le template contient deux marqueurs à remplacer :
 
 ```bash
 uv run python - <<'PYEOF'
+from datetime import datetime, timezone, timedelta
+
 analyse = """[texte narratif généré ci-dessous]"""
 proprietaire = "[alias saisi par l'utilisateur à l'étape 0]"
+
+tz_nc = timezone(timedelta(hours=11))
+dt_nc = datetime.now(tz_nc).strftime("%d/%m/%Y à %Hh%M")
 
 with open(qmd_path, "r", encoding="utf-8") as f:
     content = f.read()
 content = content.replace("HELIA_CONSO_ANALYSE_PLACEHOLDER", analyse)
 content = content.replace("HELIA_OWNER_PLACEHOLDER", proprietaire)
+content = content.replace("HELIA_DATETIME_PLACEHOLDER", dt_nc)
 with open(qmd_path, "w", encoding="utf-8") as f:
     f.write(content)
 PYEOF
