@@ -398,7 +398,7 @@ Confirmer : `✅ PDF généré : ~/Documents/helia/reseau/YYYY-MM-DD_rapport_exp
 1. Page de titre avec logo PNG (`~/Documents/helia/helia.png`) + règle dégradée TikZ
 2. Bloc de synthèse exécutive (`mdframed`) — utiliser chunk R `results='asis'` avec `cat()` pour injecter du LaTeX dynamique
 3. Tableau de bord SLA (kableExtra, en-tête `col_mid`)
-4. Analyse performances : percentiles + profil horaire (gridExtra ncol=2)
+4. Analyse performances : **note explicative des percentiles avec les vrais chiffres** (P50=X ms = moitié des requêtes en dessous, P95=X ms = 19/20 en dessous, P99=X ms = 99/100 en dessous) + charts percentiles + profil horaire (gridExtra ncol=2)
 5. Distribution des temps de réponse (histogramme par classes)
 6. **Profil de densité KDE** : `geom_density()` + histogramme, axes linéaire et log
 7. **Heatmap heure × jour** : `geom_tile()`, couleur = latence moyenne
