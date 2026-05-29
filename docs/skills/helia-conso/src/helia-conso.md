@@ -18,6 +18,7 @@ Lire `$ARGUMENTS` et router vers la section correspondante.
 | `recharge` | → **FOCUS RECHARGE** : dois-je recharger ? quelle recharge ? |
 | `rythme` | → **FOCUS RYTHME** : je consomme normalement pour ce stade du mois ? |
 | `hf` | → **FOCUS HORS-FORFAIT** : frais hors-forfait via CLI |
+| `export` | → **EXPORT MARKDOWN** : synthèse complète avec charts Mermaid |
 
 Si l'argument ne correspond à aucune commande, afficher la liste ci-dessus et produire le tableau de bord complet.
 
@@ -196,6 +197,151 @@ helia status --json | python3 -c "import sys,json; d=json.load(sys.stdin); print
 
 - `amountHF == 0` → ✅ "Aucun frais hors-forfait."
 - `amountHF > 0` → 🔴 "Tu as **X F** de hors-forfait. Ces frais seront régularisés au renouvellement."
+
+---
+
+## FOCUS EXPORT
+
+> Déclenché par `/helia-conso export`
+
+Exécuter toutes les requêtes ci-dessous, puis produire **un seul bloc Markdown complet** à copier-coller.
+
+### Requêtes à exécuter
+
+```sql
+-- État instantané
+SELECT data_left_go, data_initial_go,
+       ROUND((data_initial_go - data_left_go) / data_initial_go * 100, 1) AS pct_data_conso,
+       ROUND((data_initial_go - data_left_go), 3) AS data_conso_go,
+       voice_initial_sec, voice_left_sec,
+       ROUND(voice_left_sec * 100.0 / voice_initial_sec, 1) AS pct_voix_conso,
+       ROUND((voice_initial_sec - voice_left_sec) / 60.0, 1) AS voix_restante_min,
+       ROUND(voice_left_sec / 60.0, 1) AS voix_conso_min,
+       days_renewal
+FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1;
+
+-- Projection
+SELECT go_par_jour, data_tient_jours, jours_renouvellement, statut FROM v_projection;
+
+-- Rythme
+SELECT
+    ROUND((1 - MIN(data_left_go)/MAX(data_initial_go))*100, 1) AS pct_data_conso,
+    ROUND((30 - MIN(days_renewal))/30.0*100, 1) AS pct_temps_ecoule
+FROM conso_snapshot;
+
+-- Conso data par jour
+SELECT jour, ROUND(data_conso_mo, 1) AS mo, data_restant_go FROM v_daily_conso ORDER BY jour ASC;
+
+-- Conso voix par jour
+SELECT jour, ROUND(voice_conso_min, 1) AS min FROM v_voice_daily ORDER BY jour ASC;
+
+-- Tendance data restante
+SELECT CAST(timestamp + 11 * INTERVAL '1 hour' AS DATE) AS jour,
+       ROUND(MIN(data_left_go), 3) AS data_restant_go
+FROM conso_snapshot
+GROUP BY 1 ORDER BY 1 ASC;
+
+-- Historique
+SELECT MIN(timestamp) + 11 * INTERVAL '1 hour' AS depuis,
+       COUNT(*) AS nb_snapshots
+FROM conso_snapshot;
+```
+
+### Format du document exporté
+
+Produire **exactement** ce document, en substituant toutes les valeurs réelles :
+
+````markdown
+# 📱 Helia NC — Rapport de consommation
+> Généré le JJ/MM/AAAA · Forfait M X Go · Renouvellement dans N jours
+
+---
+
+## 📊 Synthèse
+
+| Indicateur | Valeur | Verdict |
+|---|---|---|
+| 📶 Data restante | X,XXX Go / X Go (XX%) | 🟢🟡🔴 |
+| 📞 Voix restante | X min / Xh (XX% consommé) | 🟢🟡🔴 |
+| 💬 SMS | Illimité | ✅ |
+| ⏱ Rythme data | XX% consommé · XX% temps écoulé | 🟢🟡🔴 |
+| 🏁 Projection data | tient ~X,X jours / N restants | ✅ OK / 🔴 ALERTE |
+| 🔄 Renouvellement | Dans N jours | — |
+
+---
+
+## 📶 Data
+
+```mermaid
+pie title 📶 Data — Forfait M X Go
+    "Consommé (X,XXX Go)" : XX.X
+    "Restant (X,XXX Go)" : XX.X
+```
+
+```mermaid
+xychart-beta
+    title "Conso data par jour (Mo)"
+    x-axis ["JJ/MM", "JJ/MM", ...]
+    bar [X, X, ...]
+```
+
+```mermaid
+xychart-beta
+    title "Data restante au fil des jours (Go)"
+    x-axis ["JJ/MM", "JJ/MM", ...]
+    line [X.XXX, X.XXX, ...]
+```
+
+---
+
+## 📞 Voix
+
+```mermaid
+pie title 📞 Voix — Forfait X h
+    "Consommé (X min)" : XX.X
+    "Restant (X min)" : XX.X
+```
+
+```mermaid
+xychart-beta
+    title "Conso voix par jour (min)"
+    x-axis ["JJ/MM", "JJ/MM", ...]
+    bar [X.X, X.X, ...]
+```
+
+---
+
+## 🏁 Projection
+
+| | Data | Voix |
+|---|---|---|
+| Restant | X,XXX Go | X min |
+| Rythme moyen | X,XX Go/jour | X,X min/jour |
+| Tient jusqu'au renouvellement | ✅ Oui (X,X j) / 🔴 Non | ✅ Oui / 🔴 Non |
+
+---
+
+## ⏱ Rythme
+
+```mermaid
+xychart-beta
+    title "Rythme : % data consommée vs % temps écoulé"
+    x-axis ["% data conso", "% temps écoulé"]
+    bar [XX.X, XX.X]
+```
+
+---
+
+*Données issues de `~/.config/helia/data/helia.db` · X snapshots depuis le JJ/MM/AAAA*
+````
+
+### Règles de construction des charts
+
+- **Axes x** : utiliser le format `JJ/MM` pour les dates (convertir avec UTC+11)
+- **Valeurs à 0** : les inclure pour préserver l'échelle temporelle
+- **Pie** : arrondir à 1 décimale, les deux segments doivent totaliser 100
+- **xychart-beta** : limiter à 10 points max — si plus, regrouper par semaine
+- Si une vue est vide (pas encore de données), remplacer le chart par `> Pas encore assez de données.`
 
 ---
 
