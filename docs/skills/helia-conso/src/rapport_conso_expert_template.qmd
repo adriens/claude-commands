@@ -313,7 +313,7 @@ p1 <- ggplot(pie_data, aes(x = 2, y = val, fill = col)) +
   annotate("text", x = 0.5, y = 0,
            label = paste0(data_pct, "%"),
            size = 4, fontface = "bold",
-           color = ifelse(data_pct < 60, col_ok, ifelse(data_pct < 80, col_warn, col_crit))) +
+           color = ifelse(data_pct < 80, col_magenta, col_crit)) +
   labs(title = sprintf("Data — Forfait M %g Go", snap$data_initial_go)) +
   theme_void() +
   theme(plot.title = element_text(face = "bold", size = 9,
@@ -362,7 +362,7 @@ pie_voix <- data.frame(
   label = c(sprintf("Consommé (%.0f min)", voix_conso_min),
             sprintf("Restant (%.0f min)", voix_reste_min)),
   val   = c(voix_conso_min, voix_reste_min),
-  col   = c(col_crimson, "#FFF0FE"))
+  col   = c(col_mid, "#FFF0FE"))
 
 p3 <- ggplot(pie_voix, aes(x = 2, y = val, fill = col)) +
   geom_col(width = 0.85, color = "white", linewidth = 0.5) +
@@ -374,7 +374,7 @@ p3 <- ggplot(pie_voix, aes(x = 2, y = val, fill = col)) +
   annotate("text", x = 0.5, y = 0,
            label = paste0(voix_pct, "%"),
            size = 4, fontface = "bold",
-           color = ifelse(voix_pct < 60, col_ok, ifelse(voix_pct < 80, col_warn, col_crit))) +
+           color = ifelse(voix_pct < 80, col_mid, col_crit)) +
   labs(title = sprintf("Voix — Forfait %.0f min", voix_init_min)) +
   theme_void() +
   theme(plot.title = element_text(face = "bold", size = 9,
@@ -382,7 +382,7 @@ p3 <- ggplot(pie_voix, aes(x = 2, y = val, fill = col)) +
 
 p4 <- ggplot(daily_voice,
              aes(x = format(as.Date(jour), "%d/%m"), y = min_conso)) +
-  geom_col(fill = col_crimson, alpha = 0.75, width = 0.6) +
+  geom_col(fill = col_mid, alpha = 0.75, width = 0.6) +
   geom_text(aes(label = paste0(min_conso, " min")), vjust = -0.3, size = 2) +
   labs(title = "Conso voix par jour (min)", x = NULL, y = "min") +
   theme_helia +
