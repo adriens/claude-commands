@@ -338,32 +338,30 @@ pie title Pings OK vs Timeouts
 
 Destiné aux profils techniques et décisionnels : CIO, CEO, Directeur Télécom, OPS, SysAdmin, support OPT-NC.
 
-**Format : rapport PDF compilé via Quarto + R + XeLaTeX — 3 pages max, pro et synthétique.**
+**Format : rapport PDF compilé via Quarto + R + XeLaTeX — 4–5 pages, professionnel.**
 
 L'R se charge de tout (connexion DuckDB, calculs, ggplot2). Claude écrit le `.qmd`, puis compile avec `quarto render`.
 
 ### Prérequis à vérifier avant de générer
 
 ```bash
-quarto --version          # ≥ 1.4
+quarto --version                        # ≥ 1.4
+xelatex --version                       # système TeX Live
 Rscript -e "packageVersion('duckdb')"
 Rscript -e "packageVersion('ggplot2')"
 Rscript -e "packageVersion('kableExtra')"
 Rscript -e "packageVersion('scales')"
 Rscript -e "packageVersion('dplyr')"
+Rscript -e "packageVersion('gridExtra')"
 ```
 
 Si un package manque :
 ```r
-install.packages(c("duckdb", "ggplot2", "kableExtra", "scales", "dplyr", "lubridate"))
+install.packages(c("duckdb", "ggplot2", "kableExtra", "scales", "dplyr", "gridExtra"))
 ```
 
-TinyTeX pour XeLaTeX + FontAwesome5 (si absent) :
-```r
-install.packages("tinytex")
-tinytex::install_tinytex()
-tinytex::tlmgr_install("fontawesome5")
-```
+FontAwesome5 est fourni par TeX Live système (`/usr/share/texlive/texmf-dist/tex/latex/fontawesome5/`).
+**Ne pas installer TinyTeX si TeX Live système est disponible** — conflit possible.
 
 ### Écriture et compilation
 
@@ -373,6 +371,10 @@ mkdir -p ~/Documents/helia/reseau
 [ ! -f ~/Documents/helia/helia.svg ] && \
   curl -sL -o ~/Documents/helia/helia.svg \
     https://raw.githubusercontent.com/adriens/claude-commands/main/docs/assets/logos/helia.svg
+# Convertir SVG en PNG pour XeLaTeX (rsvg-convert ou inkscape requis)
+[ ! -f ~/Documents/helia/helia.png ] && \
+  rsvg-convert -f png -w 400 ~/Documents/helia/helia.svg \
+    -o ~/Documents/helia/helia.png 2>/dev/null || true
 [ ! -f ~/Documents/helia/README.md ] && \
   curl -sL -o ~/Documents/helia/README.md \
     https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/helia-conso/README_helia_dir.md
@@ -386,21 +388,43 @@ Confirmer : `✅ PDF généré : ~/Documents/helia/reseau/YYYY-MM-DD_rapport_exp
 
 ### Template Quarto à écrire dans le fichier .qmd
 
+**Couleurs officielles Helia (extraites du SVG logo) :**
+- Dégradé : `#FF00E3` (fuchsia) → `#FF0010` (rouge cerise)
+- Milieu : `#FF0078`
+
+**Icônes FontAwesome5 :** utiliser `\faIcon{nom-en-kebab}` pour tous les icônes sauf les rares qui ont un alias direct (`\faClipboardList`, `\faChartLine`, `\faCalendarCheck`, `\faExclamationTriangle`, `\faDatabase`, `\faClock`, `\faRobot`, `\faLock`).
+
+**Sections requises :**
+1. Page de titre avec logo PNG (`~/Documents/helia/helia.png`) + règle dégradée TikZ
+2. Bloc de synthèse exécutive (`mdframed`) — utiliser chunk R `results='asis'` avec `cat()` pour injecter du LaTeX dynamique
+3. Tableau de bord SLA (kableExtra, en-tête `col_mid`)
+4. Analyse performances : percentiles + profil horaire (gridExtra ncol=2)
+5. Distribution des temps de réponse (histogramme par classes)
+6. **Profil de densité KDE** : `geom_density()` + histogramme, axes linéaire et log
+7. **Heatmap heure × jour** : `geom_tile()`, couleur = latence moyenne
+8. Disponibilité journalière + tableau détail
+9. **Chronologie des incidents** : scatter plot de tous les pings, coloré par type (Normal/Lenteur/Timeout)
+10. **Stack technique** : table des composants avec versions
+11. **Glossaire** : table d'explication des termes pour non-techniciens
+
+**YAML frontmatter minimal :**
+
 ````qmd
 ---
 title: "Rapport Expert — Qualité Réseau Helia NC"
 subtitle: "Analyse de disponibilité et performance API"
+author: "Adrien SALES"
 date: today
 lang: fr
+keywords: "Helia NC, OPT-NC, réseau mobile, SLA, disponibilité, latence, API, Nouvelle-Calédonie"
 format:
   pdf:
     pdf-engine: xelatex
-    geometry: "top=2cm, bottom=2cm, left=2.5cm, right=2.5cm"
+    geometry: "top=2.8cm, bottom=2cm, left=2.5cm, right=2.5cm"
     fontsize: 10pt
     toc: false
     number-sections: false
     fig-pos: "H"
-    fig-height: 2.8
     include-in-header:
       text: |
         \usepackage{booktabs}
@@ -409,17 +433,27 @@ format:
         \usepackage{fancyhdr}
         \usepackage{graphicx}
         \usepackage{fontawesome5}
+        \usepackage{tikz}
+        \usetikzlibrary{fadings}
+        \usepackage{mdframed}
+        % Gradient Helia officiel (SVG logo)
+        \definecolor{heliamagenta}{HTML}{FF00E3}
+        \definecolor{heliacrimson}{HTML}{FF0010}
+        \definecolor{heliamid}{HTML}{FF0078}
+        \definecolor{helialightbg}{HTML}{FFF0FE}
+        \definecolor{okgreen}{HTML}{27AE62}
+        \definecolor{warnred}{HTML}{C0392B}
         \pagestyle{fancy}
         \fancyhf{}
-        \fancyhead[L]{\textcolor[RGB]{82,45,128}{\faSignal\ \textbf{Helia NC}} — Rapport Expert Réseau}
-        \fancyhead[R]{\faCalendarAlt\ \thepage}
-        \fancyfoot[C]{\textcolor{gray}{\small \faLock\ Confidentiel — Usage interne}}
-        \definecolor{heliapurple}{RGB}{82,45,128}
-        \definecolor{heliateal}{RGB}{0,188,188}
-        \definecolor{okgreen}{RGB}{39,174,96}
-        \definecolor{warnred}{RGB}{192,57,43}
-        \definecolor{warnorange}{RGB}{230,126,34}
-        \renewcommand{\headrulewidth}{0.4pt}
+        \fancyhead[L]{\includegraphics[height=0.6cm]{PATH/helia.png}\quad\textcolor{heliamagenta}{\textbf{Helia NC}}\enspace\textcolor{heliamid}{|}\enspace Rapport Expert R\'eseau}
+        \fancyhead[R]{\small\textcolor{gray}{\faIcon{calendar-alt}\enspace\today\quad p.\enspace\thepage}}
+        \renewcommand{\headrulewidth}{0pt}
+        \newcommand{\heliarule}{%
+          \par\noindent%
+          \begin{tikzpicture}%
+            \shade[left color=heliamagenta, right color=heliacrimson]%
+              (0,0) rectangle (\textwidth,2pt);%
+          \end{tikzpicture}\par}
 execute:
   echo: false
   warning: false
