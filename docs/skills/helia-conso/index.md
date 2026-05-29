@@ -94,7 +94,7 @@ Sans argument → tableau de bord complet (data, voix, SMS, hors-forfait, rythme
     Le rapport est écrit automatiquement dans :
 
     ```
-    ~/Documents/helia/YYYY-MM-DD_rapport_conso.md
+    ~/Documents/helia/conso/YYYY-MM-DD_rapport_conso.md
     ```
 
     Idéal pour garder une trace mensuelle ou partager un bilan de conso.
