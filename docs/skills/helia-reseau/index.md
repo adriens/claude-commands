@@ -16,6 +16,8 @@ source_url: "https://github.com/adriens/claude-commands/blob/main/docs/skills/he
 ---
 # 📡 Helia NC — Qualité du réseau mobile
 
+![Logo Helia](../../assets/logos/helia.svg)
+
 !!! info "Commande Claude Code"
 
     **Commande** : `/helia-reseau`  

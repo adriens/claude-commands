@@ -15,6 +15,8 @@ source_url: "https://github.com/adriens/claude-commands/blob/main/docs/skills/he
 ---
 # 📱 Helia NC — Ma consommation mobile
 
+![Logo Helia](../../assets/logos/helia.svg)
+
 !!! info "Commande Claude Code"
 
     **Commande** : `/helia-conso`  
