@@ -1,6 +1,6 @@
-# Helia / Mobilis — Mon forfait mobile
+# Helia NC — Ma consommation mobile
 
-Réponds aux questions sur le forfait mobile Helia NC (OPT-NC).
+Réponds aux questions sur la consommation personnelle du forfait mobile Helia NC (OPT-NC).
 Réponds **dans la langue de la question posée**.
 
 ---
@@ -91,12 +91,12 @@ Après le tableau, **mettre en avant uniquement les indicateurs en 🟡 ou 🔴*
 
 ### Données historisées — toujours mentionner et exploiter
 
-**À la fin de chaque réponse**, signaler la disponibilité de l'historique DuckDB et s'en servir activement :
+**À la fin de chaque réponse**, signaler la disponibilité de l'historique DuckDB :
 
 ```
 📈 Historique disponible depuis le JJ/MM/AAAA
    Tu peux me demander : tendance de conso, jour le plus gourmand,
-   rythme semaine vs semaine, évolution de ta voix, pics de latence API...
+   rythme semaine vs semaine, évolution de ta voix...
 ```
 
 **Si l'historique est suffisant (≥ 3 jours de snapshots)**, enrichir le tableau avec :
@@ -166,15 +166,12 @@ duckdb -readonly ~/.config/helia/data/helia.db "SELECT ..."
 con = duckdb.connect('/home/adriens/.config/helia/data/helia.db', read_only=True)
 ```
 
-**Schémas des tables :**
+**Schéma de la table principale :**
 ```sql
 -- conso_snapshot (écrit toutes les 5 min si valeurs changées)
 timestamp TIMESTAMP, data_left_go DOUBLE, data_initial_go DOUBLE,
 voice_left_sec INTEGER,   -- secondes CONSOMMÉES (pas restantes !)
 voice_initial_sec INTEGER, days_renewal INTEGER
-
--- api_ping (écrit toutes les 5 min)
-timestamp TIMESTAMP, response_ms INTEGER, http_status INTEGER, timeout BOOLEAN
 ```
 
 **Vues prêtes à l'emploi :**
@@ -186,6 +183,9 @@ SELECT * FROM v_daily_conso WHERE jour >= CURRENT_DATE - 7;
 
 -- Macro paramétrée (équivalent ci-dessus)
 SELECT * FROM get_conso_since(7);
+
+-- Conso voix par jour
+SELECT * FROM v_voice_daily ORDER BY jour DESC;
 
 -- Projection : débit 7j + jours avant épuisement vs renouvellement
 SELECT * FROM v_projection;
@@ -209,20 +209,6 @@ SELECT timestamp,
 FROM conso_snapshot ORDER BY timestamp DESC LIMIT 10;
 ```
 
-### Présenter les résultats
-
-Indicateurs 🟢 / 🟡 / 🔴 :
-- 🟢 < 60% consommé · 🟡 60–80% · 🔴 > 80%
-
-| Indicateur | Valeur |
-|---|---|
-| 🟢/🟡/🔴 **Data** | `dataLeft` Go / `dataInitial` Go — tient ~X jours |
-| 🟢/🟡/🔴 **Voix** | voix restante / total — tient ~X jours |
-| **SMS** | Illimité ou ratio |
-| **Renouvellement** | Dans `daysRenewal` jours |
-| **Rythme** | pct_data_conso vs pct_temps_ecoule → en avance / dans les clous / dépasse |
-| **Hors-forfait** | Aucun ou montant XPF |
-
 ### Alertes proactives
 
 | Seuil | Action |
@@ -241,58 +227,7 @@ Indicateurs 🟢 / 🟡 / 🔴 :
 
 ---
 
-## DOMAINE 2 — Performances API
-
-### Router la commande
-
-| Question | Commande |
-|---|---|
-| État services / maintenance en ce moment | `helia maintenance --json` |
-| Latence / timeouts dernière heure | `SELECT * FROM v_api_health` |
-| Profil horaire (meilleures/pires heures) | `SELECT * FROM v_hourly_latency` |
-| Heatmap heure × jour de semaine | `SELECT * FROM v_latency_heatmap` |
-| Sparkline 40 derniers points | `SELECT points FROM v_sparkline` |
-
-### Vues disponibles
-
-```sql
--- Santé API dernière heure (moy, P95, timeouts)
-SELECT * FROM v_api_health;
--- → nb_pings | nb_ok | nb_timeouts | dispo_pct | latence_moy_ms | latence_p95_ms | latence_max_ms
-
--- Profil de latence par heure du jour (trié du plus rapide au plus lent)
-SELECT * FROM v_hourly_latency;
--- → heure | latence_moy_ms | latence_p95_ms | nb_timeouts | nb_mesures
-
--- Heatmap latence moyenne par heure × jour de semaine (0=dim, 1=lun, ..., 6=sam)
-SELECT * FROM v_latency_heatmap;
-
--- Dispo globale (toutes mesures)
-SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 1) AS dispo_pct
-FROM api_ping;
-
--- Dispo par jour
-SELECT
-    CAST(timestamp + (SELECT CAST(value AS INTEGER) FROM settings WHERE key='utc_offset_hours') * INTERVAL '1 hour' AS DATE) AS jour,
-    ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 1) AS dispo_pct,
-    COUNT(*) FILTER (WHERE timeout) AS nb_timeouts
-FROM api_ping GROUP BY 1 ORDER BY 1 DESC;
-```
-
-### Présenter les résultats
-
-| Latence | Couleur |
-|---|---|
-| ≤ 500 ms | 🟢 Rapide |
-| 500–1000 ms | 🟡 Acceptable |
-| > 1000 ms | 🔴 Lent |
-| timeout | ⛔ Indisponible |
-
-Résumer les services : "Tous opérationnels ✅" ou lister ceux en maintenance 🔴.
-
----
-
-## DOMAINE 3 — Offres & Forfaits
+## DOMAINE 2 — Offres & Forfaits
 
 ### Forfaits M (abonnement mensuel)
 
@@ -320,14 +255,9 @@ Résumer les services : "Tous opérationnels ✅" ou lister ceux en maintenance 
 - Pass Internet Voyage (depuis l'app)
 - Internet fixe / Fibre 1 Gbit/s / Téléphonie fixe
 
-### Réseau & infrastructure
-- 530+ antennes, 8 200 km de fibre optique
-- Arrêt programmé du cuivre et de la 2G (en cours)
-- Couverture consultable : [helia.nc/etat-du-reseau](https://helia.nc/etat-du-reseau)
-
 ---
 
-## DOMAINE 4 — Application Helia
+## DOMAINE 3 — Application Helia
 
 Téléchargement gratuit — [App Store](https://apps.apple.com) / [Google Play](https://play.google.com)
 - Android 5.1+ · iOS 13+
@@ -344,7 +274,7 @@ Téléchargement gratuit — [App Store](https://apps.apple.com) / [Google Play]
 
 ---
 
-## DOMAINE 5 — Assistance & Contact
+## DOMAINE 4 — Assistance & Contact
 
 ### Numéros utiles
 
@@ -372,19 +302,7 @@ Paiement facture · déménagement · changement de forfait · résiliation · c
 
 ---
 
-## DOMAINE 6 — État du réseau & incidents
-
-Consulter en temps réel : [helia.nc/etat-du-reseau](https://helia.nc/etat-du-reseau)
-
-- **Maintenances programmées** : interventions planifiées avec dates, heures et zones
-- **Incidents en cours** : perturbations en temps réel
-- Zones de couverture mobile et fibre consultables par carte
-
-> Si l'API Helia répond mais signale une maintenance (champ `isXxxOnMaintenance`), rediriger vers cette page pour le détail géographique.
-
----
-
-## DOMAINE 7 — Réclamations
+## DOMAINE 5 — Réclamations
 
 **3 canaux disponibles :**
 
@@ -404,32 +322,28 @@ Consulter en temps réel : [helia.nc/etat-du-reseau](https://helia.nc/etat-du-re
 
 ---
 
-## Arbre de décision — redirection
+## Arbre de décision
 
 ```
 Question reçue
 │
 ├─ Données temps réel (data, voix, SMS, jours) ?
-│   └─ → DOMAINE 1 : helia status --json + calculs
-│
-├─ Performances / latence / disponibilité API ?
-│   └─ → DOMAINE 2 : DuckDB vues v_api_health, v_hourly_latency...
+│   └─ → DOMAINE 1 : helia status --json + calculs DuckDB
 │
 ├─ Quel forfait choisir / combien ça coûte ?
-│   └─ → DOMAINE 3 : tableau des forfaits M + lien formulaire changement
+│   └─ → DOMAINE 2 : tableau des forfaits M + lien formulaire changement
 │
 ├─ Comment recharger / que peut faire l'app ?
-│   └─ → DOMAINE 4 : fonctionnalités app + lien téléchargement
+│   └─ → DOMAINE 3 : fonctionnalités app + lien téléchargement
 │
 ├─ Problème technique / joindre le support ?
-│   └─ → DOMAINE 5 : numéros (1000/1013/1052) + horaires + agences
-│
-├─ Panne réseau / zone sans couverture / maintenance ?
-│   └─ → DOMAINE 6 : helia.nc/etat-du-reseau + helia maintenance --json
+│   └─ → DOMAINE 4 : numéros (1000/1013/1052) + horaires + agences
 │
 └─ Erreur de facture / insatisfaction / litige ?
-    └─ → DOMAINE 7 : reclamation@helia.nc + formulaire + courrier
+    └─ → DOMAINE 5 : reclamation@helia.nc + formulaire + courrier
 ```
+
+> Pour les questions sur la **qualité du réseau, les maintenances ou la latence API** → utiliser `/helia-reseau`
 
 ---
 
@@ -441,5 +355,5 @@ Question reçue
 - Python venv : `/home/adriens/Github/helia/.venv/bin/python`
 - UTC offset NC : **+11h** stocké dans `settings` (clé `utc_offset_hours`)
 - `voiceLeft` = voix **consommée** (API mal nommée) — restante = `voiceInitial - voiceLeft`
+- `conso_snapshot` : écrit si valeurs changées (toutes les 5 min)
 - Widgets refresh : toutes les **5 min** (helia-widget et helia-status)
-- `conso_snapshot` : écrit si valeurs changées · `api_ping` : écrit à chaque refresh
