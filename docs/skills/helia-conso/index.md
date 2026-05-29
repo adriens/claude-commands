@@ -44,7 +44,7 @@ Il s'appuie sur :
 ### Prérequis
 
 ```bash
-# DuckDB CLI (pour les requêtes historiques)
+# DuckDB CLI (pour les requêtes historiques) — Linux & macOS
 brew install duckdb
 ```
 
