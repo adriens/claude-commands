@@ -492,20 +492,36 @@ quarto render "$QMD" --to pdf
 > Le template QMD est versionné dans le repo.
 > Pour toute modification, éditer `docs/skills/helia-conso/src/rapport_conso_expert_template.qmd`.
 
+### Étape 0 — Demander l'alias de la ligne avant de générer
+
+**Avant toute génération**, demander à l'utilisateur :
+
+> "Je vais générer le rapport pour **Tonton Marcel** — je laisse comme ça ou tu veux
+> mettre un autre alias pour le propriétaire de la ligne ?
+> (ex : `Maman`, `Bureau`, `Jean DUPONT — 98 XX XX XX`)"
+
+- Si l'utilisateur répond : utiliser sa réponse telle quelle.
+- Si l'utilisateur ne précise pas ou dit "par défaut" : utiliser `Tonton Marcel`.
+- Ne jamais mettre le nom de l'auteur du rapport (Adrien SALES) comme valeur par défaut —
+  l'auteur figure déjà dans le pied de page du rapport.
+
+> **Distinction importante**
+> - **Auteur du rapport** = Adrien SALES — toujours présent dans le footer (ne pas modifier)
+> - **Propriétaire de la ligne** = alias libre, affiché sur la page de couverture — peut être
+>   un prénom, un alias métier, un numéro de ligne, utile en contexte flotte d'entreprise
+
+---
+
 ### Analyse contextuelle — injection obligatoire avant le rendu
 
 Le template contient deux marqueurs à remplacer :
 - `HELIA_CONSO_ANALYSE_PLACEHOLDER` — analyse contextuelle (texte Markdown narratif)
-- `HELIA_OWNER_PLACEHOLDER` — nom de l'abonné affiché sur la page de couverture
-
-**Propriétaire / abonné :** par défaut `Adrien SALES (forfait personnel)`.
-Si l'utilisateur passe `/helia-conso expert NOM PRÉNOM` ou mentionne un abonné différent
-(utile pour gérer une flotte d'entreprise), utiliser ce nom à la place.
+- `HELIA_OWNER_PLACEHOLDER` — alias du propriétaire de la ligne (saisi à l'étape 0)
 
 ```bash
 uv run python - <<'PYEOF'
 analyse = """[texte narratif généré ci-dessous]"""
-proprietaire = "Adrien SALES (forfait personnel)"  # remplacer si abonné différent
+proprietaire = "[alias saisi par l'utilisateur à l'étape 0]"
 
 with open(qmd_path, "r", encoding="utf-8") as f:
     content = f.read()
