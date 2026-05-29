@@ -80,6 +80,7 @@ Sans argument → tableau de bord réseau complet (latence, dispo, meilleures/pi
 | `/helia-reseau dispo` | Taux de disponibilité global et par jour |
 | `/helia-reseau heatmap` | Latence par heure × jour de semaine |
 | `/helia-reseau report` | 📄 Rapport Markdown complet avec charts |
+| `/helia-reseau expert` | 🔬 Rapport expert SLA — CIO, DT, OPS, support OPT-NC |
 
 ---
 
@@ -95,6 +96,28 @@ Sans argument → tableau de bord réseau complet (latence, dispo, meilleures/pi
 
     ```
     ~/Documents/helia/reseau/YYYY-MM-DD_rapport_reseau.md
+    ```
+
+---
+
+!!! warning "Rapport expert pour professionnels"
+
+    ```text
+    /helia-reseau expert
+    ```
+
+    Rapport de niveau **SLA / telecom** destiné aux profils techniques et décisionnels :
+
+    | Profil | Ce qu'il y trouve |
+    |---|---|
+    | CIO / CEO | Synthèse exécutive, niveau SLA (two/three/four nines), indisponibilité cumulée |
+    | Directeur Télécom | Conformité SLA, MTBF, P95/P99, tendance par jour |
+    | OPS / SysAdmin | Distribution des temps de réponse, top 10 incidents horodatés, profil horaire |
+    | Support OPT-NC | Données précises exportables pour ticket d'incident |
+
+    Rapport écrit dans :
+    ```
+    ~/Documents/helia/reseau/YYYY-MM-DD_rapport_expert_reseau.md
     ```
 
 ---

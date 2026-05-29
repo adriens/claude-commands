@@ -17,6 +17,7 @@ Lire `$ARGUMENTS` et router vers la section correspondante.
 | `dispo` | → **FOCUS DISPONIBILITÉ** : taux de dispo global et par jour |
 | `heatmap` | → **FOCUS HEATMAP** : latence par heure × jour de semaine |
 | `report` | → **RAPPORT MARKDOWN** : synthèse complète avec charts Mermaid, écrite dans `~/Documents/helia/reseau/` |
+| `expert` | → **RAPPORT EXPERT** : SLA, percentiles P50/P90/P95/P99, MTBF, indisponibilité cumulée — pour CIO, DT, OPS, support OPT-NC |
 
 Si l'argument ne correspond à aucune commande, afficher la liste ci-dessus et produire le tableau de bord complet.
 
@@ -328,6 +329,237 @@ pie title Pings OK vs Timeouts
 - **Valeurs manquantes** : si une heure n'a pas de données, ne pas l'inclure dans l'axe
 - **Limiter à 10 points** pour les charts par jour si l'historique est long
 - Si `v_api_health` est vide (fenêtre sans pings récents) : afficher `> Pas de mesure sur la dernière heure.`
+
+---
+
+## FOCUS EXPERT
+
+> Déclenché par `/helia-reseau expert`
+
+Destiné aux profils techniques et décisionnels : CIO, CEO, Directeur Télécom, OPS, SysAdmin, support OPT-NC.
+Adapter le niveau de détail selon le profil détecté dans la question (si précisé).
+
+### Requêtes à exécuter
+
+```sql
+-- Percentiles de latence (hors timeouts)
+SELECT
+    ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY response_ms), 0) AS p50_ms,
+    ROUND(PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY response_ms), 0) AS p90_ms,
+    ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY response_ms), 0) AS p95_ms,
+    ROUND(PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY response_ms), 0) AS p99_ms,
+    ROUND(AVG(response_ms), 0) AS moy_ms,
+    MAX(response_ms) AS max_ms
+FROM api_ping WHERE NOT timeout;
+
+-- SLA — disponibilité globale avec niveau en "nines"
+SELECT
+    COUNT(*) AS nb_total,
+    COUNT(*) FILTER (WHERE NOT timeout) AS nb_ok,
+    COUNT(*) FILTER (WHERE timeout) AS nb_timeout,
+    ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 4) AS dispo_pct,
+    CASE
+        WHEN ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 4) >= 99.999 THEN 'Five nines ✅'
+        WHEN ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 4) >= 99.99  THEN 'Four nines ✅'
+        WHEN ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 4) >= 99.9   THEN 'Three nines 🟡'
+        WHEN ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 4) >= 99.0   THEN 'Two nines 🟡'
+        ELSE 'Below two nines 🔴'
+    END AS sla_niveau
+FROM api_ping;
+
+-- Durée d'indisponibilité cumulée (chaque ping = 5 min)
+SELECT
+    COUNT(*) FILTER (WHERE timeout) * 5 AS minutes_indispo,
+    ROUND(COUNT(*) FILTER (WHERE timeout) * 5 / 60.0, 2) AS heures_indispo,
+    COUNT(*) * 5 AS minutes_total,
+    ROUND(COUNT(*) * 5 / 60.0 / 24.0, 1) AS jours_surveilles
+FROM api_ping;
+
+-- MTBF approché : temps moyen entre deux timeouts (en minutes)
+WITH timeouts AS (
+    SELECT timestamp,
+           LAG(timestamp) OVER (ORDER BY timestamp) AS prev_timeout
+    FROM api_ping WHERE timeout
+)
+SELECT ROUND(AVG(EPOCH(timestamp - prev_timeout) / 60.0), 0) AS mtbf_minutes
+FROM timeouts WHERE prev_timeout IS NOT NULL;
+
+-- Distribution par plage de latence
+SELECT
+    CASE
+        WHEN timeout THEN 'Timeout'
+        WHEN response_ms <= 500   THEN '≤ 500 ms 🟢'
+        WHEN response_ms <= 1000  THEN '501–1000 ms 🟡'
+        WHEN response_ms <= 2000  THEN '1001–2000 ms 🟠'
+        ELSE '> 2000 ms 🔴'
+    END AS plage,
+    COUNT(*) AS nb,
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM api_ping), 1) AS pct
+FROM api_ping
+GROUP BY 1 ORDER BY MIN(CASE WHEN timeout THEN 99999 ELSE response_ms END);
+
+-- Disponibilité par jour + percentiles journaliers
+SELECT
+    CAST(timestamp + 11 * INTERVAL '1 hour' AS DATE) AS jour,
+    ROUND(100.0 * COUNT(*) FILTER (WHERE NOT timeout) / COUNT(*), 2) AS dispo_pct,
+    COUNT(*) FILTER (WHERE timeout) AS nb_timeouts,
+    ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY response_ms) FILTER (WHERE NOT timeout), 0) AS p50_ms,
+    ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY response_ms) FILTER (WHERE NOT timeout), 0) AS p95_ms,
+    COUNT(*) AS nb_mesures
+FROM api_ping GROUP BY 1 ORDER BY 1 ASC;
+
+-- Profil horaire complet
+SELECT heure, latence_moy_ms, latence_p95_ms, nb_timeouts, nb_mesures
+FROM v_hourly_latency ORDER BY heure ASC;
+
+-- Top 10 pires incidents (pings les plus lents ou timeouts)
+SELECT timestamp + 11 * INTERVAL '1 hour' AS heure_locale,
+       response_ms, timeout, http_status
+FROM api_ping
+ORDER BY CASE WHEN timeout THEN 999999 ELSE response_ms END DESC
+LIMIT 10;
+
+-- Historique
+SELECT MIN(timestamp) + 11 * INTERVAL '1 hour' AS depuis,
+       MAX(timestamp) + 11 * INTERVAL '1 hour' AS dernier,
+       COUNT(*) AS nb_pings,
+       ROUND(COUNT(*) * 5 / 60.0 / 24.0, 1) AS jours_surveilles
+FROM api_ping;
+```
+
+### Écriture du fichier
+
+```bash
+mkdir -p ~/Documents/helia/reseau
+DATE_NC=$(date -u -d '+11 hours' '+%Y-%m-%d' 2>/dev/null || date -u -v+11H '+%Y-%m-%d')
+FICHIER=~/Documents/helia/reseau/${DATE_NC}_rapport_expert_reseau.md
+```
+
+Confirmer : `✅ Rapport expert écrit dans ~/Documents/helia/reseau/YYYY-MM-DD_rapport_expert_reseau.md`
+
+### Format du document exporté
+
+````markdown
+# 📡 Helia NC — Rapport Expert Qualité Réseau
+> Généré le JJ/MM/AAAA à HH:MM (heure NC) · Période : JJ/MM/AAAA → JJ/MM/AAAA · N jours surveillés
+
+---
+
+## 🔍 Synthèse exécutive
+
+[2-3 phrases niveau management : le service respecte-t-il le SLA ? Quel est l'impact opérationnel ?
+Quelles actions sont recommandées ? Adapter selon le profil détecté.]
+
+Exemples :
+- Pour CIO/CEO → "Le service API Helia NC affiche une disponibilité de XX,XX% sur la période (niveau : Three nines 🟡). Le temps d'indisponibilité cumulé est de X heures X minutes. Aucune action corrective immédiate n'est requise."
+- Pour DT/OPS → "XX timeouts enregistrés sur N mesures. MTBF estimé à XXX minutes. P95 à XXX ms — dans les normes pour un service mobile. Les créneaux 7h–9h présentent une dégradation systématique à surveiller."
+- Pour support OPT-NC → "Rapport de disponibilité API sur N jours. X incidents de timeout détectés. Pics de latence entre Xh et Xh. Données exportables pour ticket d'incident."
+
+---
+
+## 📊 Tableau de bord SLA
+
+| Métrique | Valeur | Objectif | Statut |
+|---|---|---|---|
+| Disponibilité globale | XX,XXXX% | ≥ 99,9% | 🟢🟡🔴 |
+| Niveau SLA | Three nines / Four nines… | — | ✅🟡🔴 |
+| Latence P50 | XXX ms | ≤ 500 ms | 🟢🟡🔴 |
+| Latence P95 | XXX ms | ≤ 1 000 ms | 🟢🟡🔴 |
+| Latence P99 | XXX ms | ≤ 2 000 ms | 🟢🟡🔴 |
+| Timeouts | X / N (X,X%) | < 1% | 🟢🟡🔴 |
+| Indisponibilité cumulée | X h X min | — | — |
+| MTBF | XXX min | — | — |
+| Période surveillée | N jours | — | — |
+
+---
+
+## 📈 Latence — Percentiles
+
+```mermaid
+xychart-beta
+    title "Percentiles de latence (ms)"
+    x-axis ["P50", "P90", "P95", "P99", "Max"]
+    bar [XXX, XXX, XXX, XXX, XXXX]
+```
+
+---
+
+## 📊 Distribution des réponses
+
+```mermaid
+pie title Distribution des temps de réponse
+    "≤ 500 ms 🟢 (XX%)" : XX.X
+    "501–1000 ms 🟡 (XX%)" : XX.X
+    "1001–2000 ms 🟠 (XX%)" : XX.X
+    "> 2000 ms 🔴 (XX%)" : XX.X
+    "Timeout ⛔ (X%)" : X.X
+```
+
+---
+
+## 📶 Disponibilité journalière
+
+```mermaid
+xychart-beta
+    title "Disponibilité par jour (%)"
+    x-axis ["JJ/MM", ...]
+    line [XX.XX, ...]
+```
+
+---
+
+## ⏱ Latence P95 par jour
+
+```mermaid
+xychart-beta
+    title "P95 de latence par jour (ms)"
+    x-axis ["JJ/MM", ...]
+    bar [XXX, ...]
+```
+
+---
+
+## ⏰ Profil horaire — Latence moyenne
+
+```mermaid
+xychart-beta
+    title "Latence moyenne par heure du jour (ms)"
+    x-axis ["0h","1h","2h","3h","4h","5h","6h","7h","8h","9h","10h","11h","12h","13h","14h","15h","16h","17h","18h","19h","20h","21h","22h","23h"]
+    line [X, X, ...]
+```
+
+---
+
+## 🚨 Top 10 incidents (pires mesures)
+
+| Horodatage (NC) | Latence | Timeout | HTTP |
+|---|---|---|---|
+| JJ/MM/AAAA HH:MM | X XXX ms | ✅/⛔ | 200/0 |
+| ... | | | |
+
+---
+
+## 📋 Disponibilité journalière — Détail
+
+| Date | Dispo % | Timeouts | P50 | P95 | Mesures |
+|---|---|---|---|---|---|
+| JJ/MM | XX,XX% | X | XXX ms | XXX ms | N |
+| ... | | | | | |
+
+---
+
+*Données issues de `~/.config/helia/data/helia.db` · N pings · période : JJ/MM → JJ/MM · dernier ping : JJ/MM HH:MM*
+````
+
+### Règles de présentation
+
+- **Disponibilité** : toujours à 4 décimales (ex: 99,6552%)
+- **Latence** : arrondie à l'entier (ms), jamais de décimale
+- **MTBF** : si < 60 min → afficher en minutes ; si ≥ 60 min → afficher en heures et minutes
+- **Indisponibilité cumulée** : convertir en h min sec
+- **Top 10 incidents** : trier timeouts d'abord, puis par latence décroissante
+- **Objectifs SLA** : utiliser les seuils telecom standards (P95 ≤ 1 000 ms, dispo ≥ 99,9%)
+- Si aucun timeout → mentionner "aucun incident enregistré sur la période" dans la synthèse exécutive
 
 ---
 
