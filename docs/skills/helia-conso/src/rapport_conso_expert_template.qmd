@@ -236,7 +236,7 @@ cat(paste0(
 
 \vspace{0.3cm}
 
-## \faSearch\enspace Analyse contextuelle
+## \faIcon{search}\enspace Analyse contextuelle
 
 HELIA_CONSO_ANALYSE_PLACEHOLDER
 
@@ -304,12 +304,16 @@ pie_data <- data.frame(
   col   = c(ifelse(data_pct < 60, col_ok, ifelse(data_pct < 80, col_warn, col_crit)),
             "gray85"))
 
-p1 <- ggplot(pie_data, aes(x = "", y = val, fill = col)) +
-  geom_col(width = 1, color = "white", linewidth = 0.5) +
+p1 <- ggplot(pie_data, aes(x = 2, y = val, fill = col)) +
+  geom_col(width = 0.85, color = "white", linewidth = 0.5) +
   coord_polar("y") +
+  xlim(c(0.5, 2.5)) +
   scale_fill_identity() +
   geom_text(aes(label = label),
-            position = position_stack(vjust = 0.5), size = 2.5) +
+            position = position_stack(vjust = 0.5), size = 2.2) +
+  annotate("text", x = 0.5, y = 0,
+           label = paste0(data_pct, "%"),
+           size = 4, fontface = "bold", color = col_mid) +
   labs(title = sprintf("Data — Forfait M %g Go", snap$data_initial_go)) +
   theme_void() +
   theme(plot.title = element_text(face = "bold", size = 9,
@@ -361,12 +365,16 @@ pie_voix <- data.frame(
   col   = c(ifelse(voix_pct < 60, col_ok, ifelse(voix_pct < 80, col_warn, col_crit)),
             "gray85"))
 
-p3 <- ggplot(pie_voix, aes(x = "", y = val, fill = col)) +
-  geom_col(width = 1, color = "white", linewidth = 0.5) +
+p3 <- ggplot(pie_voix, aes(x = 2, y = val, fill = col)) +
+  geom_col(width = 0.85, color = "white", linewidth = 0.5) +
   coord_polar("y") +
+  xlim(c(0.5, 2.5)) +
   scale_fill_identity() +
   geom_text(aes(label = label),
-            position = position_stack(vjust = 0.5), size = 2.5) +
+            position = position_stack(vjust = 0.5), size = 2.2) +
+  annotate("text", x = 0.5, y = 0,
+           label = paste0(voix_pct, "%"),
+           size = 4, fontface = "bold", color = col_mid) +
   labs(title = sprintf("Voix — Forfait %.0f min", voix_init_min)) +
   theme_void() +
   theme(plot.title = element_text(face = "bold", size = 9,
@@ -382,6 +390,10 @@ p4 <- ggplot(daily_voice,
 
 grid.arrange(p3, p4, ncol = 2)
 ```
+
+\vspace{0.3cm}
+
+## \faCalendarCheck\enspace Heatmap consommation voix — heure par jour de la semaine
 
 ```{r chart-heatmap-voix, fig.width=6.5, fig.height=2.2}
 jours_fr_v <- c("0" = "Dimanche", "1" = "Lundi", "2" = "Mardi",

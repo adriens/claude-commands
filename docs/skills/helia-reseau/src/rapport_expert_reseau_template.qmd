@@ -231,7 +231,7 @@ cat(paste0(
 
 \vspace{0.3cm}
 
-## \faSearch\enspace Analyse contextuelle
+## \faIcon{search}\enspace Analyse contextuelle
 
 HELIA_ANALYSE_PLACEHOLDER
 

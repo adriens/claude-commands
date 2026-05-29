@@ -507,11 +507,11 @@ uv run python - <<'PYEOF'
 analyse = """[texte narratif généré ci-dessous]"""
 proprietaire = "Adrien SALES (forfait personnel)"  # remplacer si abonné différent
 
-with open(qmd_path, "r") as f:
+with open(qmd_path, "r", encoding="utf-8") as f:
     content = f.read()
 content = content.replace("HELIA_CONSO_ANALYSE_PLACEHOLDER", analyse)
 content = content.replace("HELIA_OWNER_PLACEHOLDER", proprietaire)
-with open(qmd_path, "w") as f:
+with open(qmd_path, "w", encoding="utf-8") as f:
     f.write(content)
 PYEOF
 ```
