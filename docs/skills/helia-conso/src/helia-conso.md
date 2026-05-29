@@ -258,6 +258,18 @@ Produire **exactement** ce document, en substituant toutes les valeurs réelles 
 
 ---
 
+## 🔍 Analyse
+
+> Rédiger 2-3 phrases en langage naturel qui résument la situation globale : ce qui va bien, ce qui mérite attention, et ce qu'il faut faire (ou ne pas faire). Ton direct, pas de jargon.
+>
+> Exemples de formulations selon la situation :
+> - Tout OK → "Ton forfait est bien géré ce mois-ci : tu n'as consommé que X% de ta data pour X% du temps écoulé. Rien à faire, attends le renouvellement dans N jours."
+> - Alerte data → "Ta data s'épuise plus vite que prévu : X% consommé pour X% du temps écoulé. À ce rythme tu seras à sec dans X jours, avant le renouvellement. Une recharge s'impose."
+> - Alerte voix → "Ta data est tranquille mais tu as presque épuisé tes minutes (X% consommé). Il te reste X min pour N jours — évite les longs appels d'ici le renouvellement."
+> - Double alerte → "Situation tendue : data et voix sont toutes les deux dans le rouge. Envisage une recharge packagée (1h + 1 Go — 1 000 F) pour finir le mois sereinement."
+
+---
+
 ## 📊 Synthèse
 
 | Indicateur | Valeur | Verdict |
