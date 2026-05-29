@@ -58,6 +58,7 @@ execute:
 ```{r setup}
 library(duckdb)
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(kableExtra)
 library(scales)
@@ -126,6 +127,24 @@ heatmap_conso <- dbGetQuery(con, "
     COUNT(*) AS nb_mesures
   FROM diffs
   WHERE conso_go IS NOT NULL
+  GROUP BY 1, 2
+  ORDER BY 1, 2")
+
+heatmap_voix <- dbGetQuery(con, "
+  WITH diffs AS (
+    SELECT
+      EXTRACT(DOW  FROM timestamp + 11 * INTERVAL '1 hour') AS dow,
+      EXTRACT(HOUR FROM timestamp + 11 * INTERVAL '1 hour') AS heure,
+      GREATEST(voice_left_sec - LAG(voice_left_sec) OVER (ORDER BY timestamp), 0) / 60.0 AS conso_min
+    FROM conso_snapshot
+  )
+  SELECT
+    dow,
+    heure,
+    ROUND(SUM(conso_min), 1) AS conso_min,
+    COUNT(*) AS nb_mesures
+  FROM diffs
+  WHERE conso_min IS NOT NULL
   GROUP BY 1, 2
   ORDER BY 1, 2")
 
@@ -363,6 +382,48 @@ p4 <- ggplot(daily_voice,
 grid.arrange(p3, p4, ncol = 2)
 ```
 
+```{r chart-heatmap-voix, fig.width=6.5, fig.height=2.2}
+jours_fr_v <- c("0" = "Dimanche", "1" = "Lundi", "2" = "Mardi",
+                "3" = "Mercredi", "4" = "Jeudi", "5" = "Vendredi", "6" = "Samedi")
+
+hm_voix <- heatmap_voix |>
+  mutate(
+    jour_semaine = factor(
+      jours_fr_v[as.character(as.integer(dow))],
+      levels = c("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")),
+    conso_eff = ifelse(conso_min == 0, NA_real_, conso_min)) |>
+  complete(jour_semaine, heure = 0:23, fill = list(conso_eff = NA_real_))
+
+max_voix <- max(hm_voix$conso_eff, na.rm = TRUE)
+if (is.infinite(max_voix) || is.na(max_voix)) max_voix <- 1
+
+ggplot(hm_voix, aes(x = as.integer(heure), y = jour_semaine, fill = conso_eff)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  scale_fill_gradientn(
+    colors   = c("gray95", col_mid, col_crimson),
+    values   = rescale(c(0, max_voix * 0.3, max_voix)),
+    na.value = "gray95",
+    name     = "Conso (min)",
+    labels   = function(x) paste0(x, " min"),
+    limits   = c(0, max_voix),
+    oob      = squish) +
+  scale_x_continuous(breaks = seq(0, 23, 3),
+                     labels = paste0(seq(0, 23, 3), "h"),
+                     expand = c(0.01, 0.01)) +
+  coord_equal() +
+  labs(title = "Consommation voix par heure et jour de la semaine",
+       subtitle = paste0("Période : ", periode_debut, " au ", periode_fin,
+                         "  |  Plus foncé = plus de minutes consommées"),
+       x = NULL, y = NULL) +
+  theme_helia +
+  theme(legend.position   = "right",
+        legend.key.height = unit(0.8, "cm"),
+        legend.key.width  = unit(0.3, "cm"),
+        legend.title      = element_text(size = 7),
+        legend.text       = element_text(size = 7),
+        panel.grid        = element_blank())
+```
+
 \newpage
 
 \heliarule
@@ -378,18 +439,21 @@ hm <- heatmap_conso |>
     jour_semaine = factor(
       jours_fr[as.character(as.integer(dow))],
       levels = c("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")),
-    conso_eff = ifelse(conso_mo == 0, NA_real_, conso_mo))
+    conso_eff = ifelse(conso_mo == 0, NA_real_, conso_mo)) |>
+  complete(jour_semaine, heure = 0:23, fill = list(conso_eff = NA_real_))
+
+max_data <- max(hm$conso_eff, na.rm = TRUE)
+if (is.infinite(max_data) || is.na(max_data)) max_data <- 1
 
 ggplot(hm, aes(x = as.integer(heure), y = jour_semaine, fill = conso_eff)) +
   geom_tile(color = "white", linewidth = 0.4) +
   scale_fill_gradientn(
     colors  = c("gray95", col_magenta, col_crimson),
-    values  = rescale(c(0, max(hm$conso_eff, na.rm = TRUE) * 0.3,
-                        max(hm$conso_eff, na.rm = TRUE))),
+    values  = rescale(c(0, max_data * 0.3, max_data)),
     na.value = "gray95",
     name    = "Conso (Mo)",
     labels  = function(x) paste0(x, " Mo"),
-    limits  = c(0, max(hm$conso_eff, na.rm = TRUE)),
+    limits  = c(0, max_data),
     oob     = squish) +
   scale_x_continuous(breaks = seq(0, 23, 3),
                      labels = paste0(seq(0, 23, 3), "h"),
