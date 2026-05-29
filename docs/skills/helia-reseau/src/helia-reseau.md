@@ -368,7 +368,14 @@ tinytex::tlmgr_install("fontawesome5")
 ### Écriture et compilation
 
 ```bash
+# Initialisation du répertoire (première fois)
 mkdir -p ~/Documents/helia/reseau
+[ ! -f ~/Documents/helia/helia.svg ] && \
+  curl -sL -o ~/Documents/helia/helia.svg \
+    https://raw.githubusercontent.com/adriens/claude-commands/main/docs/assets/logos/helia.svg
+[ ! -f ~/Documents/helia/README.md ] && \
+  curl -sL -o ~/Documents/helia/README.md \
+    https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/helia-conso/README_helia_dir.md
 DATE_NC=$(date -u -d '+11 hours' '+%Y-%m-%d' 2>/dev/null || date -u -v+11H '+%Y-%m-%d')
 QMD=~/Documents/helia/reseau/${DATE_NC}_rapport_expert_reseau.qmd
 # → écrire le contenu .qmd ci-dessous dans $QMD

@@ -353,7 +353,14 @@ xychart-beta
 Une fois le document Markdown construit, l'écrire sur disque :
 
 ```bash
+# Initialisation du répertoire (première fois)
 mkdir -p ~/Documents/helia/conso
+[ ! -f ~/Documents/helia/helia.svg ] && \
+  curl -sL -o ~/Documents/helia/helia.svg \
+    https://raw.githubusercontent.com/adriens/claude-commands/main/docs/assets/logos/helia.svg
+[ ! -f ~/Documents/helia/README.md ] && \
+  curl -sL -o ~/Documents/helia/README.md \
+    https://raw.githubusercontent.com/adriens/claude-commands/main/docs/skills/helia-conso/README_helia_dir.md
 ```
 
 Nom du fichier : `YYYY-MM-DD_rapport_conso.md` où la date est celle du jour en heure NC (UTC+11).
