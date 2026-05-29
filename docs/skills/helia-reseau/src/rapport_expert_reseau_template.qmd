@@ -194,7 +194,8 @@ theme_helia <- theme_minimal(base_size = 9) +
 \vspace{0.2cm}
 \includegraphics[height=2cm]{/home/adriens/Documents/helia/helia.png}\\[0.4cm]
 {\Large\textbf{\textcolor{heliamagenta}{Rapport Expert} \textcolor{heliamid}{R\'eseau}}}\\[0.15cm]
-{\normalsize\textcolor{gray}{Analyse SLA \textbullet{} Disponibilit\'e \textbullet{} Performance API}}\\[0.2cm]
+{\normalsize\textcolor{gray}{Analyse SLA \textbullet{} Disponibilit\'e \textbullet{} Performance API}}\\[0.1cm]
+{\small\textcolor{gray}{\faUser\enspace HELIA_OWNER_PLACEHOLDER}}\\[0.2cm]
 \end{center}
 
 \heliarule
@@ -545,11 +546,15 @@ ggplot(timeline_df, aes(x = ts, y = ifelse(timeout, 15000, response_ms),
 
 \vfill
 \heliarule
-\textcolor{gray}{\small
+{\small\textcolor{gray}{%
+  \textbf{\faFlask\enspace Prototype op\'erationnel} --- con\c{c}u \& d\'evelopp\'e par \textbf{Adrien SALES}
+  via la skill Claude \texttt{/helia-reseau expert}\\[2pt]
+  \faTwitter\enspace \texttt{x.com/rastadidi}\quad
+  \faLinkedinIn\enspace \texttt{linkedin.com/in/adrien-sales/}
+  \hfill
   \faDatabase\enspace \texttt{\textasciitilde/.config/helia/data/helia.db}\quad
-  \faClock\enspace Intervalle : 5~min\quad
-  \faRobot\enspace Auteur : Adrien SALES via \texttt{/helia-reseau expert}
-}
+  \faClock\enspace 5~min
+}}
 
 \newpage
 

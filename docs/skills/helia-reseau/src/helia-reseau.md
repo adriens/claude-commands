@@ -476,22 +476,32 @@ sur les dernières 24 heures disponibles.
 
 #### Injection dans le QMD
 
+Le template contient deux marqueurs à remplacer :
+- `HELIA_ANALYSE_PLACEHOLDER` — analyse contextuelle (texte Markdown narratif)
+- `HELIA_OWNER_PLACEHOLDER` — nom de l'abonné affiché sur la page de couverture
+
+**Propriétaire / abonné :** par défaut `Adrien SALES (forfait personnel)`.
+Si l'utilisateur passe une commande `/helia-reseau expert NOM PRÉNOM` ou mentionne un abonné différent
+(utile pour une flotte d'entreprise), utiliser ce nom à la place.
+
 ```bash
 uv run python - <<'PYEOF'
 analyse = """[texte généré ci-dessus — paragraphes Markdown, sans LaTeX]"""
+proprietaire = "Adrien SALES (forfait personnel)"  # remplacer si abonné différent
 
 with open(qmd_path, "r") as f:
     content = f.read()
 
 content = content.replace("HELIA_ANALYSE_PLACEHOLDER", analyse)
+content = content.replace("HELIA_OWNER_PLACEHOLDER", proprietaire)
 
 with open(qmd_path, "w") as f:
     f.write(content)
 PYEOF
 ```
 
-> Le texte doit être du **Markdown standard** (gras, listes, sauts de ligne) — Quarto le convertit
-> en LaTeX automatiquement. Ne pas injecter de commandes LaTeX brutes.
+> Le texte de `analyse` doit être du **Markdown standard** (gras, listes, sauts de ligne) —
+> Quarto le convertit en LaTeX automatiquement. Ne pas injecter de commandes LaTeX brutes.
 
 Confirmer : `✅ PDF généré : ~/Documents/helia/reseau/YYYY-MM-DD_rapport_expert_reseau.pdf`
 

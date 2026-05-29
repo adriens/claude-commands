@@ -494,15 +494,23 @@ quarto render "$QMD" --to pdf
 
 ### Analyse contextuelle — injection obligatoire avant le rendu
 
-Le template contient `HELIA_CONSO_ANALYSE_PLACEHOLDER`. **Remplacer avant `quarto render`** :
+Le template contient deux marqueurs à remplacer :
+- `HELIA_CONSO_ANALYSE_PLACEHOLDER` — analyse contextuelle (texte Markdown narratif)
+- `HELIA_OWNER_PLACEHOLDER` — nom de l'abonné affiché sur la page de couverture
+
+**Propriétaire / abonné :** par défaut `Adrien SALES (forfait personnel)`.
+Si l'utilisateur passe `/helia-conso expert NOM PRÉNOM` ou mentionne un abonné différent
+(utile pour gérer une flotte d'entreprise), utiliser ce nom à la place.
 
 ```bash
 uv run python - <<'PYEOF'
 analyse = """[texte narratif généré ci-dessous]"""
+proprietaire = "Adrien SALES (forfait personnel)"  # remplacer si abonné différent
 
 with open(qmd_path, "r") as f:
     content = f.read()
 content = content.replace("HELIA_CONSO_ANALYSE_PLACEHOLDER", analyse)
+content = content.replace("HELIA_OWNER_PLACEHOLDER", proprietaire)
 with open(qmd_path, "w") as f:
     f.write(content)
 PYEOF
