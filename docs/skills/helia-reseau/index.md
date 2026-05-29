@@ -70,12 +70,32 @@ curl -o ~/.claude/commands/helia-reseau.md \
 
 Sans argument → tableau de bord réseau complet (latence, dispo, meilleures/pires heures).
 
-```text
-/helia-reseau latence
-/helia-reseau maintenance
-/helia-reseau incident
-/helia-reseau heatmap
-```
+### Sous-commandes disponibles
+
+| Commande | Description |
+|---|---|
+| `/helia-reseau` | Tableau de bord réseau complet |
+| `/helia-reseau latence` | Latence actuelle, P95, profil horaire |
+| `/helia-reseau maintenance` | Maintenances en cours, incidents, état du réseau |
+| `/helia-reseau dispo` | Taux de disponibilité global et par jour |
+| `/helia-reseau heatmap` | Latence par heure × jour de semaine |
+| `/helia-reseau report` | 📄 Rapport Markdown complet avec charts |
+
+---
+
+!!! tip "Générer un rapport réseau"
+
+    ```text
+    /helia-reseau report
+    ```
+
+    Produit un fichier Markdown avec **note d'analyse**, **tableau de synthèse** et **4 charts Mermaid** (latence horaire, dispo par jour, timeouts, pie OK/timeout).
+
+    Le rapport est écrit automatiquement dans :
+
+    ```
+    ~/Documents/helia/reseau/YYYY-MM-DD_rapport_reseau.md
+    ```
 
 ---
 
