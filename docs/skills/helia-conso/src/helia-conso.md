@@ -5,6 +5,200 @@ Réponds **dans la langue de la question posée**.
 
 ---
 
+## ROUTING — Sous-commandes disponibles
+
+Lire `$ARGUMENTS` et router vers la section correspondante.
+
+| Argument | Action |
+|---|---|
+| _(vide)_ | → **TABLEAU DE BORD** complet |
+| `data` | → **FOCUS DATA** : Go restants, rythme, projection data |
+| `voix` | → **FOCUS VOIX** : minutes restantes, rythme, tient ? |
+| `projection` | → **FOCUS PROJECTION** : data et voix tiennent-elles jusqu'au renouvellement ? |
+| `recharge` | → **FOCUS RECHARGE** : dois-je recharger ? quelle recharge ? |
+| `rythme` | → **FOCUS RYTHME** : je consomme normalement pour ce stade du mois ? |
+| `hf` | → **FOCUS HORS-FORFAIT** : frais hors-forfait via CLI |
+
+Si l'argument ne correspond à aucune commande, afficher la liste ci-dessus et produire le tableau de bord complet.
+
+---
+
+## FOCUS DATA
+
+> Déclenché par `/helia-conso data`
+
+```sql
+SELECT data_left_go, data_initial_go,
+       ROUND((data_initial_go - data_left_go) / data_initial_go * 100, 1) AS pct_conso,
+       days_renewal
+FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1;
+
+SELECT go_par_jour, data_tient_jours, jours_renouvellement, statut FROM v_projection;
+
+SELECT jour, data_conso_mo, data_restant_go FROM v_daily_conso ORDER BY jour DESC LIMIT 7;
+```
+
+Format de réponse :
+
+```
+📶 Data — Forfait M X Go
+
+  Restant    : X,XXX Go (XX% consommé)
+  Rythme     : X,XX Go/jour
+  Projection : tient ~X,X jours → OK ✅ / ALERTE 🔴
+  Renouvellement dans N jours
+
+📅 Conso par jour (7 derniers jours)
+  JJ/MM : X Mo
+  ...
+```
+
+Verdict : appliquer les seuils du TABLEAU DE BORD. Si `statut = 'ALERTE'`, suggérer une recharge.
+
+---
+
+## FOCUS VOIX
+
+> Déclenché par `/helia-conso voix`
+
+```sql
+SELECT voice_initial_sec, voice_left_sec,
+       ROUND(voice_left_sec * 100.0 / voice_initial_sec, 1) AS pct_conso,
+       ROUND((voice_initial_sec - voice_left_sec) / 60.0, 1) AS restant_min,
+       days_renewal
+FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1;
+
+SELECT jour, voice_conso_min FROM v_voice_daily ORDER BY jour DESC LIMIT 7;
+
+SELECT ROUND(AVG(voice_conso_sec) / 60.0, 1) AS moy_min_par_jour FROM v_voice_daily WHERE voice_conso_sec > 0;
+```
+
+Format de réponse :
+
+```
+📞 Voix — Forfait X h
+
+  Restant    : X min X sec (XX% consommé)  🟢🟡🔴
+  Rythme     : ~X,X min/jour
+  Projection : tient ~X jours → OK ✅ / risque 🔴
+  Renouvellement dans N jours
+
+📅 Conso voix par jour
+  JJ/MM : X,X min
+  ...
+```
+
+Verdict : `voix_restante_min / moy_min_par_jour >= days_renewal` → ✅ sinon 🔴.
+
+---
+
+## FOCUS PROJECTION
+
+> Déclenché par `/helia-conso projection`
+
+```sql
+SELECT data_left_go, days_renewal FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1;
+SELECT go_par_jour, data_tient_jours, jours_renouvellement, statut FROM v_projection;
+SELECT voice_initial_sec, voice_left_sec, days_renewal FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1;
+SELECT ROUND(AVG(voice_conso_sec) / 60.0, 1) AS moy_min_par_jour FROM v_voice_daily WHERE voice_conso_sec > 0;
+```
+
+Format de réponse :
+
+```
+🏁 Projection jusqu'au renouvellement (N jours)
+
+  📶 Data  : X,XX Go restants · X,XX Go/j · tient ~X,X jours → OK ✅ / ALERTE 🔴
+  📞 Voix  : X min restantes · X,X min/j  · tient ~X jours   → OK ✅ / risque 🔴
+
+  ⚠️ Si < 3 jours de snapshots : projection estimée, fiable dans X jours.
+```
+
+Si les deux sont OK → "Rien à faire, attends le renouvellement."
+Si alerte → passer directement à la recommandation de recharge.
+
+---
+
+## FOCUS RECHARGE
+
+> Déclenché par `/helia-conso recharge`
+
+Évaluer si une recharge est nécessaire :
+
+```sql
+SELECT data_tient_jours, jours_renouvellement, statut FROM v_projection;
+SELECT voice_initial_sec, voice_left_sec, days_renewal FROM conso_snapshot ORDER BY timestamp DESC LIMIT 1;
+SELECT ROUND(AVG(voice_conso_sec) / 60.0, 1) AS moy_min_par_jour FROM v_voice_daily WHERE voice_conso_sec > 0;
+```
+
+Logique de décision :
+
+| Situation | Recommandation |
+|---|---|
+| Tout OK | 🟢 Pas besoin de recharger, renouvellement dans N jours |
+| Data ALERTE uniquement | 🔴 Recharge Internet Mobile 1 Go / 24h — **400 F** |
+| Voix épuisée avant renouvellement | 🔴 Recharge packagée 1h + 1 Go + SMS illim. — **1 000 F** |
+| Data + Voix en alerte | 🔴 Recharge packagée 1h + 1 Go + SMS illim. — **1 000 F** |
+| Besoin confort | Recharge packagée 2h + 5 Go + SMS illim. — **3 000 F** |
+
+Canaux disponibles :
+- 📱 App Helia (App Store / Google Play) — le plus rapide
+- 🌐 helia.nc → "Mes démarches en ligne"
+- 📞 **1013** (gratuit) — Lun–Ven 7h30–16h / Sam 7h–11h
+- 🏪 46 agences / 21 revendeurs en NC
+
+---
+
+## FOCUS RYTHME
+
+> Déclenché par `/helia-conso rythme`
+
+```sql
+SELECT
+    ROUND((1 - MIN(data_left_go)/MAX(data_initial_go))*100, 1) AS pct_data_conso,
+    ROUND((30 - MIN(days_renewal))/30.0*100, 1) AS pct_temps_ecoule,
+    MIN(days_renewal) AS jours_restants
+FROM conso_snapshot;
+
+SELECT jour, data_conso_mo FROM v_daily_conso ORDER BY jour DESC LIMIT 7;
+SELECT go_par_jour FROM v_projection;
+```
+
+Format de réponse :
+
+```
+⏱ Rythme de consommation
+
+  Data consommée : XX%
+  Temps écoulé   : XX%
+  Écart          : XX points → 🟢 en avance / 🟡 dans les clous / 🔴 dépasse
+
+  Rythme moyen : X,XX Go/jour
+  Jour le plus gourmand : JJ/MM — X Mo
+```
+
+Règles de verdict :
+- `pct_data_conso < pct_temps_ecoule - 10` → 🟢 En avance
+- `ABS(pct_data_conso - pct_temps_ecoule) <= 10` → 🟡 Dans les clous
+- `pct_data_conso > pct_temps_ecoule + 10` → 🔴 Consomme trop vite
+
+---
+
+## FOCUS HORS-FORFAIT
+
+> Déclenché par `/helia-conso hf`
+
+DuckDB ne stocke pas `amountHF`. Requêter le CLI :
+
+```bash
+helia status --json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('amountHF', 0))"
+```
+
+- `amountHF == 0` → ✅ "Aucun frais hors-forfait."
+- `amountHF > 0` → 🔴 "Tu as **X F** de hors-forfait. Ces frais seront régularisés au renouvellement."
+
+---
+
 ## TABLEAU DE BORD — Synthèse par défaut
 
 **Si l'utilisateur ne pose pas de question précise, ou demande un état général, produire systématiquement ce tableau de bord complet.**
