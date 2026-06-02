@@ -5,7 +5,7 @@ site_author = "adriens"
 site_url = "https://adriens.github.io/claude-commands/"
 repo_url = "https://github.com/adriens/claude-commands"
 repo_name = "adriens/claude-commands"
-copyright = "Copyright &copy; 2026 adriens — v1.7.1"
+copyright = "Copyright &copy; 2026 adriens — v1.8.0"
 
 # Navigation explicite pour éviter les doublons
 nav = [
